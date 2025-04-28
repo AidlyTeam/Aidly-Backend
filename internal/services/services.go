@@ -14,12 +14,14 @@ type IService interface {
 	UtilService() IUtilService
 	UserService() *UserService
 	RoleService() *RoleService
+	CampaignService() *CampaignService
 }
 
 type Services struct {
-	utilService IUtilService
-	userService *UserService
-	roleService *RoleService
+	utilService     IUtilService
+	userService     *UserService
+	roleService     *RoleService
+	campaignService *CampaignService
 }
 
 func CreateNewServices(
@@ -31,11 +33,13 @@ func CreateNewServices(
 	utilService := newUtilService(validatorService, &cfg.Defaults)
 	userService := newUserService(db, queries, utilService)
 	roleService := newRoleService(db, queries, utilService)
+	campaignService := newCampaignService(db, queries, utilService)
 
 	return &Services{
-		utilService: utilService,
-		userService: userService,
-		roleService: roleService,
+		utilService:     utilService,
+		userService:     userService,
+		roleService:     roleService,
+		campaignService: campaignService,
 	}
 }
 
@@ -49,6 +53,10 @@ func (s *Services) UserService() *UserService {
 
 func (s *Services) RoleService() *RoleService {
 	return s.roleService
+}
+
+func (s *Services) CampaignService() *CampaignService {
+	return s.campaignService
 }
 
 // ------------------------------------------------------

@@ -144,7 +144,7 @@ func (s *UserService) ChangeUserRole(ctx context.Context, id, newRoleID uuid.UUI
 		UserID: id,
 		RoleID: newRoleID,
 	}); err != nil {
-		return serviceErrors.NewServiceErrorWithMessage(serviceErrors.StatusInternalServerError, serviceErrors.ErrChangingRole)
+		return serviceErrors.NewServiceErrorWithMessage(serviceErrors.StatusInternalServerError, serviceErrors.ErrUpdatingUserRole)
 	}
 
 	return nil

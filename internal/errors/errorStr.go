@@ -17,6 +17,8 @@ const (
 	ErrUserNotFound        = "USER_NOT_FOUND"
 	ErrDefaultUserNotFound = "DEFAULT_USER_NOT_FOUND"
 	ErrRoleNotFound        = "ROLE_NOT_FOUND"
+
+	ErrCampaignNotFound = "CAMPAIGN_NOT_FOUND"
 )
 
 // 400
@@ -37,21 +39,18 @@ const (
 
 // 500
 const (
-	ErrFilteringUserProfile = "ERROR_FILTERING_USER_PROFILE"
-	ErrFilteringRole        = "ERROR_FILTERING_ROLES"
-	ErrFilteringUsers       = "ERROR_FILTERING_USERS"
-	ErrFilteringLanguages   = "ERROR_FILTERING_LANGUAGES"
-	ErrCreatingUser         = "ERROR_CREATE_USER"
+	ErrFilteringRole      = "ERROR_FILTERING_ROLES"
+	ErrFilteringUsers     = "ERROR_FILTERING_USERS"
+	ErrFilteringCampaigns = "ERROR_FILTERING_CAMPAIGNS"
 
-	ErrCreatingUsers       = "ERROR_CREATING_USERS"
-	ErrUpdatingUsers       = "ERROR_UPDATING_USERS"
-	ErrChangingRole        = "ERROR_CHANGING_USER_ROLE"
-	ErrCreatingUserProfile = "ERROR_CREATING_USER_PROFILE"
-	ErrUpdatingUserProfile = "ERROR_UPDATING_USER_PROFILE"
+	ErrCreatingUser      = "ERROR_CREATE_USER"
+	ErrCreatingCampaigns = "ERROR_CREATE_CAMPAINGS"
 
-	ErrComparingPassword = "ERROR_COMPARING_PASSWORDS"
-	ErrHashing           = "ERROR_HASHING"
-	ErrTransactionError  = "ERROR_COMMITING"
+	ErrUpdatingUserRole  = "ERROR_UPDATING_USER_ROLE"
+	ErrUpdatingCampaigns = "ERROR_UPDATING_CAMPAINGS"
+	ErrUpdatingUsers     = "ERROR_UPDATING_USERS"
+
+	ErrDeletingCampaigns = "ERROR_DELETING_CAMPAIGNS"
 
 	ErrWalletVerificationError = "WALLET_VERIFICATION_ERROR"
 )

@@ -15,12 +15,12 @@ type TCampaign struct {
 	UserID       uuid.UUID
 	Title        string
 	Description  sql.NullString
+	ImagePath    sql.NullString
 	TargetAmount string
 	RaisedAmount sql.NullString
 	StartDate    sql.NullTime
 	EndDate      sql.NullTime
 	CreatedAt    sql.NullTime
-	UpdatedAt    sql.NullTime
 }
 
 type TDonation struct {
