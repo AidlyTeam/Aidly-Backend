@@ -1,0 +1,33 @@
+services:
+  api:
+    container_name: Aidly-api
+    build:
+      context: ../.
+      dockerfile: ./deployment/dev.Dockerfile
+    ports:
+      - 8080:8080
+    volumes:
+      - ../:/app
+    networks:
+      - Aidly
+
+  database:
+    container_name: Aidly-db
+    image: postgres:13
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=defaultDB
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_HOST=database
+      - POSTGRES_PORT=5432
+    volumes:
+      - ../storage/postgres_data:/var/lib/postgresql/data
+      - ./script:/docker-entrypoint-initdb.d
+    networks:
+      - Aidly
+
+networks:
+  Aidly:
+    driver: bridge

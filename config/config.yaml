@@ -1,0 +1,49 @@
+app:
+  site: "localhost"
+  https: false
+  devMode: true
+  mode: "self"
+  migrationsPath: "migrations"
+  managment:
+    walletAddress: "74HhKaQZp94oEbWgU51qJsSDTLRahVJFaJLqJN5jfs4U"
+
+database:
+  driver: "postgres"
+  host: "database"
+  port: "5432"
+  managment:
+    username: "postgres"
+    password: "1234"
+  dbname: "defaultDB"
+  sslmode: "disable"
+  timezone: "UTC"
+
+http:
+  host: "localhost"
+  port: "8080"
+  maxHeaderBytes: 1
+  readTimeout: 10s
+  writeTimeout: 10s
+  allowedOrigins:
+    - "http://localhost"
+    - "http://localhost:8080"
+    - "http://127.0.0.1:8080"
+  allowedMethods:
+    - "GET"
+    - "POST"
+    - "PUT"
+    - "DELETE"
+  allowedHeaders:
+    - "Accept"
+    - "Accept-Encoding"
+    - "Authorization"
+    - "Content-Length"
+    - "Content-Type"
+    - "X-CSRF-Token"
+    - "X-Requested-With"
+    - "Origin"
+  exposedHeaders:
+    - "Content-Length"
+    - "Content-Type"
+  allowCredentials: true
+  proxyHeader: "X-Forwarded-For"
