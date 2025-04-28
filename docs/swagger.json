@@ -8,6 +8,274 @@
     "host": "localhost:8080",
     "basePath": "/api/v1",
     "paths": {
+        "/admin/campaign/{campaignID}": {
+            "delete": {
+                "description": "Deletes a campaign based on the provided campaign ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Campaign"
+                ],
+                "summary": "Delete a Campaign",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Campaign ID",
+                        "name": "campaignID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/private/campaign": {
+            "get": {
+                "description": "Retrieves a list of campaigns based on given filters.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Campaign"
+                ],
+                "summary": "Get Campaigns",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Campaign ID",
+                        "name": "id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "userID",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Page Number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Limit Per Page",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.BaseResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Creates a new campaign.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Campaign"
+                ],
+                "summary": "Create a Campaign for User",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "Campaign Image File",
+                        "name": "imageFile",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "maxLength": 500,
+                        "type": "string",
+                        "name": "description",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "endDate",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "startDate",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "targetAmount",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "maxLength": 100,
+                        "type": "string",
+                        "name": "title",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/response.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/private/campaign/{campaignID}": {
+            "get": {
+                "description": "Retrieves a campaign based on the provided campaign ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Campaign"
+                ],
+                "summary": "Get Campaign by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Campaign ID",
+                        "name": "campaignID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.BaseResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Updates the details of an existing campaign.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Campaign"
+                ],
+                "summary": "Update a Campaign for User",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Campaign ID",
+                        "name": "campaignID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Campaign Image File",
+                        "name": "imageFile",
+                        "in": "formData"
+                    },
+                    {
+                        "maxLength": 500,
+                        "type": "string",
+                        "name": "description",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "name": "endDate",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "name": "startDate",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "name": "targetAmount",
+                        "in": "formData"
+                    },
+                    {
+                        "maxLength": 100,
+                        "type": "string",
+                        "name": "title",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.BaseResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes a campaign based on the provided campaign ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Campaign"
+                ],
+                "summary": "Delete a Campaign for User",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Campaign ID",
+                        "name": "campaignID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/private/user/profile": {
             "get": {
                 "description": "Retrieves users profile.",
@@ -110,17 +378,6 @@
                     "Auth"
                 ],
                 "summary": "Login",
-                "parameters": [
-                    {
-                        "description": "Login",
-                        "name": "login",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.UserLoginDTO"
-                        }
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -172,24 +429,6 @@
                 },
                 "walletAddress": {
                     "type": "string"
-                }
-            }
-        },
-        "dto.UserLoginDTO": {
-            "type": "object",
-            "required": [
-                "password",
-                "username"
-            ],
-            "properties": {
-                "password": {
-                    "type": "string",
-                    "minLength": 8
-                },
-                "username": {
-                    "type": "string",
-                    "maxLength": 30,
-                    "minLength": 3
                 }
             }
         },

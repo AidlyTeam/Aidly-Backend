@@ -130,7 +130,7 @@ func (s *UserService) Update(ctx context.Context, id, name, surname string) erro
 
 	if err := s.queries.UpdateUser(ctx, repo.UpdateUserParams{
 		UserID:  idUUID,
-		Name:    s.utilService.ParseString(surname),
+		Name:    s.utilService.ParseString(name),
 		Surname: s.utilService.ParseString(surname),
 	}); err != nil {
 		return serviceErrors.NewServiceErrorWithMessage(serviceErrors.StatusInternalServerError, serviceErrors.ErrUpdatingUsers)

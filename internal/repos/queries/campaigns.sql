@@ -16,6 +16,14 @@ FROM
 WHERE 
     id = @campaign_id;
 
+-- name: GetUserCampaign :one
+SELECT 
+    id, user_id, title, description, image_path, target_amount, raised_amount, start_date, end_date, created_at
+FROM 
+    t_campaigns
+WHERE 
+    id = @campaign_id AND user_id = @user_id;
+
 -- name: CreateCampaign :one
 INSERT INTO t_campaigns 
     (user_id, title, description, image_path, target_amount, raised_amount, start_date, end_date, created_at)
@@ -30,7 +38,7 @@ SET
     title = COALESCE(@title, title),
     description = COALESCE(@description, description),
     image_path = COALESCE(@image_path, image_path),
-    target_amount = COALESCE(@target_amount, target_amount),
+    target_amount = COALESCE(sqlc.narg(target_amount), target_amount),
     raised_amount = COALESCE(@raised_amount, raised_amount),
     start_date = COALESCE(@start_date, start_date),
     end_date = COALESCE(@end_date, end_date)

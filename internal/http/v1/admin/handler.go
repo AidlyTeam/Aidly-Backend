@@ -47,6 +47,7 @@ func (h *AdminHandler) Init(router fiber.Router) {
 
 	// Initialize Routes
 	h.initUserRoutes(root)
+	h.initCampaignsRoutes(root)
 }
 
 func (h *AdminHandler) authMiddleware(c *fiber.Ctx) error {

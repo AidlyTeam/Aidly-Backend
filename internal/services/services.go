@@ -15,6 +15,7 @@ type IService interface {
 	UserService() *UserService
 	RoleService() *RoleService
 	CampaignService() *CampaignService
+	UploadService() *uploadService
 }
 
 type Services struct {
@@ -22,6 +23,7 @@ type Services struct {
 	userService     *UserService
 	roleService     *RoleService
 	campaignService *CampaignService
+	uploadService   *uploadService
 }
 
 func CreateNewServices(
@@ -34,12 +36,14 @@ func CreateNewServices(
 	userService := newUserService(db, queries, utilService)
 	roleService := newRoleService(db, queries, utilService)
 	campaignService := newCampaignService(db, queries, utilService)
+	uploadService := newUploadService(utilService)
 
 	return &Services{
 		utilService:     utilService,
 		userService:     userService,
 		roleService:     roleService,
 		campaignService: campaignService,
+		uploadService:   uploadService,
 	}
 }
 
@@ -57,6 +61,10 @@ func (s *Services) RoleService() *RoleService {
 
 func (s *Services) CampaignService() *CampaignService {
 	return s.campaignService
+}
+
+func (s *Services) UploadService() *uploadService {
+	return s.uploadService
 }
 
 // ------------------------------------------------------

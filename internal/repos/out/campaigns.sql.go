@@ -157,6 +157,38 @@ func (q *Queries) GetCampaigns(ctx context.Context, arg GetCampaignsParams) ([]T
 	return items, nil
 }
 
+const getUserCampaign = `-- name: GetUserCampaign :one
+SELECT 
+    id, user_id, title, description, image_path, target_amount, raised_amount, start_date, end_date, created_at
+FROM 
+    t_campaigns
+WHERE 
+    id = $1 AND user_id = $2
+`
+
+type GetUserCampaignParams struct {
+	CampaignID uuid.UUID
+	UserID     uuid.UUID
+}
+
+func (q *Queries) GetUserCampaign(ctx context.Context, arg GetUserCampaignParams) (TCampaign, error) {
+	row := q.db.QueryRowContext(ctx, getUserCampaign, arg.CampaignID, arg.UserID)
+	var i TCampaign
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.Title,
+		&i.Description,
+		&i.ImagePath,
+		&i.TargetAmount,
+		&i.RaisedAmount,
+		&i.StartDate,
+		&i.EndDate,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const updateCampaign = `-- name: UpdateCampaign :exec
 UPDATE
     t_campaigns
@@ -176,7 +208,7 @@ type UpdateCampaignParams struct {
 	Title        string
 	Description  sql.NullString
 	ImagePath    sql.NullString
-	TargetAmount string
+	TargetAmount sql.NullString
 	RaisedAmount sql.NullString
 	StartDate    sql.NullTime
 	EndDate      sql.NullTime

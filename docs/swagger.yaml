@@ -13,19 +13,6 @@ definitions:
     - signatureBase58
     - walletAddress
     type: object
-  dto.UserLoginDTO:
-    properties:
-      password:
-        minLength: 8
-        type: string
-      username:
-        maxLength: 30
-        minLength: 3
-        type: string
-    required:
-    - password
-    - username
-    type: object
   dto.UserProfileUpdateDTO:
     properties:
       name:
@@ -52,6 +39,183 @@ info:
   description: API Service for Aidly
   title: API Service
 paths:
+  /admin/campaign/{campaignID}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a campaign based on the provided campaign ID.
+      parameters:
+      - description: Campaign ID
+        in: path
+        name: campaignID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.BaseResponse'
+      summary: Delete a Campaign
+      tags:
+      - Campaign
+  /private/campaign:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a list of campaigns based on given filters.
+      parameters:
+      - description: Campaign ID
+        in: query
+        name: id
+        type: string
+      - description: User ID
+        in: query
+        name: userID
+        type: string
+      - description: Page Number
+        in: query
+        name: page
+        type: string
+      - description: Limit Per Page
+        in: query
+        name: limit
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.BaseResponse'
+      summary: Get Campaigns
+      tags:
+      - Campaign
+    post:
+      consumes:
+      - application/json
+      description: Creates a new campaign.
+      parameters:
+      - description: Campaign Image File
+        in: formData
+        name: imageFile
+        required: true
+        type: file
+      - in: formData
+        maxLength: 500
+        name: description
+        required: true
+        type: string
+      - in: formData
+        name: endDate
+        required: true
+        type: string
+      - in: formData
+        name: startDate
+        required: true
+        type: string
+      - in: formData
+        name: targetAmount
+        required: true
+        type: string
+      - in: formData
+        maxLength: 100
+        name: title
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.BaseResponse'
+      summary: Create a Campaign for User
+      tags:
+      - Campaign
+  /private/campaign/{campaignID}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a campaign based on the provided campaign ID.
+      parameters:
+      - description: Campaign ID
+        in: path
+        name: campaignID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.BaseResponse'
+      summary: Delete a Campaign for User
+      tags:
+      - Campaign
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a campaign based on the provided campaign ID.
+      parameters:
+      - description: Campaign ID
+        in: path
+        name: campaignID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.BaseResponse'
+      summary: Get Campaign by ID
+      tags:
+      - Campaign
+    put:
+      consumes:
+      - application/json
+      description: Updates the details of an existing campaign.
+      parameters:
+      - description: Campaign ID
+        in: path
+        name: campaignID
+        required: true
+        type: string
+      - description: Campaign Image File
+        in: formData
+        name: imageFile
+        type: file
+      - in: formData
+        maxLength: 500
+        name: description
+        type: string
+      - in: formData
+        name: endDate
+        type: string
+      - in: formData
+        name: startDate
+        type: string
+      - in: formData
+        name: targetAmount
+        type: string
+      - in: formData
+        maxLength: 100
+        name: title
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.BaseResponse'
+      summary: Update a Campaign for User
+      tags:
+      - Campaign
   /private/user/profile:
     get:
       consumes:
@@ -115,13 +279,6 @@ paths:
       consumes:
       - application/json
       description: Login
-      parameters:
-      - description: Login
-        in: body
-        name: login
-        required: true
-        schema:
-          $ref: '#/definitions/dto.UserLoginDTO'
       produces:
       - application/json
       responses:
