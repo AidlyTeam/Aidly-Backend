@@ -11,11 +11,12 @@ import (
 )
 
 type SessionData struct {
-	UserID  uuid.UUID
-	RoleID  uuid.UUID
-	Role    string
-	Name    string
-	Surname string
+	UserID        uuid.UUID
+	RoleID        uuid.UUID
+	Role          string
+	Name          string
+	Surname       string
+	WalletAddress string
 }
 
 func (s *SessionData) ParseFromUser(user *repo.TUser, role *repo.TRole) {
@@ -24,6 +25,7 @@ func (s *SessionData) ParseFromUser(user *repo.TUser, role *repo.TRole) {
 	s.Role = role.Name
 	s.Name = user.Name.String
 	s.Surname = user.Surname.String
+	s.WalletAddress = user.WalletAddress
 }
 
 func (s *SessionData) SetNameSurname(name, surname string) {

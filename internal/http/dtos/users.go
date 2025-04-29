@@ -9,20 +9,22 @@ func NewUserDTOManager() UserDTOManager {
 }
 
 type UserProfileView struct {
-	ID       string `json:"id"`
-	RoleID   string `json:"roleID"`
-	RoleName string `json:"role"`
-	Name     string `json:"name"`
-	Surname  string `json:"surname"`
+	ID            string `json:"id"`
+	RoleID        string `json:"roleID"`
+	RoleName      string `json:"role"`
+	Name          string `json:"name"`
+	Surname       string `json:"surname"`
+	WalletAddress string `json:"walletAddress"`
 }
 
 func (UserDTOManager) ToUserProfile(userData sessionStore.SessionData) UserProfileView {
 	return UserProfileView{
-		ID:       userData.UserID.String(),
-		RoleID:   userData.RoleID.String(),
-		RoleName: userData.Role,
-		Name:     userData.Name,
-		Surname:  userData.Surname,
+		ID:            userData.UserID.String(),
+		RoleID:        userData.RoleID.String(),
+		RoleName:      userData.Role,
+		Name:          userData.Name,
+		Surname:       userData.Surname,
+		WalletAddress: userData.WalletAddress,
 	}
 }
 
