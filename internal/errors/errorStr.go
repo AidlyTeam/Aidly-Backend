@@ -54,4 +54,7 @@ const (
 	ErrCountDonations = "ERROR_COUNT_DONATIONS"
 
 	ErrWalletVerificationError = "WALLET_VERIFICATION_ERROR"
+
+	ErrDecimalConvertionError = "DECIMAL_CONVERTION_ERROR"
+	ErrCommittingTx           = "ERROR_COMMIT_TX"
 )

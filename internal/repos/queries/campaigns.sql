@@ -1,7 +1,7 @@
 -- name: GetCampaigns :many
 SELECT 
     id, user_id, title, description, wallet_address, image_path, target_amount, raised_amount, 
-    accepted_token_symbol, is_verified, start_date, end_date, created_at
+    accepted_token_symbol, is_verified, is_valid, start_date, end_date, created_at
 FROM 
     t_campaigns
 WHERE
@@ -13,7 +13,7 @@ LIMIT @lim OFFSET @off;
 -- name: GetCampaignByID :one
 SELECT 
     id, user_id, title, description, wallet_address, image_path, target_amount, raised_amount, 
-    accepted_token_symbol, is_verified, start_date, end_date, created_at
+    accepted_token_symbol, is_verified, is_valid, start_date, end_date, created_at
 FROM 
     t_campaigns
 WHERE 
@@ -22,7 +22,7 @@ WHERE
 -- name: GetUserCampaign :one
 SELECT 
     id, user_id, title, description, wallet_address, image_path, target_amount, raised_amount, 
-    accepted_token_symbol, is_verified, start_date, end_date, created_at
+    accepted_token_symbol, is_verified, is_valid, start_date, end_date, created_at
 FROM 
     t_campaigns
 WHERE 
@@ -45,6 +45,7 @@ SET
     image_path = COALESCE(@image_path, image_path),
     target_amount = COALESCE(sqlc.narg(target_amount), target_amount),
     raised_amount = COALESCE(@raised_amount, raised_amount),
+    is_valid = COALESCE(@is_valid, is_valid),
     start_date = COALESCE(@start_date, start_date),
     end_date = COALESCE(@end_date, end_date)
 WHERE

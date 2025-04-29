@@ -101,13 +101,12 @@ func (h *PrivateHandler) Donate(c *fiber.Ctx) error {
 	}
 
 	// TODO: CHECK IF THE DONATION IS SUCCEED WITH TRANSACTION ID. IF SUCCEED. THEN CREATE.
-
 	donationID, err := h.services.DonationService().CreateDonation(
 		c.Context(),
 		userSession.UserID,
-		campaign.ID,
 		newDonation.Amount,
 		newDonation.TransactionID,
+		campaign,
 	)
 	if err != nil {
 		return err

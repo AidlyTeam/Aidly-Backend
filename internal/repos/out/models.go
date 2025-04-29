@@ -20,7 +20,8 @@ type TCampaign struct {
 	TargetAmount        string
 	RaisedAmount        sql.NullString
 	AcceptedTokenSymbol sql.NullString
-	IsVerified          sql.NullBool
+	IsVerified          bool
+	IsValid             bool
 	StartDate           sql.NullTime
 	EndDate             sql.NullTime
 	CreatedAt           sql.NullTime

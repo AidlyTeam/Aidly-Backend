@@ -211,7 +211,7 @@ func (s *CampaignService) ChangeCampaignVerified(
 
 	if err := s.queries.ChangeVerified(ctx, repo.ChangeVerifiedParams{
 		CampaignID: idUUID,
-		IsVerified: sql.NullBool{Bool: verify, Valid: true},
+		IsVerified: verify,
 	}); err != nil {
 		if err == sql.ErrNoRows {
 			return serviceErrors.NewServiceErrorWithMessage(serviceErrors.StatusNotFound, serviceErrors.ErrCampaignNotFound)

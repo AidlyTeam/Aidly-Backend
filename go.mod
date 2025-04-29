@@ -15,6 +15,7 @@ require (
 	github.com/matthewhartstonge/argon2 v1.2.0
 	github.com/mr-tron/base58 v1.2.0
 	github.com/pressly/goose v2.7.0+incompatible
+	github.com/shopspring/decimal v1.4.0
 	github.com/spf13/viper v1.20.0
 	github.com/swaggo/swag v1.16.4
 )
@@ -55,7 +56,6 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/sagikazarmark/locafero v0.7.0 // indirect
-	github.com/shopspring/decimal v1.4.0 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
 	github.com/spf13/afero v1.12.0 // indirect
 	github.com/spf13/cast v1.7.1 // indirect

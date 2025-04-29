@@ -22,7 +22,7 @@ WHERE
 `
 
 type ChangeVerifiedParams struct {
-	IsVerified sql.NullBool
+	IsVerified bool
 	CampaignID uuid.UUID
 }
 
@@ -97,7 +97,7 @@ func (q *Queries) DeleteCampaign(ctx context.Context, campaignID uuid.UUID) erro
 const getCampaignByID = `-- name: GetCampaignByID :one
 SELECT 
     id, user_id, title, description, wallet_address, image_path, target_amount, raised_amount, 
-    accepted_token_symbol, is_verified, start_date, end_date, created_at
+    accepted_token_symbol, is_verified, is_valid, start_date, end_date, created_at
 FROM 
     t_campaigns
 WHERE 
@@ -118,6 +118,7 @@ func (q *Queries) GetCampaignByID(ctx context.Context, campaignID uuid.UUID) (TC
 		&i.RaisedAmount,
 		&i.AcceptedTokenSymbol,
 		&i.IsVerified,
+		&i.IsValid,
 		&i.StartDate,
 		&i.EndDate,
 		&i.CreatedAt,
@@ -128,7 +129,7 @@ func (q *Queries) GetCampaignByID(ctx context.Context, campaignID uuid.UUID) (TC
 const getCampaigns = `-- name: GetCampaigns :many
 SELECT 
     id, user_id, title, description, wallet_address, image_path, target_amount, raised_amount, 
-    accepted_token_symbol, is_verified, start_date, end_date, created_at
+    accepted_token_symbol, is_verified, is_valid, start_date, end_date, created_at
 FROM 
     t_campaigns
 WHERE
@@ -172,6 +173,7 @@ func (q *Queries) GetCampaigns(ctx context.Context, arg GetCampaignsParams) ([]T
 			&i.RaisedAmount,
 			&i.AcceptedTokenSymbol,
 			&i.IsVerified,
+			&i.IsValid,
 			&i.StartDate,
 			&i.EndDate,
 			&i.CreatedAt,
@@ -192,7 +194,7 @@ func (q *Queries) GetCampaigns(ctx context.Context, arg GetCampaignsParams) ([]T
 const getUserCampaign = `-- name: GetUserCampaign :one
 SELECT 
     id, user_id, title, description, wallet_address, image_path, target_amount, raised_amount, 
-    accepted_token_symbol, is_verified, start_date, end_date, created_at
+    accepted_token_symbol, is_verified, is_valid, start_date, end_date, created_at
 FROM 
     t_campaigns
 WHERE 
@@ -218,6 +220,7 @@ func (q *Queries) GetUserCampaign(ctx context.Context, arg GetUserCampaignParams
 		&i.RaisedAmount,
 		&i.AcceptedTokenSymbol,
 		&i.IsVerified,
+		&i.IsValid,
 		&i.StartDate,
 		&i.EndDate,
 		&i.CreatedAt,
@@ -235,10 +238,11 @@ SET
     image_path = COALESCE($4, image_path),
     target_amount = COALESCE($5, target_amount),
     raised_amount = COALESCE($6, raised_amount),
-    start_date = COALESCE($7, start_date),
-    end_date = COALESCE($8, end_date)
+    is_valid = COALESCE($7, is_valid),
+    start_date = COALESCE($8, start_date),
+    end_date = COALESCE($9, end_date)
 WHERE
-    id = $9
+    id = $10
 `
 
 type UpdateCampaignParams struct {
@@ -248,6 +252,7 @@ type UpdateCampaignParams struct {
 	ImagePath     sql.NullString
 	TargetAmount  sql.NullString
 	RaisedAmount  sql.NullString
+	IsValid       bool
 	StartDate     sql.NullTime
 	EndDate       sql.NullTime
 	CampaignID    uuid.UUID
@@ -261,6 +266,7 @@ func (q *Queries) UpdateCampaign(ctx context.Context, arg UpdateCampaignParams) 
 		arg.ImagePath,
 		arg.TargetAmount,
 		arg.RaisedAmount,
+		arg.IsValid,
 		arg.StartDate,
 		arg.EndDate,
 		arg.CampaignID,
