@@ -12,18 +12,20 @@ import (
 
 type IService interface {
 	UtilService() IUtilService
+	UploadService() *uploadService
 	UserService() *UserService
 	RoleService() *RoleService
 	CampaignService() *CampaignService
-	UploadService() *uploadService
+	DonationService() *DonationService
 }
 
 type Services struct {
 	utilService     IUtilService
+	uploadService   *uploadService
 	userService     *UserService
 	roleService     *RoleService
 	campaignService *CampaignService
-	uploadService   *uploadService
+	donationService *DonationService
 }
 
 func CreateNewServices(
@@ -33,10 +35,11 @@ func CreateNewServices(
 	cfg *config.Config,
 ) *Services {
 	utilService := newUtilService(validatorService, &cfg.Defaults)
+	uploadService := newUploadService(utilService)
 	userService := newUserService(db, queries, utilService)
 	roleService := newRoleService(db, queries, utilService)
 	campaignService := newCampaignService(db, queries, utilService)
-	uploadService := newUploadService(utilService)
+	donationService := newDonationService(db, queries, utilService)
 
 	return &Services{
 		utilService:     utilService,
@@ -44,11 +47,16 @@ func CreateNewServices(
 		roleService:     roleService,
 		campaignService: campaignService,
 		uploadService:   uploadService,
+		donationService: donationService,
 	}
 }
 
 func (s *Services) UtilService() IUtilService {
 	return s.utilService
+}
+
+func (s *Services) UploadService() *uploadService {
+	return s.uploadService
 }
 
 func (s *Services) UserService() *UserService {
@@ -63,8 +71,8 @@ func (s *Services) CampaignService() *CampaignService {
 	return s.campaignService
 }
 
-func (s *Services) UploadService() *uploadService {
-	return s.uploadService
+func (s *Services) DonationService() *DonationService {
+	return s.donationService
 }
 
 // ------------------------------------------------------

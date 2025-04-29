@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS t_campaigns (
     user_id UUID NOT NULL,
     title VARCHAR(255) NOT NULL,
     description TEXT,
+    wallet_address TEXT NOT NULL,
     image_path TEXT, 
     target_amount DECIMAL(10, 2) NOT NULL,
     raised_amount DECIMAL(10, 2) DEFAULT 0,

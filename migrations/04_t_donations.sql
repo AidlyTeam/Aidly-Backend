@@ -3,6 +3,7 @@
 CREATE TABLE IF NOT EXISTS t_donations (
     id UUID PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),
     campaign_id UUID NOT NULL,
+    transaction_id VARCHAR(255) NOT NULL,
     user_id UUID NOT NULL,
     amount DECIMAL(10, 2) NOT NULL,
     donation_date TIMESTAMPTZ DEFAULT NOW(),

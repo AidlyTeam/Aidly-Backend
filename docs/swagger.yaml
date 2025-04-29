@@ -1,5 +1,18 @@
 basePath: /api/v1
 definitions:
+  dto.DonationCreateDTO:
+    properties:
+      amount:
+        type: string
+      campaignID:
+        type: string
+      transactionID:
+        type: string
+    required:
+    - amount
+    - campaignID
+    - transactionID
+    type: object
   dto.UserAuthWalletDTO:
     properties:
       message:
@@ -60,6 +73,84 @@ paths:
       summary: Delete a Campaign
       tags:
       - Campaign
+  /admin/donation:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a list of donations based on given filters.
+      parameters:
+      - description: Donation ID
+        in: query
+        name: id
+        type: string
+      - description: User ID
+        in: query
+        name: userID
+        type: string
+      - description: Campaign ID
+        in: query
+        name: campaignID
+        type: string
+      - description: Page Number
+        in: query
+        name: page
+        type: string
+      - description: Limit Per Page
+        in: query
+        name: limit
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.BaseResponse'
+      summary: Get Donations
+      tags:
+      - Donation
+  /admin/donation/{donationID}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a donation based on the provided donation ID.
+      parameters:
+      - description: Donation ID
+        in: path
+        name: donationID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.BaseResponse'
+      summary: Delete a Donation
+      tags:
+      - Donation
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a donation based on the provided donation ID. User can
+        only view their own donation.
+      parameters:
+      - description: Donation ID
+        in: path
+        name: donationID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.BaseResponse'
+      summary: Get Donation by ID
+      tags:
+      - Donation
   /private/campaign:
     get:
       consumes:
@@ -122,6 +213,11 @@ paths:
       - in: formData
         maxLength: 100
         name: title
+        required: true
+        type: string
+      - in: formData
+        maxLength: 500
+        name: walletAddress
         required: true
         type: string
       produces:
@@ -206,6 +302,11 @@ paths:
         maxLength: 100
         name: title
         type: string
+      - in: formData
+        maxLength: 500
+        name: walletAddress
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -216,6 +317,81 @@ paths:
       summary: Update a Campaign for User
       tags:
       - Campaign
+  /private/donation:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a list of donations based on given filters.
+      parameters:
+      - description: Donation ID
+        in: query
+        name: id
+        type: string
+      - description: Campaign ID
+        in: query
+        name: campaignID
+        type: string
+      - description: Page Number
+        in: query
+        name: page
+        type: string
+      - description: Limit Per Page
+        in: query
+        name: limit
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.BaseResponse'
+      summary: Get Donations for User
+      tags:
+      - Donation
+    post:
+      consumes:
+      - application/json
+      description: Creates a new donation for a user.
+      parameters:
+      - description: New Donation
+        in: body
+        name: donation
+        required: true
+        schema:
+          $ref: '#/definitions/dto.DonationCreateDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.BaseResponse'
+      summary: Create a Donation for User
+      tags:
+      - Donation
+  /private/donation/{donationID}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a donation based on the provided donation ID. User can
+        only view their own donation.
+      parameters:
+      - description: Donation ID
+        in: path
+        name: donationID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.BaseResponse'
+      summary: Get Donation by ID for User
+      tags:
+      - Donation
   /private/user/profile:
     get:
       consumes:

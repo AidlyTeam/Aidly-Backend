@@ -21,6 +21,7 @@ type LimitDefaults struct {
 	DefaultLanguageLimit int
 	DefaultUserLimit     int
 	DefaultCampaignLimit int
+	DefaultDonationLimit int
 }
 
 // Initialize Defaults
@@ -39,6 +40,7 @@ func NewDefaults() Defaults {
 			DefaultLanguageLimit: 10,
 			DefaultUserLimit:     10,
 			DefaultCampaignLimit: 10,
+			DefaultDonationLimit: 10,
 		},
 	}
 }

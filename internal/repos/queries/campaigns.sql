@@ -1,6 +1,6 @@
 -- name: GetCampaigns :many
 SELECT 
-    id, user_id, title, description, image_path, target_amount, raised_amount, start_date, end_date, created_at
+    id, user_id, title, description, wallet_address, image_path, target_amount, raised_amount, start_date, end_date, created_at
 FROM 
     t_campaigns
 WHERE
@@ -10,7 +10,7 @@ LIMIT @lim OFFSET @off;
 
 -- name: GetCampaignByID :one
 SELECT 
-    id, user_id, title, description, image_path, target_amount, raised_amount, start_date, end_date, created_at
+    id, user_id, title, description, wallet_address, image_path, target_amount, raised_amount, start_date, end_date, created_at
 FROM 
     t_campaigns
 WHERE 
@@ -18,7 +18,7 @@ WHERE
 
 -- name: GetUserCampaign :one
 SELECT 
-    id, user_id, title, description, image_path, target_amount, raised_amount, start_date, end_date, created_at
+    id, user_id, title, description, wallet_address, image_path, target_amount, raised_amount, start_date, end_date, created_at
 FROM 
     t_campaigns
 WHERE 
@@ -26,15 +26,16 @@ WHERE
 
 -- name: CreateCampaign :one
 INSERT INTO t_campaigns 
-    (user_id, title, description, image_path, target_amount, raised_amount, start_date, end_date, created_at)
+    (user_id, wallet_address, title, description, image_path, target_amount, raised_amount, start_date, end_date, created_at)
 VALUES 
-    (@user_id, @title, @description, @image_path, @target_amount, DEFAULT, @start_date, @end_date, NOW())
+    (@user_id, @wallet_address, @title, @description, @image_path, @target_amount, DEFAULT, @start_date, @end_date, NOW())
 RETURNING id;
 
 -- name: UpdateCampaign :exec
 UPDATE
     t_campaigns
 SET
+    wallet_address = COALESCE(@wallet_address, wallet_address),
     title = COALESCE(@title, title),
     description = COALESCE(@description, description),
     image_path = COALESCE(@image_path, image_path),
@@ -57,4 +58,4 @@ SELECT
 FROM 
     t_campaigns 
 WHERE 
-    (@user_id IS NULL OR user_id = @user_id);
+    (sqlc.narg(user_id)::UUID IS NULL OR user_id = sqlc.narg(user_id)::UUID);

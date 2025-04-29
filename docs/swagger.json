@@ -40,6 +40,123 @@
                 }
             }
         },
+        "/admin/donation": {
+            "get": {
+                "description": "Retrieves a list of donations based on given filters.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Donation"
+                ],
+                "summary": "Get Donations",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Donation ID",
+                        "name": "id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "userID",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Campaign ID",
+                        "name": "campaignID",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Page Number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Limit Per Page",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/donation/{donationID}": {
+            "get": {
+                "description": "Retrieves a donation based on the provided donation ID. User can only view their own donation.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Donation"
+                ],
+                "summary": "Get Donation by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Donation ID",
+                        "name": "donationID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.BaseResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes a donation based on the provided donation ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Donation"
+                ],
+                "summary": "Delete a Donation",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Donation ID",
+                        "name": "donationID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/private/campaign": {
             "get": {
                 "description": "Retrieves a list of campaigns based on given filters.",
@@ -139,6 +256,13 @@
                         "name": "title",
                         "in": "formData",
                         "required": true
+                    },
+                    {
+                        "maxLength": 500,
+                        "type": "string",
+                        "name": "walletAddress",
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -234,6 +358,13 @@
                         "type": "string",
                         "name": "title",
                         "in": "formData"
+                    },
+                    {
+                        "maxLength": 500,
+                        "type": "string",
+                        "name": "walletAddress",
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -262,6 +393,119 @@
                         "type": "string",
                         "description": "Campaign ID",
                         "name": "campaignID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/private/donation": {
+            "get": {
+                "description": "Retrieves a list of donations based on given filters.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Donation"
+                ],
+                "summary": "Get Donations for User",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Donation ID",
+                        "name": "id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Campaign ID",
+                        "name": "campaignID",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Page Number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Limit Per Page",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.BaseResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Creates a new donation for a user.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Donation"
+                ],
+                "summary": "Create a Donation for User",
+                "parameters": [
+                    {
+                        "description": "New Donation",
+                        "name": "donation",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.DonationCreateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/response.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/private/donation/{donationID}": {
+            "get": {
+                "description": "Retrieves a donation based on the provided donation ID. User can only view their own donation.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Donation"
+                ],
+                "summary": "Get Donation by ID for User",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Donation ID",
+                        "name": "donationID",
                         "in": "path",
                         "required": true
                     }
@@ -413,6 +657,25 @@
         }
     },
     "definitions": {
+        "dto.DonationCreateDTO": {
+            "type": "object",
+            "required": [
+                "amount",
+                "campaignID",
+                "transactionID"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "string"
+                },
+                "campaignID": {
+                    "type": "string"
+                },
+                "transactionID": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.UserAuthWalletDTO": {
             "type": "object",
             "required": [

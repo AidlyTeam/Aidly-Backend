@@ -18,10 +18,10 @@ SELECT
 FROM 
     t_campaigns 
 WHERE 
-    ($1 IS NULL OR user_id = $1)
+    ($1::UUID IS NULL OR user_id = $1::UUID)
 `
 
-func (q *Queries) CountCampaigns(ctx context.Context, userID interface{}) (int64, error) {
+func (q *Queries) CountCampaigns(ctx context.Context, userID uuid.NullUUID) (int64, error) {
 	row := q.db.QueryRowContext(ctx, countCampaigns, userID)
 	var count int64
 	err := row.Scan(&count)
@@ -30,25 +30,27 @@ func (q *Queries) CountCampaigns(ctx context.Context, userID interface{}) (int64
 
 const createCampaign = `-- name: CreateCampaign :one
 INSERT INTO t_campaigns 
-    (user_id, title, description, image_path, target_amount, raised_amount, start_date, end_date, created_at)
+    (user_id, wallet_address, title, description, image_path, target_amount, raised_amount, start_date, end_date, created_at)
 VALUES 
-    ($1, $2, $3, $4, $5, DEFAULT, $6, $7, NOW())
+    ($1, $2, $3, $4, $5, $6, DEFAULT, $7, $8, NOW())
 RETURNING id
 `
 
 type CreateCampaignParams struct {
-	UserID       uuid.UUID
-	Title        string
-	Description  sql.NullString
-	ImagePath    sql.NullString
-	TargetAmount string
-	StartDate    sql.NullTime
-	EndDate      sql.NullTime
+	UserID        uuid.UUID
+	WalletAddress string
+	Title         string
+	Description   sql.NullString
+	ImagePath     sql.NullString
+	TargetAmount  string
+	StartDate     sql.NullTime
+	EndDate       sql.NullTime
 }
 
 func (q *Queries) CreateCampaign(ctx context.Context, arg CreateCampaignParams) (uuid.UUID, error) {
 	row := q.db.QueryRowContext(ctx, createCampaign,
 		arg.UserID,
+		arg.WalletAddress,
 		arg.Title,
 		arg.Description,
 		arg.ImagePath,
@@ -75,7 +77,7 @@ func (q *Queries) DeleteCampaign(ctx context.Context, campaignID uuid.UUID) erro
 
 const getCampaignByID = `-- name: GetCampaignByID :one
 SELECT 
-    id, user_id, title, description, image_path, target_amount, raised_amount, start_date, end_date, created_at
+    id, user_id, title, description, wallet_address, image_path, target_amount, raised_amount, start_date, end_date, created_at
 FROM 
     t_campaigns
 WHERE 
@@ -90,6 +92,7 @@ func (q *Queries) GetCampaignByID(ctx context.Context, campaignID uuid.UUID) (TC
 		&i.UserID,
 		&i.Title,
 		&i.Description,
+		&i.WalletAddress,
 		&i.ImagePath,
 		&i.TargetAmount,
 		&i.RaisedAmount,
@@ -102,7 +105,7 @@ func (q *Queries) GetCampaignByID(ctx context.Context, campaignID uuid.UUID) (TC
 
 const getCampaigns = `-- name: GetCampaigns :many
 SELECT 
-    id, user_id, title, description, image_path, target_amount, raised_amount, start_date, end_date, created_at
+    id, user_id, title, description, wallet_address, image_path, target_amount, raised_amount, start_date, end_date, created_at
 FROM 
     t_campaigns
 WHERE
@@ -137,6 +140,7 @@ func (q *Queries) GetCampaigns(ctx context.Context, arg GetCampaignsParams) ([]T
 			&i.UserID,
 			&i.Title,
 			&i.Description,
+			&i.WalletAddress,
 			&i.ImagePath,
 			&i.TargetAmount,
 			&i.RaisedAmount,
@@ -159,7 +163,7 @@ func (q *Queries) GetCampaigns(ctx context.Context, arg GetCampaignsParams) ([]T
 
 const getUserCampaign = `-- name: GetUserCampaign :one
 SELECT 
-    id, user_id, title, description, image_path, target_amount, raised_amount, start_date, end_date, created_at
+    id, user_id, title, description, wallet_address, image_path, target_amount, raised_amount, start_date, end_date, created_at
 FROM 
     t_campaigns
 WHERE 
@@ -179,6 +183,7 @@ func (q *Queries) GetUserCampaign(ctx context.Context, arg GetUserCampaignParams
 		&i.UserID,
 		&i.Title,
 		&i.Description,
+		&i.WalletAddress,
 		&i.ImagePath,
 		&i.TargetAmount,
 		&i.RaisedAmount,
@@ -193,30 +198,33 @@ const updateCampaign = `-- name: UpdateCampaign :exec
 UPDATE
     t_campaigns
 SET
-    title = COALESCE($1, title),
-    description = COALESCE($2, description),
-    image_path = COALESCE($3, image_path),
-    target_amount = COALESCE($4, target_amount),
-    raised_amount = COALESCE($5, raised_amount),
-    start_date = COALESCE($6, start_date),
-    end_date = COALESCE($7, end_date)
+    wallet_address = COALESCE($1, wallet_address),
+    title = COALESCE($2, title),
+    description = COALESCE($3, description),
+    image_path = COALESCE($4, image_path),
+    target_amount = COALESCE($5, target_amount),
+    raised_amount = COALESCE($6, raised_amount),
+    start_date = COALESCE($7, start_date),
+    end_date = COALESCE($8, end_date)
 WHERE
-    id = $8
+    id = $9
 `
 
 type UpdateCampaignParams struct {
-	Title        string
-	Description  sql.NullString
-	ImagePath    sql.NullString
-	TargetAmount sql.NullString
-	RaisedAmount sql.NullString
-	StartDate    sql.NullTime
-	EndDate      sql.NullTime
-	CampaignID   uuid.UUID
+	WalletAddress string
+	Title         string
+	Description   sql.NullString
+	ImagePath     sql.NullString
+	TargetAmount  sql.NullString
+	RaisedAmount  sql.NullString
+	StartDate     sql.NullTime
+	EndDate       sql.NullTime
+	CampaignID    uuid.UUID
 }
 
 func (q *Queries) UpdateCampaign(ctx context.Context, arg UpdateCampaignParams) error {
 	_, err := q.db.ExecContext(ctx, updateCampaign,
+		arg.WalletAddress,
 		arg.Title,
 		arg.Description,
 		arg.ImagePath,

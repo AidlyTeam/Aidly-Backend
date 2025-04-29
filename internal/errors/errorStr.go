@@ -10,15 +10,11 @@ const (
 
 // 404
 const (
-	ErrLanguageNotFound        = "LANGUAGE_NOT_FOUND"
-	ErrLanguageDefaultNotFound = "DEFAULT_LANGUAGE_NOT_FOUND"
-
-	ErrUserProfileNotFound = "USER_PROFILE_NOT_FOUND"
 	ErrUserNotFound        = "USER_NOT_FOUND"
 	ErrDefaultUserNotFound = "DEFAULT_USER_NOT_FOUND"
 	ErrRoleNotFound        = "ROLE_NOT_FOUND"
-
-	ErrCampaignNotFound = "CAMPAIGN_NOT_FOUND"
+	ErrCampaignNotFound    = "CAMPAIGN_NOT_FOUND"
+	ErrDonationNotFound    = "DONATION_NOT_FOUND"
 )
 
 // 400
@@ -42,15 +38,20 @@ const (
 	ErrFilteringRole      = "ERROR_FILTERING_ROLES"
 	ErrFilteringUsers     = "ERROR_FILTERING_USERS"
 	ErrFilteringCampaigns = "ERROR_FILTERING_CAMPAIGNS"
+	ErrFilteringDonation  = "ERROR_FILTERING_DONATIONS"
 
 	ErrCreatingUser      = "ERROR_CREATE_USER"
 	ErrCreatingCampaigns = "ERROR_CREATE_CAMPAINGS"
+	ErrCreatingDontaions = "ERROR_CREATE_DONATIONS"
 
 	ErrUpdatingUserRole  = "ERROR_UPDATING_USER_ROLE"
 	ErrUpdatingCampaigns = "ERROR_UPDATING_CAMPAINGS"
 	ErrUpdatingUsers     = "ERROR_UPDATING_USERS"
 
 	ErrDeletingCampaigns = "ERROR_DELETING_CAMPAIGNS"
+	ErrDeletingDonations = "ERROR_DELETING_DONATIONS"
+
+	ErrCountDonations = "ERROR_COUNT_DONATIONS"
 
 	ErrWalletVerificationError = "WALLET_VERIFICATION_ERROR"
 )
