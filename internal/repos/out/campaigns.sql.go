@@ -12,6 +12,25 @@ import (
 	"github.com/google/uuid"
 )
 
+const changeValid = `-- name: ChangeValid :exec
+UPDATE
+    t_campaigns
+SET
+    is_valid = COALESCE($1, is_valid)
+WHERE
+    id = $2
+`
+
+type ChangeValidParams struct {
+	IsValid    bool
+	CampaignID uuid.UUID
+}
+
+func (q *Queries) ChangeValid(ctx context.Context, arg ChangeValidParams) error {
+	_, err := q.db.ExecContext(ctx, changeValid, arg.IsValid, arg.CampaignID)
+	return err
+}
+
 const changeVerified = `-- name: ChangeVerified :exec
 UPDATE
     t_campaigns

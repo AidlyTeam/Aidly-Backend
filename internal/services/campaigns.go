@@ -8,6 +8,7 @@ import (
 
 	serviceErrors "github.com/AidlyTeam/Aidly-Backend/internal/errors"
 	repo "github.com/AidlyTeam/Aidly-Backend/internal/repos/out"
+	"github.com/shopspring/decimal"
 
 	"github.com/google/uuid"
 )
@@ -218,5 +219,51 @@ func (s *CampaignService) ChangeCampaignVerified(
 		}
 		return serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrUpdatingCampaigns, err)
 	}
+	return nil
+}
+
+func (s *CampaignService) CheckCampaignValidity(ctx context.Context, campaignID string) (bool, error) {
+	campaign, err := s.GetCampaignByID(ctx, campaignID)
+	if err != nil {
+		return false, err
+	}
+
+	if campaign.EndDate.Valid && campaign.EndDate.Time.Before(time.Now()) {
+		return false, nil
+	}
+
+	// Check if the target amount has been raised
+	raisedAmount, err := decimal.NewFromString(campaign.RaisedAmount.String)
+	if err != nil {
+		return false, serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrDecimalConvertionError, err)
+	}
+	targetAmount, err := decimal.NewFromString(campaign.TargetAmount)
+	if err != nil {
+		return false, serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrDecimalConvertionError, err)
+	}
+
+	if targetAmount.LessThanOrEqual(raisedAmount) {
+		return false, nil
+	}
+
+	return true, nil
+}
+
+// UpdateCampaignValidity checks if the campaign is valid and updates the validity status.
+func (s *CampaignService) UpdateCampaignValidity(ctx context.Context, campaignID string) error {
+	// Step 1: Check the current validity status of the campaign
+	isValid, err := s.CheckCampaignValidity(ctx, campaignID)
+	if err != nil {
+		return err
+	}
+
+	// Step 2: Update the campaign's validity status in the database
+	if err := s.queries.ChangeValid(ctx, repo.ChangeValidParams{
+		CampaignID: uuid.MustParse(campaignID),
+		IsValid:    isValid,
+	}); err != nil {
+		return err
+	}
+
 	return nil
 }

@@ -101,6 +101,8 @@ func (h *PrivateHandler) Donate(c *fiber.Ctx) error {
 	}
 
 	// TODO: CHECK IF THE DONATION IS SUCCEED WITH TRANSACTION ID. IF SUCCEED. THEN CREATE.
+	// Make A web3 servis for this
+
 	donationID, err := h.services.DonationService().CreateDonation(
 		c.Context(),
 		userSession.UserID,
@@ -109,6 +111,9 @@ func (h *PrivateHandler) Donate(c *fiber.Ctx) error {
 		campaign,
 	)
 	if err != nil {
+		return err
+	}
+	if err := h.services.CampaignService().UpdateCampaignValidity(c.Context(), newDonation.CampaignID); err != nil {
 		return err
 	}
 

@@ -59,6 +59,14 @@ SET
 WHERE
     id = @campaign_id;
 
+-- name: ChangeValid :exec
+UPDATE
+    t_campaigns
+SET
+    is_valid = COALESCE(@is_valid, is_valid)
+WHERE
+    id = @campaign_id;
+
 -- name: DeleteCampaign :exec
 DELETE FROM 
     t_campaigns

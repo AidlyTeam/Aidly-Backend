@@ -18,6 +18,8 @@ func (h *PrivateHandler) initCampaignsRoutes(root fiber.Router) {
 	campaign.Post("/", h.CreateCampaign)
 	campaign.Put("/:campaignID", h.UpdateCampaign)
 	campaign.Delete("/:campaignID", h.DeleteCampaign)
+
+	campaign.Get("/:campaignID/isValid", h.CheckCampaignValidity)
 }
 
 // @Tags Campaign
@@ -195,4 +197,27 @@ func (h *PrivateHandler) DeleteCampaign(c *fiber.Ctx) error {
 	}
 
 	return response.Response(200, "Campaign Deleted Successfully", nil)
+}
+
+// @Tags Campaign
+// @Summary Check if the Campaign is Valid
+// @Description Checks if the campaign is valid based on its end date, target amount raised, etc. Request This Before Donation!!!!!!!!
+// @Accept json
+// @Produce json
+// @Param campaignID path string true "Campaign ID"
+// @Success 200 {object} response.BaseResponse{}
+// @Router /private/campaign/{campaignID}/isValid [Get]
+func (h *PrivateHandler) CheckCampaignValidity(c *fiber.Ctx) error {
+	campaignID := c.Params("campaignID")
+
+	isValid, err := h.services.CampaignService().CheckCampaignValidity(c.Context(), campaignID)
+	if err != nil {
+		return err
+	}
+
+	if err := h.services.CampaignService().UpdateCampaignValidity(c.Context(), campaignID); err != nil {
+		return err
+	}
+
+	return response.Response(200, "Successful", isValid)
 }

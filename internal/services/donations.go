@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"strconv"
-	"time"
 
 	serviceErrors "github.com/AidlyTeam/Aidly-Backend/internal/errors"
 	repo "github.com/AidlyTeam/Aidly-Backend/internal/repos/out"
@@ -115,30 +114,13 @@ func (s *DonationService) CreateDonation(ctx context.Context, userID uuid.UUID, 
 		return nil, serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrDecimalConvertionError, err)
 	}
 
-	targetAmountDec, err := decimal.NewFromString(campaign.TargetAmount)
-	if err != nil {
-		return nil, serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrDecimalConvertionError, err)
-	}
-
 	// Step 3: Calculate new raised amount and update campaign validity
 	newRaisedAmount := raisedAmount.Add(amountDec)
-
-	var valid bool = false
-	// Check if the campaign is valid (target reached or end date passed)
-	if targetAmountDec.LessThanOrEqual(newRaisedAmount) {
-		valid = true
-	}
-
-	// Check if the end date is passed or not (using sql.NullTime)
-	if campaign.EndDate.Valid && campaign.EndDate.Time.Before(time.Now()) {
-		valid = true
-	}
 
 	// Step 4: Update the campaign raised amount and validity status
 	if err := qtx.UpdateCampaign(ctx, repo.UpdateCampaignParams{
 		CampaignID:   campaign.ID,
 		RaisedAmount: sql.NullString{String: newRaisedAmount.String(), Valid: true},
-		IsValid:      valid,
 	}); err != nil {
 		return nil, serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrUpdatingCampaigns, err)
 	}

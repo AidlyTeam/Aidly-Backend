@@ -24,6 +24,7 @@ type CampaignView struct {
 	TargetAmount  string    `json:"targetAmount"`
 	RaisedAmount  string    `json:"raisedAmount"`
 	IsVerified    bool      `json:"isVerified"`
+	IsValid       bool      `json:"isValid"`
 	AcceptedToken string    `json:"acceptedToken"`
 	StartDate     time.Time `json:"startDate"`
 	EndDate       time.Time `json:"endDate"`
@@ -40,6 +41,7 @@ func (m *CampaignDTOManager) ToCampaignView(campaignData *repo.TCampaign) Campai
 		TargetAmount:  campaignData.TargetAmount,
 		RaisedAmount:  campaignData.RaisedAmount.String,
 		IsVerified:    campaignData.IsVerified,
+		IsValid:       campaignData.IsValid,
 		AcceptedToken: campaignData.AcceptedTokenSymbol.String,
 		StartDate:     campaignData.StartDate.Time,
 		EndDate:       campaignData.EndDate.Time,

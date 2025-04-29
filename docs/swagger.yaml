@@ -353,6 +353,28 @@ paths:
       summary: Update a Campaign for User
       tags:
       - Campaign
+  /private/campaign/{campaignID}/isValid:
+    get:
+      consumes:
+      - application/json
+      description: Checks if the campaign is valid based on its end date, target amount
+        raised, etc. Request This Before Donation!!!!!!!!
+      parameters:
+      - description: Campaign ID
+        in: path
+        name: campaignID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.BaseResponse'
+      summary: Check if the Campaign is Valid
+      tags:
+      - Campaign
   /private/donation:
     get:
       consumes:

@@ -461,6 +461,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/private/campaign/{campaignID}/isValid": {
+            "get": {
+                "description": "Checks if the campaign is valid based on its end date, target amount raised, etc. Request This Before Donation!!!!!!!!",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Campaign"
+                ],
+                "summary": "Check if the Campaign is Valid",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Campaign ID",
+                        "name": "campaignID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/private/donation": {
             "get": {
                 "description": "Retrieves a list of donations based on given filters.",
