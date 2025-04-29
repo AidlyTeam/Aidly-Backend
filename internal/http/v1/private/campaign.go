@@ -95,6 +95,7 @@ func (h *PrivateHandler) CreateCampaign(c *fiber.Ctx) error {
 
 	imagePath := h.services.UploadService().CreatePath(imageFile.Filename)
 
+	// TODO: CHECK IF THE WALLET ADDRESS IS REALY SOLANA WALLET ADRESS. CREATE WEB3 SERVICE
 	campaignID, err := h.services.CampaignService().CreateCampaign(
 		c.Context(),
 		userSession.UserID,

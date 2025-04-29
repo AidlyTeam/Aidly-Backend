@@ -13,7 +13,7 @@ func (h *PrivateHandler) initDonationsRoutes(root fiber.Router) {
 	donation.Get("/", h.GetDonations)
 	donation.Get("/:donationID", h.GetDonationByID)
 
-	donation.Post("/", h.CreateDonation)
+	donation.Post("/", h.Donate)
 }
 
 // @Tags Donation
@@ -84,7 +84,7 @@ func (h *PrivateHandler) GetDonationByID(c *fiber.Ctx) error {
 // @Param donation body dto.DonationCreateDTO true "New Donation"
 // @Success 201 {object} response.BaseResponse{}
 // @Router /private/donation [post]
-func (h *PrivateHandler) CreateDonation(c *fiber.Ctx) error {
+func (h *PrivateHandler) Donate(c *fiber.Ctx) error {
 	userSession := sessionStore.GetSessionData(c)
 
 	var newDonation dto.DonationCreateDTO
