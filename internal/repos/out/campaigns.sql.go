@@ -12,6 +12,25 @@ import (
 	"github.com/google/uuid"
 )
 
+const changeVerified = `-- name: ChangeVerified :exec
+UPDATE
+    t_campaigns
+SET
+    is_verified = COALESCE($1, is_verified)
+WHERE
+    id = $2
+`
+
+type ChangeVerifiedParams struct {
+	IsVerified sql.NullBool
+	CampaignID uuid.UUID
+}
+
+func (q *Queries) ChangeVerified(ctx context.Context, arg ChangeVerifiedParams) error {
+	_, err := q.db.ExecContext(ctx, changeVerified, arg.IsVerified, arg.CampaignID)
+	return err
+}
+
 const countCampaigns = `-- name: CountCampaigns :one
 SELECT 
     COUNT(*) 
@@ -77,7 +96,8 @@ func (q *Queries) DeleteCampaign(ctx context.Context, campaignID uuid.UUID) erro
 
 const getCampaignByID = `-- name: GetCampaignByID :one
 SELECT 
-    id, user_id, title, description, wallet_address, image_path, target_amount, raised_amount, start_date, end_date, created_at
+    id, user_id, title, description, wallet_address, image_path, target_amount, raised_amount, 
+    accepted_token_symbol, is_verified, start_date, end_date, created_at
 FROM 
     t_campaigns
 WHERE 
@@ -96,6 +116,8 @@ func (q *Queries) GetCampaignByID(ctx context.Context, campaignID uuid.UUID) (TC
 		&i.ImagePath,
 		&i.TargetAmount,
 		&i.RaisedAmount,
+		&i.AcceptedTokenSymbol,
+		&i.IsVerified,
 		&i.StartDate,
 		&i.EndDate,
 		&i.CreatedAt,
@@ -105,26 +127,30 @@ func (q *Queries) GetCampaignByID(ctx context.Context, campaignID uuid.UUID) (TC
 
 const getCampaigns = `-- name: GetCampaigns :many
 SELECT 
-    id, user_id, title, description, wallet_address, image_path, target_amount, raised_amount, start_date, end_date, created_at
+    id, user_id, title, description, wallet_address, image_path, target_amount, raised_amount, 
+    accepted_token_symbol, is_verified, start_date, end_date, created_at
 FROM 
     t_campaigns
 WHERE
     ($1::UUID IS NULL OR id = $1::UUID) AND
-    ($2::UUID IS NULL OR user_id = $2::UUID)
-LIMIT $4 OFFSET $3
+    ($2::UUID IS NULL OR user_id = $2::UUID) AND
+    ($3::BOOLEAN IS NULL OR is_verified = $3::BOOLEAN) 
+LIMIT $5 OFFSET $4
 `
 
 type GetCampaignsParams struct {
-	ID     uuid.NullUUID
-	UserID uuid.NullUUID
-	Off    int32
-	Lim    int32
+	ID         uuid.NullUUID
+	UserID     uuid.NullUUID
+	IsVerified sql.NullBool
+	Off        int32
+	Lim        int32
 }
 
 func (q *Queries) GetCampaigns(ctx context.Context, arg GetCampaignsParams) ([]TCampaign, error) {
 	rows, err := q.db.QueryContext(ctx, getCampaigns,
 		arg.ID,
 		arg.UserID,
+		arg.IsVerified,
 		arg.Off,
 		arg.Lim,
 	)
@@ -144,6 +170,8 @@ func (q *Queries) GetCampaigns(ctx context.Context, arg GetCampaignsParams) ([]T
 			&i.ImagePath,
 			&i.TargetAmount,
 			&i.RaisedAmount,
+			&i.AcceptedTokenSymbol,
+			&i.IsVerified,
 			&i.StartDate,
 			&i.EndDate,
 			&i.CreatedAt,
@@ -163,7 +191,8 @@ func (q *Queries) GetCampaigns(ctx context.Context, arg GetCampaignsParams) ([]T
 
 const getUserCampaign = `-- name: GetUserCampaign :one
 SELECT 
-    id, user_id, title, description, wallet_address, image_path, target_amount, raised_amount, start_date, end_date, created_at
+    id, user_id, title, description, wallet_address, image_path, target_amount, raised_amount, 
+    accepted_token_symbol, is_verified, start_date, end_date, created_at
 FROM 
     t_campaigns
 WHERE 
@@ -187,6 +216,8 @@ func (q *Queries) GetUserCampaign(ctx context.Context, arg GetUserCampaignParams
 		&i.ImagePath,
 		&i.TargetAmount,
 		&i.RaisedAmount,
+		&i.AcceptedTokenSymbol,
+		&i.IsVerified,
 		&i.StartDate,
 		&i.EndDate,
 		&i.CreatedAt,

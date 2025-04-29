@@ -1,16 +1,19 @@
 -- name: GetCampaigns :many
 SELECT 
-    id, user_id, title, description, wallet_address, image_path, target_amount, raised_amount, start_date, end_date, created_at
+    id, user_id, title, description, wallet_address, image_path, target_amount, raised_amount, 
+    accepted_token_symbol, is_verified, start_date, end_date, created_at
 FROM 
     t_campaigns
 WHERE
     (sqlc.narg(id)::UUID IS NULL OR id = sqlc.narg(id)::UUID) AND
-    (sqlc.narg(user_id)::UUID IS NULL OR user_id = sqlc.narg(user_id)::UUID)
+    (sqlc.narg(user_id)::UUID IS NULL OR user_id = sqlc.narg(user_id)::UUID) AND
+    (sqlc.narg(is_verified)::BOOLEAN IS NULL OR is_verified = sqlc.narg(is_verified)::BOOLEAN) 
 LIMIT @lim OFFSET @off;
 
 -- name: GetCampaignByID :one
 SELECT 
-    id, user_id, title, description, wallet_address, image_path, target_amount, raised_amount, start_date, end_date, created_at
+    id, user_id, title, description, wallet_address, image_path, target_amount, raised_amount, 
+    accepted_token_symbol, is_verified, start_date, end_date, created_at
 FROM 
     t_campaigns
 WHERE 
@@ -18,7 +21,8 @@ WHERE
 
 -- name: GetUserCampaign :one
 SELECT 
-    id, user_id, title, description, wallet_address, image_path, target_amount, raised_amount, start_date, end_date, created_at
+    id, user_id, title, description, wallet_address, image_path, target_amount, raised_amount, 
+    accepted_token_symbol, is_verified, start_date, end_date, created_at
 FROM 
     t_campaigns
 WHERE 
@@ -43,6 +47,14 @@ SET
     raised_amount = COALESCE(@raised_amount, raised_amount),
     start_date = COALESCE(@start_date, start_date),
     end_date = COALESCE(@end_date, end_date)
+WHERE
+    id = @campaign_id;
+
+-- name: ChangeVerified :exec
+UPDATE
+    t_campaigns
+SET
+    is_verified = COALESCE(@is_verified, is_verified)
 WHERE
     id = @campaign_id;
 

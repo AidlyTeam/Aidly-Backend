@@ -47,6 +47,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/admin/campaign/{campaignID}/verify": {
+            "patch": {
+                "description": "Updates the verification status of a campaign.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Campaign"
+                ],
+                "summary": "Change Campaign Verification Status",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Campaign ID",
+                        "name": "campaignID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Updated Campaign",
+                        "name": "verify",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CampaignChangeVerify"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/donation": {
             "get": {
                 "description": "Retrieves a list of donations based on given filters.",
@@ -188,6 +229,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "User ID",
                         "name": "userID",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Campaign Verifiy",
+                        "name": "isVerified",
                         "in": "query"
                     },
                     {
@@ -664,6 +711,14 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "dto.CampaignChangeVerify": {
+            "type": "object",
+            "properties": {
+                "isVerified": {
+                    "type": "boolean"
+                }
+            }
+        },
         "dto.DonationCreateDTO": {
             "type": "object",
             "required": [

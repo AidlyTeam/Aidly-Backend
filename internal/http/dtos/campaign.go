@@ -16,27 +16,31 @@ func NewCampaignDTOManager() CampaignDTOManager {
 
 // CampaignView struct will define the response format for campaign details.
 type CampaignView struct {
-	ID           string    `json:"id"`
-	UserID       string    `json:"userID"`
-	Title        string    `json:"title"`
-	Description  string    `json:"description"`
-	ImagePath    string    `json:"imagePath"`
-	TargetAmount string    `json:"targetAmount"`
-	StartDate    time.Time `json:"startDate"`
-	EndDate      time.Time `json:"endDate"`
+	ID            string    `json:"id"`
+	UserID        string    `json:"userID"`
+	Title         string    `json:"title"`
+	Description   string    `json:"description"`
+	ImagePath     string    `json:"imagePath"`
+	TargetAmount  string    `json:"targetAmount"`
+	IsVerified    bool      `json:"isVerified"`
+	AcceptedToken string    `json:"acceptedToken"`
+	StartDate     time.Time `json:"startDate"`
+	EndDate       time.Time `json:"endDate"`
 }
 
 // ToCampaignView converts campaign data to a view format for response.
 func (m *CampaignDTOManager) ToCampaignView(campaignData *repo.TCampaign) CampaignView {
 	return CampaignView{
-		ID:           campaignData.ID.String(),
-		UserID:       campaignData.UserID.String(),
-		Title:        campaignData.Title,
-		Description:  campaignData.Description.String,
-		ImagePath:    campaignData.ImagePath.String,
-		TargetAmount: campaignData.TargetAmount,
-		StartDate:    campaignData.StartDate.Time,
-		EndDate:      campaignData.EndDate.Time,
+		ID:            campaignData.ID.String(),
+		UserID:        campaignData.UserID.String(),
+		Title:         campaignData.Title,
+		Description:   campaignData.Description.String,
+		ImagePath:     campaignData.ImagePath.String,
+		TargetAmount:  campaignData.TargetAmount,
+		IsVerified:    campaignData.IsVerified.Bool,
+		AcceptedToken: campaignData.AcceptedTokenSymbol.String,
+		StartDate:     campaignData.StartDate.Time,
+		EndDate:       campaignData.EndDate.Time,
 	}
 }
 
@@ -67,4 +71,8 @@ type CampaignUpdateDTO struct {
 	TargetAmount  string `json:"targetAmount" validate:"omitempty"`
 	StartDate     string `json:"startDate" validate:"omitempty"`
 	EndDate       string `json:"endDate" validate:"omitempty"`
+}
+
+type CampaignChangeVerify struct {
+	IsVerified bool `json:"isVerified"`
 }

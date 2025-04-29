@@ -11,17 +11,19 @@ import (
 )
 
 type TCampaign struct {
-	ID            uuid.UUID
-	UserID        uuid.UUID
-	Title         string
-	Description   sql.NullString
-	WalletAddress string
-	ImagePath     sql.NullString
-	TargetAmount  string
-	RaisedAmount  sql.NullString
-	StartDate     sql.NullTime
-	EndDate       sql.NullTime
-	CreatedAt     sql.NullTime
+	ID                  uuid.UUID
+	UserID              uuid.UUID
+	Title               string
+	Description         sql.NullString
+	WalletAddress       string
+	ImagePath           sql.NullString
+	TargetAmount        string
+	RaisedAmount        sql.NullString
+	AcceptedTokenSymbol sql.NullString
+	IsVerified          sql.NullBool
+	StartDate           sql.NullTime
+	EndDate             sql.NullTime
+	CreatedAt           sql.NullTime
 }
 
 type TDonation struct {

@@ -9,6 +9,8 @@ CREATE TABLE IF NOT EXISTS t_campaigns (
     image_path TEXT, 
     target_amount DECIMAL(10, 2) NOT NULL,
     raised_amount DECIMAL(10, 2) DEFAULT 0,
+    accepted_token_symbol VARCHAR(10) DEFAULT 'SOL',
+    is_verified BOOLEAN DEFAULT FALSE,
     start_date TIMESTAMPTZ DEFAULT NOW(),
     end_date TIMESTAMPTZ,
     created_at TIMESTAMPTZ DEFAULT NOW(),

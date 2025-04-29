@@ -1,5 +1,10 @@
 basePath: /api/v1
 definitions:
+  dto.CampaignChangeVerify:
+    properties:
+      isVerified:
+        type: boolean
+    type: object
   dto.DonationCreateDTO:
     properties:
       amount:
@@ -71,6 +76,33 @@ paths:
           schema:
             $ref: '#/definitions/response.BaseResponse'
       summary: Delete a Campaign
+      tags:
+      - Campaign
+  /admin/campaign/{campaignID}/verify:
+    patch:
+      consumes:
+      - application/json
+      description: Updates the verification status of a campaign.
+      parameters:
+      - description: Campaign ID
+        in: path
+        name: campaignID
+        required: true
+        type: string
+      - description: Updated Campaign
+        in: body
+        name: verify
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CampaignChangeVerify'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.BaseResponse'
+      summary: Change Campaign Verification Status
       tags:
       - Campaign
   /admin/donation:
@@ -164,6 +196,10 @@ paths:
       - description: User ID
         in: query
         name: userID
+        type: string
+      - description: Campaign Verifiy
+        in: query
+        name: isVerified
         type: string
       - description: Page Number
         in: query

@@ -30,7 +30,7 @@ func newCampaignService(
 	}
 }
 
-func (s *CampaignService) GetCampaigns(ctx context.Context, id, userID, page, limit string) ([]repo.TCampaign, error) {
+func (s *CampaignService) GetCampaigns(ctx context.Context, id, userID, IsVerified, page, limit string) ([]repo.TCampaign, error) {
 	pageNum, err := strconv.Atoi(page)
 	if err != nil || page == "" {
 		pageNum = 1
@@ -41,11 +41,23 @@ func (s *CampaignService) GetCampaigns(ctx context.Context, id, userID, page, li
 		limitNum = s.utilService.D().Limits.DefaultCampaignLimit
 	}
 
+	var isVerifiedBool bool
+	var isVerifiedSQL sql.NullBool
+
+	if IsVerified != "" {
+		isVerifiedBool, err = strconv.ParseBool(IsVerified)
+		if err != nil {
+			return nil, serviceErrors.NewServiceErrorWithMessage(serviceErrors.StatusBadRequest, "Invalid isVerified value")
+		}
+		isVerifiedSQL = sql.NullBool{Bool: isVerifiedBool, Valid: true}
+	}
+
 	campaign, err := s.queries.GetCampaigns(ctx, repo.GetCampaignsParams{
-		ID:     s.utilService.ParseNullUUID(id),
-		UserID: s.utilService.ParseNullUUID(userID),
-		Lim:    int32(limitNum),
-		Off:    (int32(pageNum) - 1) * int32(limitNum),
+		ID:         s.utilService.ParseNullUUID(id),
+		UserID:     s.utilService.ParseNullUUID(userID),
+		IsVerified: isVerifiedSQL,
+		Lim:        int32(limitNum),
+		Off:        (int32(pageNum) - 1) * int32(limitNum),
 	})
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -179,6 +191,27 @@ func (s *CampaignService) UpdateCampaign(
 		TargetAmount:  s.utilService.ParseString(targetAmount),
 		StartDate:     sql.NullTime{Time: startDateTime, Valid: !startDateTime.IsZero()},
 		EndDate:       sql.NullTime{Time: endDateTime, Valid: !endDateTime.IsZero()},
+	}); err != nil {
+		if err == sql.ErrNoRows {
+			return serviceErrors.NewServiceErrorWithMessage(serviceErrors.StatusNotFound, serviceErrors.ErrCampaignNotFound)
+		}
+		return serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrUpdatingCampaigns, err)
+	}
+	return nil
+}
+
+func (s *CampaignService) ChangeCampaignVerified(
+	ctx context.Context,
+	id string, verify bool,
+) error {
+	idUUID, err := s.utilService.NParseUUID(id)
+	if err != nil {
+		return err
+	}
+
+	if err := s.queries.ChangeVerified(ctx, repo.ChangeVerifiedParams{
+		CampaignID: idUUID,
+		IsVerified: sql.NullBool{Bool: verify, Valid: true},
 	}); err != nil {
 		if err == sql.ErrNoRows {
 			return serviceErrors.NewServiceErrorWithMessage(serviceErrors.StatusNotFound, serviceErrors.ErrCampaignNotFound)
