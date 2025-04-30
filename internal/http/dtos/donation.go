@@ -53,29 +53,6 @@ func (m *DonationDTOManager) ToDonationViews(donation []repo.TDonation, count in
 // DonationCreateDTO represents the structure for creating a new donation
 type DonationCreateDTO struct {
 	CampaignID    string `json:"campaignID" validate:"required"`
-	Amount        string `json:"amount" validate:"required"`
+	Amount        string `json:"amount" validate:"required,numeric"`
 	TransactionID string `json:"transactionID" validate:"required"`
-}
-
-// DonationUpdateDTO represents the structure for updating an existing donation
-type DonationUpdateDTO struct {
-	Amount        float64 `json:"amount" validate:"omitempty"`
-	TransactionID string  `json:"transactionID" validate:"omitempty"`
-}
-
-// ToDonationCreateDTO transforms incoming request data to the appropriate DTO for creation
-func (DonationDTOManager) ToDonationCreateDTO(data DonationCreateDTO) DonationCreateDTO {
-	return DonationCreateDTO{
-		CampaignID:    data.CampaignID,
-		Amount:        data.Amount,
-		TransactionID: data.TransactionID,
-	}
-}
-
-// ToDonationUpdateDTO transforms incoming request data to the appropriate DTO for updating
-func (DonationDTOManager) ToDonationUpdateDTO(data DonationUpdateDTO) DonationUpdateDTO {
-	return DonationUpdateDTO{
-		Amount:        data.Amount,
-		TransactionID: data.TransactionID,
-	}
 }

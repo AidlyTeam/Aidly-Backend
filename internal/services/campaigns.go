@@ -182,6 +182,10 @@ func (s *CampaignService) DeleteCampaign(ctx context.Context, campaignID string)
 		return err
 	}
 
+	if _, err := s.GetCampaignByID(ctx, campaignID); err != nil {
+		return err
+	}
+
 	if err = s.queries.DeleteCampaign(ctx, id); err != nil {
 		if err == sql.ErrNoRows {
 			return serviceErrors.NewServiceErrorWithMessage(serviceErrors.StatusNotFound, serviceErrors.ErrCampaignNotFound)
