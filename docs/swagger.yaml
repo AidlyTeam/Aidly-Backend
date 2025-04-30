@@ -243,6 +243,9 @@ paths:
         required: true
         type: string
       - in: formData
+        name: statusType
+        type: string
+      - in: formData
         name: targetAmount
         required: true
         type: string
@@ -332,6 +335,9 @@ paths:
         name: startDate
         type: string
       - in: formData
+        name: statusType
+        type: string
+      - in: formData
         name: targetAmount
         type: string
       - in: formData
@@ -341,7 +347,6 @@ paths:
       - in: formData
         maxLength: 500
         name: walletAddress
-        required: true
         type: string
       produces:
       - application/json

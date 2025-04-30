@@ -68,9 +68,9 @@ func (q *Queries) CountCampaigns(ctx context.Context, userID uuid.NullUUID) (int
 
 const createCampaign = `-- name: CreateCampaign :one
 INSERT INTO t_campaigns 
-    (user_id, wallet_address, title, description, image_path, target_amount, raised_amount, start_date, end_date, created_at)
+    (user_id, wallet_address, title, description, image_path, target_amount, raised_amount, status_type, start_date, end_date, created_at)
 VALUES 
-    ($1, $2, $3, $4, $5, $6, DEFAULT, $7, $8, NOW())
+    ($1, $2, $3, $4, $5, $6, DEFAULT, $7, $8, $9, NOW())
 RETURNING id
 `
 
@@ -81,6 +81,7 @@ type CreateCampaignParams struct {
 	Description   sql.NullString
 	ImagePath     sql.NullString
 	TargetAmount  string
+	StatusType    string
 	StartDate     sql.NullTime
 	EndDate       sql.NullTime
 }
@@ -93,6 +94,7 @@ func (q *Queries) CreateCampaign(ctx context.Context, arg CreateCampaignParams) 
 		arg.Description,
 		arg.ImagePath,
 		arg.TargetAmount,
+		arg.StatusType,
 		arg.StartDate,
 		arg.EndDate,
 	)
@@ -116,7 +118,7 @@ func (q *Queries) DeleteCampaign(ctx context.Context, campaignID uuid.UUID) erro
 const getCampaignByID = `-- name: GetCampaignByID :one
 SELECT 
     id, user_id, title, description, wallet_address, image_path, target_amount, raised_amount, 
-    accepted_token_symbol, is_verified, is_valid, start_date, end_date, created_at
+    accepted_token_symbol, is_verified, is_valid, status_type, start_date, end_date, created_at
 FROM 
     t_campaigns
 WHERE 
@@ -138,6 +140,7 @@ func (q *Queries) GetCampaignByID(ctx context.Context, campaignID uuid.UUID) (TC
 		&i.AcceptedTokenSymbol,
 		&i.IsVerified,
 		&i.IsValid,
+		&i.StatusType,
 		&i.StartDate,
 		&i.EndDate,
 		&i.CreatedAt,
@@ -148,7 +151,7 @@ func (q *Queries) GetCampaignByID(ctx context.Context, campaignID uuid.UUID) (TC
 const getCampaigns = `-- name: GetCampaigns :many
 SELECT 
     id, user_id, title, description, wallet_address, image_path, target_amount, raised_amount, 
-    accepted_token_symbol, is_verified, is_valid, start_date, end_date, created_at
+    accepted_token_symbol, is_verified, is_valid, status_type, start_date, end_date, created_at
 FROM 
     t_campaigns
 WHERE
@@ -193,6 +196,7 @@ func (q *Queries) GetCampaigns(ctx context.Context, arg GetCampaignsParams) ([]T
 			&i.AcceptedTokenSymbol,
 			&i.IsVerified,
 			&i.IsValid,
+			&i.StatusType,
 			&i.StartDate,
 			&i.EndDate,
 			&i.CreatedAt,
@@ -213,7 +217,7 @@ func (q *Queries) GetCampaigns(ctx context.Context, arg GetCampaignsParams) ([]T
 const getUserCampaign = `-- name: GetUserCampaign :one
 SELECT 
     id, user_id, title, description, wallet_address, image_path, target_amount, raised_amount, 
-    accepted_token_symbol, is_verified, is_valid, start_date, end_date, created_at
+    accepted_token_symbol, is_verified, is_valid, status_type, start_date, end_date, created_at
 FROM 
     t_campaigns
 WHERE 
@@ -240,6 +244,7 @@ func (q *Queries) GetUserCampaign(ctx context.Context, arg GetUserCampaignParams
 		&i.AcceptedTokenSymbol,
 		&i.IsVerified,
 		&i.IsValid,
+		&i.StatusType,
 		&i.StartDate,
 		&i.EndDate,
 		&i.CreatedAt,
@@ -258,20 +263,22 @@ SET
     target_amount = COALESCE($5, target_amount),
     raised_amount = COALESCE($6, raised_amount),
     is_valid = COALESCE($7, is_valid),
-    start_date = COALESCE($8, start_date),
-    end_date = COALESCE($9, end_date)
+    status_type = COALESCE($8, status_type),
+    start_date = COALESCE($9, start_date),
+    end_date = COALESCE($10, end_date)
 WHERE
-    id = $10
+    id = $11
 `
 
 type UpdateCampaignParams struct {
-	WalletAddress string
-	Title         string
+	WalletAddress sql.NullString
+	Title         sql.NullString
 	Description   sql.NullString
 	ImagePath     sql.NullString
 	TargetAmount  sql.NullString
 	RaisedAmount  sql.NullString
-	IsValid       bool
+	IsValid       sql.NullBool
+	StatusType    sql.NullString
 	StartDate     sql.NullTime
 	EndDate       sql.NullTime
 	CampaignID    uuid.UUID
@@ -286,6 +293,7 @@ func (q *Queries) UpdateCampaign(ctx context.Context, arg UpdateCampaignParams) 
 		arg.TargetAmount,
 		arg.RaisedAmount,
 		arg.IsValid,
+		arg.StatusType,
 		arg.StartDate,
 		arg.EndDate,
 		arg.CampaignID,

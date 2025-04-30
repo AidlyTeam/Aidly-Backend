@@ -26,6 +26,8 @@ type CampaignView struct {
 	IsVerified    bool      `json:"isVerified"`
 	IsValid       bool      `json:"isValid"`
 	AcceptedToken string    `json:"acceptedToken"`
+	StatusType    string    `json:"status"`
+	WalletAddress string    `json:"walletAddress"`
 	StartDate     time.Time `json:"startDate"`
 	EndDate       time.Time `json:"endDate"`
 }
@@ -43,6 +45,8 @@ func (m *CampaignDTOManager) ToCampaignView(campaignData *repo.TCampaign) Campai
 		IsVerified:    campaignData.IsVerified,
 		IsValid:       campaignData.IsValid,
 		AcceptedToken: campaignData.AcceptedTokenSymbol.String,
+		StatusType:    campaignData.StatusType,
+		WalletAddress: campaignData.WalletAddress,
 		StartDate:     campaignData.StartDate.Time,
 		EndDate:       campaignData.EndDate.Time,
 	}
@@ -63,6 +67,7 @@ type CampaignCreateDTO struct {
 	Description   string `json:"description" validate:"required,max=500"`
 	WalletAddress string `json:"walletAddress" validate:"required,max=500"`
 	TargetAmount  string `json:"targetAmount" validate:"required"`
+	StatusType    string `json:"statusType"`
 	StartDate     string `json:"startDate" validate:"required"`
 	EndDate       string `json:"endDate" validate:"required"`
 }
@@ -71,8 +76,9 @@ type CampaignCreateDTO struct {
 type CampaignUpdateDTO struct {
 	Title         string `json:"title" validate:"omitempty,max=100"`
 	Description   string `json:"description" validate:"omitempty,max=500"`
-	WalletAddress string `json:"walletAddress" validate:"required,max=500"`
+	WalletAddress string `json:"walletAddress" validate:"omitempty,max=500"`
 	TargetAmount  string `json:"targetAmount" validate:"omitempty"`
+	StatusType    string `json:"statusType"`
 	StartDate     string `json:"startDate" validate:"omitempty"`
 	EndDate       string `json:"endDate" validate:"omitempty"`
 }

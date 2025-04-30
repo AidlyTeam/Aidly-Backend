@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS t_campaigns (
     accepted_token_symbol VARCHAR(10) DEFAULT 'SOL',
     is_verified BOOLEAN NOT NULL DEFAULT FALSE,
     is_valid BOOLEAN NOT NULL DEFAULT FALSE,
+    status_type VARCHAR(50) NOT NULL DEFAULT 'normal',
     start_date TIMESTAMPTZ DEFAULT NOW(),
     end_date TIMESTAMPTZ,
     created_at TIMESTAMPTZ DEFAULT NOW(),

@@ -106,6 +106,7 @@ func (h *PrivateHandler) CreateCampaign(c *fiber.Ctx) error {
 		newCampaign.WalletAddress,
 		imagePath,
 		newCampaign.TargetAmount,
+		newCampaign.StatusType,
 		newCampaign.StartDate,
 		newCampaign.EndDate,
 	)
@@ -161,6 +162,7 @@ func (h *PrivateHandler) UpdateCampaign(c *fiber.Ctx) error {
 		updateCampaign.WalletAddress,
 		imagePath,
 		updateCampaign.TargetAmount,
+		updateCampaign.StatusType,
 		updateCampaign.StartDate,
 		updateCampaign.EndDate,
 	); err != nil {

@@ -300,6 +300,11 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "name": "statusType",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
                         "name": "targetAmount",
                         "in": "formData",
                         "required": true
@@ -404,6 +409,11 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "name": "statusType",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
                         "name": "targetAmount",
                         "in": "formData"
                     },
@@ -417,8 +427,7 @@ const docTemplate = `{
                         "maxLength": 500,
                         "type": "string",
                         "name": "walletAddress",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     }
                 ],
                 "responses": {

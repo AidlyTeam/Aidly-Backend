@@ -109,7 +109,7 @@ func (s *CampaignService) CheckTheOwnerOfCampaign(ctx context.Context, id string
 func (s *CampaignService) CreateCampaign(
 	ctx context.Context,
 	userID uuid.UUID,
-	title, description, walletAddress, imagePath, targetAmount string,
+	title, description, walletAddress, imagePath, targetAmount, statusType string,
 	startDate, endDate string,
 ) (*uuid.UUID, error) {
 	startDateTime, err := time.Parse(time.RFC3339, startDate)
@@ -121,6 +121,18 @@ func (s *CampaignService) CreateCampaign(
 		return nil, err
 	}
 
+	validStatuses := map[string]bool{
+		"normal":    true,
+		"urgent":    true,
+		"critical":  true,
+		"featured":  true,
+		"scheduled": true,
+	}
+
+	if _, ok := validStatuses[statusType]; !ok {
+		return nil, serviceErrors.NewServiceErrorWithMessage(serviceErrors.StatusBadRequest, serviceErrors.ErrInvalidCampaignStatus)
+	}
+
 	campaignID, err := s.queries.CreateCampaign(ctx, repo.CreateCampaignParams{
 		UserID:        userID,
 		Title:         title,
@@ -128,6 +140,7 @@ func (s *CampaignService) CreateCampaign(
 		WalletAddress: walletAddress,
 		ImagePath:     s.utilService.ParseString(imagePath),
 		TargetAmount:  targetAmount,
+		StatusType:    statusType,
 		StartDate:     sql.NullTime{Time: startDateTime, Valid: !startDateTime.IsZero()},
 		EndDate:       sql.NullTime{Time: endDateTime, Valid: !endDateTime.IsZero()},
 	})
@@ -156,7 +169,7 @@ func (s *CampaignService) DeleteCampaign(ctx context.Context, campaignID string)
 func (s *CampaignService) UpdateCampaign(
 	ctx context.Context,
 	userID uuid.UUID,
-	id, title, description, walletAddress, imagePath, targetAmount string,
+	id, title, description, walletAddress, imagePath, targetAmount, statusType string,
 	startDate, endDate string,
 ) error {
 	idUUID, err := s.utilService.NParseUUID(id)
@@ -183,13 +196,26 @@ func (s *CampaignService) UpdateCampaign(
 		}
 	}
 
+	validStatuses := map[string]bool{
+		"normal":    true,
+		"urgent":    true,
+		"critical":  true,
+		"featured":  true,
+		"scheduled": true,
+	}
+
+	if _, ok := validStatuses[statusType]; !ok {
+		return serviceErrors.NewServiceErrorWithMessage(serviceErrors.StatusBadRequest, serviceErrors.ErrInvalidCampaignStatus)
+	}
+
 	if err := s.queries.UpdateCampaign(ctx, repo.UpdateCampaignParams{
 		CampaignID:    idUUID,
-		WalletAddress: walletAddress,
-		Title:         title,
+		WalletAddress: s.utilService.ParseString(walletAddress),
+		Title:         s.utilService.ParseString(title),
 		Description:   s.utilService.ParseString(description),
 		ImagePath:     s.utilService.ParseString(imagePath),
 		TargetAmount:  s.utilService.ParseString(targetAmount),
+		StatusType:    s.utilService.ParseString(statusType),
 		StartDate:     sql.NullTime{Time: startDateTime, Valid: !startDateTime.IsZero()},
 		EndDate:       sql.NullTime{Time: endDateTime, Valid: !endDateTime.IsZero()},
 	}); err != nil {

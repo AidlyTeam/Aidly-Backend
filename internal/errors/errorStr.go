@@ -31,6 +31,9 @@ const (
 	ErrInvalidBoolean          = "INVALID_BOOLEAN"
 	ErrInvalidWalletConnection = "INVALID_WALLET_CONNECTION"
 	ErrInvalidFileType         = "INVALID_FILE_TYPE"
+
+	// Campaign
+	ErrInvalidCampaignStatus = "INVALID_CAMPAIGN_STATUS"
 )
 
 // 500

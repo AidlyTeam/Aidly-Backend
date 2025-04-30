@@ -293,6 +293,11 @@
                     },
                     {
                         "type": "string",
+                        "name": "statusType",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
                         "name": "targetAmount",
                         "in": "formData",
                         "required": true
@@ -397,6 +402,11 @@
                     },
                     {
                         "type": "string",
+                        "name": "statusType",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
                         "name": "targetAmount",
                         "in": "formData"
                     },
@@ -410,8 +420,7 @@
                         "maxLength": 500,
                         "type": "string",
                         "name": "walletAddress",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     }
                 ],
                 "responses": {

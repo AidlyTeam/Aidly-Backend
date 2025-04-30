@@ -22,6 +22,7 @@ type TCampaign struct {
 	AcceptedTokenSymbol sql.NullString
 	IsVerified          bool
 	IsValid             bool
+	StatusType          string
 	StartDate           sql.NullTime
 	EndDate             sql.NullTime
 	CreatedAt           sql.NullTime
