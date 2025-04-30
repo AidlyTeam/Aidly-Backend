@@ -1,6 +1,8 @@
 package private
 
 import (
+	"fmt"
+
 	dto "github.com/AidlyTeam/Aidly-Backend/internal/http/dtos"
 	"github.com/AidlyTeam/Aidly-Backend/internal/http/response"
 	"github.com/AidlyTeam/Aidly-Backend/internal/http/sessionStore"
@@ -99,10 +101,10 @@ func (h *PrivateHandler) Donate(c *fiber.Ctx) error {
 	if err != nil {
 		return nil
 	}
+	fmt.Println(campaign, "a", userSession)
 
 	// TODO: CHECK IF THE DONATION IS SUCCEED WITH TRANSACTION ID. IF SUCCEED. THEN CREATE.
 	// Make A web3 servis for this
-
 	donationID, err := h.services.DonationService().CreateDonation(
 		c.Context(),
 		userSession.UserID,

@@ -252,7 +252,7 @@ func (h *PrivateHandler) AddCategoryToCampaign(c *fiber.Ctx) error {
 		return err
 	}
 
-	campaignCategoryID, err := h.services.CampaignService().AddCategory(c.Context(), campaignID, category.ID)
+	campaignCategoryID, err := h.services.CampaignService().AddCategory(c.Context(), campaignID, category.CategoryID)
 	if err != nil {
 		return err
 	}
@@ -285,7 +285,7 @@ func (h *PrivateHandler) RemoveCategoryFromCampaign(c *fiber.Ctx) error {
 		return err
 	}
 
-	if err := h.services.CampaignService().RemoveCategory(c.Context(), campaignID, category.ID); err != nil {
+	if err := h.services.CampaignService().RemoveCategory(c.Context(), campaignID, category.CategoryID); err != nil {
 		return err
 	}
 

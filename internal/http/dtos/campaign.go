@@ -3,7 +3,7 @@ package dto
 import (
 	"time"
 
-	repo "github.com/AidlyTeam/Aidly-Backend/internal/repos/out"
+	"github.com/AidlyTeam/Aidly-Backend/internal/domains"
 )
 
 // CampaignDTOManager struct will manage DTO conversion for Campaign.
@@ -16,44 +16,48 @@ func NewCampaignDTOManager() CampaignDTOManager {
 
 // CampaignView struct will define the response format for campaign details.
 type CampaignView struct {
-	ID            string    `json:"id"`
-	UserID        string    `json:"userID"`
-	Title         string    `json:"title"`
-	Description   string    `json:"description"`
-	ImagePath     string    `json:"imagePath"`
-	TargetAmount  string    `json:"targetAmount"`
-	RaisedAmount  string    `json:"raisedAmount"`
-	IsVerified    bool      `json:"isVerified"`
-	IsValid       bool      `json:"isValid"`
-	AcceptedToken string    `json:"acceptedToken"`
-	StatusType    string    `json:"status"`
-	WalletAddress string    `json:"walletAddress"`
-	StartDate     time.Time `json:"startDate"`
-	EndDate       time.Time `json:"endDate"`
+	ID            string        `json:"id"`
+	UserID        string        `json:"userID"`
+	Title         string        `json:"title"`
+	Description   string        `json:"description"`
+	ImagePath     string        `json:"imagePath"`
+	TargetAmount  string        `json:"targetAmount"`
+	RaisedAmount  string        `json:"raisedAmount"`
+	IsVerified    bool          `json:"isVerified"`
+	IsValid       bool          `json:"isValid"`
+	AcceptedToken string        `json:"acceptedToken"`
+	StatusType    string        `json:"status"`
+	WalletAddress string        `json:"walletAddress"`
+	StartDate     time.Time     `json:"startDate"`
+	EndDate       time.Time     `json:"endDate"`
+	Categories    CategoryViews `json:"categories"`
 }
 
 // ToCampaignView converts campaign data to a view format for response.
-func (m *CampaignDTOManager) ToCampaignView(campaignData *repo.TCampaign) CampaignView {
+func (m *CampaignDTOManager) ToCampaignView(campaignData *domains.Campaign) CampaignView {
+	categoryManager := new(CategoryDTOManager)
+
 	return CampaignView{
 		ID:            campaignData.ID.String(),
 		UserID:        campaignData.UserID.String(),
 		Title:         campaignData.Title,
-		Description:   campaignData.Description.String,
-		ImagePath:     campaignData.ImagePath.String,
+		Description:   campaignData.Description,
+		ImagePath:     campaignData.ImagePath,
 		TargetAmount:  campaignData.TargetAmount,
-		RaisedAmount:  campaignData.RaisedAmount.String,
+		RaisedAmount:  campaignData.RaisedAmount,
 		IsVerified:    campaignData.IsVerified,
 		IsValid:       campaignData.IsValid,
-		AcceptedToken: campaignData.AcceptedTokenSymbol.String,
+		AcceptedToken: campaignData.AcceptedTokenSymbol,
 		StatusType:    campaignData.StatusType,
 		WalletAddress: campaignData.WalletAddress,
-		StartDate:     campaignData.StartDate.Time,
-		EndDate:       campaignData.EndDate.Time,
+		StartDate:     campaignData.StartDate,
+		EndDate:       *campaignData.EndDate,
+		Categories:    *categoryManager.ToCategoryViews(campaignData.Categories, 0),
 	}
 }
 
 // ToCampaignViews converts a slice of campaign data to an array of views.
-func (m *CampaignDTOManager) ToCampaignViews(campaigns []repo.TCampaign) []CampaignView {
+func (m *CampaignDTOManager) ToCampaignViews(campaigns []domains.Campaign) []CampaignView {
 	var campaignViews []CampaignView
 	for _, campaign := range campaigns {
 		campaignViews = append(campaignViews, m.ToCampaignView(&campaign))

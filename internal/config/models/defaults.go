@@ -18,10 +18,11 @@ type LanguageDefaults struct {
 }
 
 type LimitDefaults struct {
-	DefaultLanguageLimit int
-	DefaultUserLimit     int
-	DefaultCampaignLimit int
-	DefaultDonationLimit int
+	DefaultLanguageLimit         int
+	DefaultUserLimit             int
+	DefaultCampaignLimit         int
+	DefaultDonationLimit         int
+	DefaultCampaignCategoryLimit int
 }
 
 // Initialize Defaults
@@ -37,10 +38,11 @@ func NewDefaults() Defaults {
 			DefaultLanguage: "EN",
 		},
 		Limits: LimitDefaults{
-			DefaultLanguageLimit: 10,
-			DefaultUserLimit:     10,
-			DefaultCampaignLimit: 10,
-			DefaultDonationLimit: 10,
+			DefaultLanguageLimit:         10,
+			DefaultUserLimit:             10,
+			DefaultCampaignLimit:         10,
+			DefaultDonationLimit:         10,
+			DefaultCampaignCategoryLimit: 20,
 		},
 	}
 }

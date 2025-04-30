@@ -1,7 +1,7 @@
 package dto
 
 import (
-	repo "github.com/AidlyTeam/Aidly-Backend/internal/repos/out"
+	"github.com/AidlyTeam/Aidly-Backend/internal/domains"
 )
 
 type CategoryDTOManager struct{}
@@ -19,18 +19,18 @@ type CategoryView struct {
 
 type CategoryViews struct {
 	Categories []CategoryView `json:"categories"`
-	TotalCount int            `json:"totalCount"`
+	TotalCount int            `json:"totalCount,omitempty"`
 }
 
 // ToCategoryView transforms the raw category data into a structured response view
-func (CategoryDTOManager) ToCategoryView(category *repo.TCategory) CategoryView {
+func (CategoryDTOManager) ToCategoryView(category *domains.Category) CategoryView {
 	return CategoryView{
-		ID:   category.ID.String(),
+		ID:   category.CategoryID.String(),
 		Name: category.Name,
 	}
 }
 
-func (m *CategoryDTOManager) ToCategoryViews(categories []repo.TCategory, count int64) *CategoryViews {
+func (m *CategoryDTOManager) ToCategoryViews(categories []domains.Category, count int64) *CategoryViews {
 	var categoryViews []CategoryView
 	for _, model := range categories {
 		categoryViews = append(categoryViews, m.ToCategoryView(&model))

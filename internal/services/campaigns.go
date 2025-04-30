@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/AidlyTeam/Aidly-Backend/internal/domains"
 	serviceErrors "github.com/AidlyTeam/Aidly-Backend/internal/errors"
 	repo "github.com/AidlyTeam/Aidly-Backend/internal/repos/out"
 	"github.com/shopspring/decimal"
@@ -31,7 +32,7 @@ func newCampaignService(
 	}
 }
 
-func (s *CampaignService) GetCampaigns(ctx context.Context, id, userID, IsVerified, page, limit string) ([]repo.TCampaign, error) {
+func (s *CampaignService) GetCampaigns(ctx context.Context, id, userID, IsVerified, page, limit string) ([]domains.Campaign, error) {
 	pageNum, err := strconv.Atoi(page)
 	if err != nil || page == "" {
 		pageNum = 1
@@ -53,7 +54,7 @@ func (s *CampaignService) GetCampaigns(ctx context.Context, id, userID, IsVerifi
 		isVerifiedSQL = sql.NullBool{Bool: isVerifiedBool, Valid: true}
 	}
 
-	campaign, err := s.queries.GetCampaigns(ctx, repo.GetCampaignsParams{
+	campaigns, err := s.queries.GetCampaigns(ctx, repo.GetCampaignsParams{
 		ID:         s.utilService.ParseNullUUID(id),
 		UserID:     s.utilService.ParseNullUUID(userID),
 		IsVerified: isVerifiedSQL,
@@ -67,10 +68,26 @@ func (s *CampaignService) GetCampaigns(ctx context.Context, id, userID, IsVerifi
 		return nil, serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrFilteringCampaigns, err)
 	}
 
-	return campaign, nil
+	// Domains Mapper
+	var domainsCampaigns []domains.Campaign
+	for _, campaign := range campaigns {
+		categories, err := s.queries.GetCampaignCategories(ctx, repo.GetCampaignCategoriesParams{CampaignID: campaign.ID, Lim: 100, Off: 0})
+		if err != nil {
+			return nil, serviceErrors.NewServiceErrorWithMessageAndError(
+				serviceErrors.StatusInternalServerError,
+				serviceErrors.ErrFilteringCampaignCategories,
+				err,
+			)
+		}
+
+		appCategories := domains.ToCategoriesCampaign(categories)
+		domainsCampaigns = append(domainsCampaigns, *domains.ToCampaign(&campaign, appCategories))
+	}
+
+	return domainsCampaigns, nil
 }
 
-func (s *CampaignService) GetCampaignByID(ctx context.Context, campaignID string) (*repo.TCampaign, error) {
+func (s *CampaignService) GetCampaignByID(ctx context.Context, campaignID string) (*domains.Campaign, error) {
 	id, err := s.utilService.NParseUUID(campaignID)
 	if err != nil {
 		return nil, err
@@ -84,7 +101,15 @@ func (s *CampaignService) GetCampaignByID(ctx context.Context, campaignID string
 		return nil, serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrFilteringCampaigns, err)
 	}
 
-	return &campaign, nil
+	categories, err := s.queries.GetCampaignCategories(ctx, repo.GetCampaignCategoriesParams{CampaignID: campaign.ID, Lim: 100, Off: 0})
+	if err != nil {
+		return nil, serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrFilteringCampaignCategories, err)
+	}
+
+	appCategories := domains.ToCategoriesCampaign(categories)
+	domainsCampaigns := domains.ToCampaign(&campaign, appCategories)
+
+	return domainsCampaigns, nil
 }
 
 func (s *CampaignService) CheckTheOwnerOfCampaign(ctx context.Context, id string, userID uuid.UUID) error {
@@ -254,12 +279,12 @@ func (s *CampaignService) CheckCampaignValidity(ctx context.Context, campaignID 
 		return false, err
 	}
 
-	if campaign.EndDate.Valid && campaign.EndDate.Time.Before(time.Now()) {
+	if campaign.EndDate != nil && campaign.EndDate.Before(time.Now()) {
 		return false, nil
 	}
 
 	// Check if the target amount has been raised
-	raisedAmount, err := decimal.NewFromString(campaign.RaisedAmount.String)
+	raisedAmount, err := decimal.NewFromString(campaign.RaisedAmount)
 	if err != nil {
 		return false, serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrDecimalConvertionError, err)
 	}
@@ -300,6 +325,17 @@ func (s *CampaignService) AddCategory(ctx context.Context, campaignID string, ca
 		return nil, err
 	}
 
+	category, err := s.queries.GetCampaignCategoriesOne(ctx, repo.GetCampaignCategoriesOneParams{
+		CampaignID: campaign.ID,
+		CategoryID: categoryID,
+	})
+	if err != nil && err != sql.ErrNoRows {
+		return nil, serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrFilteringCampaignCategories, err)
+	}
+	if err == nil && category.CategoryID != uuid.Nil {
+		return nil, serviceErrors.NewServiceErrorWithMessage(serviceErrors.StatusBadRequest, serviceErrors.ErrCategoryAlreadyAdded)
+	}
+
 	id, err := s.queries.CreateCampaignCategory(ctx, repo.CreateCampaignCategoryParams{
 		CampaignID: campaign.ID,
 		CategoryID: categoryID,
@@ -317,6 +353,11 @@ func (s *CampaignService) RemoveCategory(ctx context.Context, campaignID string,
 		return err
 	}
 
+	if _, err := s.GetCampaignCategoryByIDs(ctx, campaignID, categoryID); err != nil {
+		return err
+	}
+
+	// TODO: Make GetCategoryByID for is exist check
 	if err := s.queries.DeleteCampaignCategory(ctx, repo.DeleteCampaignCategoryParams{
 		CampaignID: campaign.ID,
 		CategoryID: categoryID,
@@ -325,4 +366,56 @@ func (s *CampaignService) RemoveCategory(ctx context.Context, campaignID string,
 	}
 
 	return nil
+}
+
+func (s *CampaignService) GetCampaignCategoriesByID(ctx context.Context, campaignID, page, limit string) ([]repo.GetCampaignCategoriesRow, error) {
+	campaign, err := s.GetCampaignByID(ctx, campaignID)
+	if err != nil {
+		return nil, err
+	}
+
+	pageNum, err := strconv.Atoi(page)
+	if err != nil || page == "" {
+		pageNum = 1
+	}
+
+	limitNum, err := strconv.Atoi(limit)
+	if err != nil || limit == "" {
+		limitNum = s.utilService.D().Limits.DefaultCampaignCategoryLimit
+	}
+
+	offset := (pageNum - 1) * limitNum
+	categories, err := s.queries.GetCampaignCategories(ctx, repo.GetCampaignCategoriesParams{
+		CampaignID: campaign.ID,
+		Lim:        int32(limitNum),
+		Off:        int32(offset),
+	})
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, serviceErrors.NewServiceErrorWithMessage(serviceErrors.StatusNotFound, serviceErrors.ErrCampaignNotFound)
+		}
+		return nil, serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrFilteringCampaignCategories, err)
+	}
+
+	return categories, nil
+}
+
+func (s *CampaignService) GetCampaignCategoryByIDs(ctx context.Context, campaignID string, categoryID uuid.UUID) (*repo.TCampaignCategory, error) {
+	campaign, err := s.GetCampaignByID(ctx, campaignID)
+	if err != nil {
+		return nil, err
+	}
+
+	categories, err := s.queries.GetCampaignCategoriesOne(ctx, repo.GetCampaignCategoriesOneParams{
+		CampaignID: campaign.ID,
+		CategoryID: categoryID,
+	})
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, serviceErrors.NewServiceErrorWithMessage(serviceErrors.StatusNotFound, serviceErrors.ErrCampaignCategoryNotFound)
+		}
+		return nil, serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrFilteringCampaignCategories, err)
+	}
+
+	return &categories, nil
 }

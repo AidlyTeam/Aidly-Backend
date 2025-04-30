@@ -10,12 +10,13 @@ const (
 
 // 404
 const (
-	ErrUserNotFound        = "USER_NOT_FOUND"
-	ErrDefaultUserNotFound = "DEFAULT_USER_NOT_FOUND"
-	ErrRoleNotFound        = "ROLE_NOT_FOUND"
-	ErrCampaignNotFound    = "CAMPAIGN_NOT_FOUND"
-	ErrDonationNotFound    = "DONATION_NOT_FOUND"
-	ErrCategoryNotFound    = "CATEGORY_NOT_FOUND"
+	ErrUserNotFound             = "USER_NOT_FOUND"
+	ErrDefaultUserNotFound      = "DEFAULT_USER_NOT_FOUND"
+	ErrRoleNotFound             = "ROLE_NOT_FOUND"
+	ErrCampaignNotFound         = "CAMPAIGN_NOT_FOUND"
+	ErrCampaignCategoryNotFound = "CAMPAIGN_CATEGORY_NOT_FOUND"
+	ErrDonationNotFound         = "DONATION_NOT_FOUND"
+	ErrCategoryNotFound         = "CATEGORY_NOT_FOUND"
 )
 
 // 400
@@ -35,15 +36,17 @@ const (
 
 	// Campaign
 	ErrInvalidCampaignStatus = "INVALID_CAMPAIGN_STATUS"
+	ErrCategoryAlreadyAdded  = "CATEGORY_ALREADY_ADDED_INTO_CAMPAIGN"
 )
 
 // 500
 const (
-	ErrFilteringRole       = "ERROR_FILTERING_ROLES"
-	ErrFilteringUsers      = "ERROR_FILTERING_USERS"
-	ErrFilteringCampaigns  = "ERROR_FILTERING_CAMPAIGNS"
-	ErrFilteringDonation   = "ERROR_FILTERING_DONATIONS"
-	ErrFilteringCategories = "ERROR_FILTERING_CATEGORIES"
+	ErrFilteringRole               = "ERROR_FILTERING_ROLES"
+	ErrFilteringUsers              = "ERROR_FILTERING_USERS"
+	ErrFilteringCampaigns          = "ERROR_FILTERING_CAMPAIGNS"
+	ErrFilteringDonation           = "ERROR_FILTERING_DONATIONS"
+	ErrFilteringCategories         = "ERROR_FILTERING_CATEGORIES"
+	ErrFilteringCampaignCategories = "ERROR_FILTERING_CATEGORIES"
 
 	ErrCreatingUser           = "ERROR_CREATE_USER"
 	ErrCreatingCampaigns      = "ERROR_CREATE_CAMPAINGS"

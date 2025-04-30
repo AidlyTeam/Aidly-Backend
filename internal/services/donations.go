@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"strconv"
 
+	"github.com/AidlyTeam/Aidly-Backend/internal/domains"
 	serviceErrors "github.com/AidlyTeam/Aidly-Backend/internal/errors"
 	repo "github.com/AidlyTeam/Aidly-Backend/internal/repos/out"
 	"github.com/google/uuid"
@@ -77,7 +78,7 @@ func (s *DonationService) GetDonationByID(ctx context.Context, donationID string
 }
 
 // CreateDonation creates a new donation record.
-func (s *DonationService) CreateDonation(ctx context.Context, userID uuid.UUID, amountStr, transactionID string, campaign *repo.TCampaign) (*uuid.UUID, error) {
+func (s *DonationService) CreateDonation(ctx context.Context, userID uuid.UUID, amountStr, transactionID string, campaign *domains.Campaign) (*uuid.UUID, error) {
 	tx, err := s.db.Begin()
 	if err != nil {
 		return nil, err
@@ -104,7 +105,7 @@ func (s *DonationService) CreateDonation(ctx context.Context, userID uuid.UUID, 
 	}
 
 	// Step 2: Convert raised amount, amount, and target amount to decimals
-	raisedAmount, err := decimal.NewFromString(campaign.RaisedAmount.String)
+	raisedAmount, err := decimal.NewFromString(campaign.RaisedAmount)
 	if err != nil {
 		return nil, serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrDecimalConvertionError, err)
 	}

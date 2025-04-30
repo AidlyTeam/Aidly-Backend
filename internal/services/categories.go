@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"strconv"
 
+	"github.com/AidlyTeam/Aidly-Backend/internal/domains"
 	serviceErrors "github.com/AidlyTeam/Aidly-Backend/internal/errors"
 	repo "github.com/AidlyTeam/Aidly-Backend/internal/repos/out"
 	"github.com/google/uuid"
@@ -29,7 +30,7 @@ func newCategoryService(
 }
 
 // GetCategories returns a list of all categories.
-func (s *CategoryService) GetCategories(ctx context.Context, page, limit string) ([]repo.TCategory, error) {
+func (s *CategoryService) GetCategories(ctx context.Context, page, limit string) ([]domains.Category, error) {
 	pageNum, err := strconv.Atoi(page)
 	if err != nil || page == "" {
 		pageNum = 1
@@ -47,11 +48,14 @@ func (s *CategoryService) GetCategories(ctx context.Context, page, limit string)
 	if err != nil {
 		return nil, serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrFilteringCategories, err)
 	}
-	return categories, nil
+
+	appModels := domains.ToCategories(categories)
+
+	return appModels, nil
 }
 
 // GetCategoryByID returns a category by its ID.
-func (s *CategoryService) GetCategoryByID(ctx context.Context, categoryID string) (*repo.TCategory, error) {
+func (s *CategoryService) GetCategoryByID(ctx context.Context, categoryID string) (*domains.Category, error) {
 	id, err := s.utilService.NParseUUID(categoryID)
 	if err != nil {
 		return nil, err
@@ -64,8 +68,9 @@ func (s *CategoryService) GetCategoryByID(ctx context.Context, categoryID string
 		}
 		return nil, serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrFilteringCategories, err)
 	}
+	appCategory := domains.ToCategory(&category)
 
-	return &category, nil
+	return appCategory, nil
 }
 
 // CreateCategory creates a new category.
