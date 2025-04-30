@@ -293,3 +293,36 @@ func (s *CampaignService) UpdateCampaignValidity(ctx context.Context, campaignID
 
 	return nil
 }
+
+func (s *CampaignService) AddCategory(ctx context.Context, campaignID string, categoryID uuid.UUID) (*uuid.UUID, error) {
+	campaign, err := s.GetCampaignByID(ctx, campaignID)
+	if err != nil {
+		return nil, err
+	}
+
+	id, err := s.queries.CreateCampaignCategory(ctx, repo.CreateCampaignCategoryParams{
+		CampaignID: campaign.ID,
+		CategoryID: categoryID,
+	})
+	if err != nil {
+		return nil, serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrCreateCampaingCategory, err)
+	}
+
+	return &id, nil
+}
+
+func (s *CampaignService) RemoveCategory(ctx context.Context, campaignID string, categoryID uuid.UUID) error {
+	campaign, err := s.GetCampaignByID(ctx, campaignID)
+	if err != nil {
+		return err
+	}
+
+	if err := s.queries.DeleteCampaignCategory(ctx, repo.DeleteCampaignCategoryParams{
+		CampaignID: campaign.ID,
+		CategoryID: categoryID,
+	}); err != nil {
+		return serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrDeletingCampaignCategory, err)
+	}
+
+	return nil
+}

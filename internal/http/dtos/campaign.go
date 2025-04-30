@@ -86,3 +86,7 @@ type CampaignUpdateDTO struct {
 type CampaignChangeVerify struct {
 	IsVerified bool `json:"isVerified"`
 }
+
+type CampaignCategoryAddDelete struct {
+	CategoryID string `json:"categoryID" validate:"required,max=500"`
+}

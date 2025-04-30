@@ -20,6 +20,9 @@ func (h *PrivateHandler) initCampaignsRoutes(root fiber.Router) {
 	campaign.Delete("/:campaignID", h.DeleteCampaign)
 
 	campaign.Get("/:campaignID/isValid", h.CheckCampaignValidity)
+
+	campaign.Post("/:campaignID/category", h.AddCategoryToCampaign)
+	campaign.Delete("/:campaignID/category", h.RemoveCategoryFromCampaign)
 }
 
 // @Tags Campaign
@@ -222,4 +225,69 @@ func (h *PrivateHandler) CheckCampaignValidity(c *fiber.Ctx) error {
 	}
 
 	return response.Response(200, "Successful", isValid)
+}
+
+// @Tags Campaign
+// @Summary Add Category to Campaign
+// @Description Adds a category to the campaign.
+// @Accept json
+// @Produce json
+// @Param campaignID path string true "Campaign ID"
+// @Param req body dto.CampaignCategoryAddDelete true "Category ID"
+// @Success 201 {object} response.BaseResponse{}
+// @Router /private/campaign/{campaignID}/category [post]
+func (h *PrivateHandler) AddCategoryToCampaign(c *fiber.Ctx) error {
+	campaignID := c.Params("campaignID")
+
+	var req dto.CampaignCategoryAddDelete
+	if err := c.BodyParser(&req); err != nil {
+		return err
+	}
+	if err := h.services.UtilService().Validator().ValidateStruct(req); err != nil {
+		return err
+	}
+
+	category, err := h.services.CategoryService().GetCategoryByID(c.Context(), req.CategoryID)
+	if err != nil {
+		return err
+	}
+
+	campaignCategoryID, err := h.services.CampaignService().AddCategory(c.Context(), campaignID, category.ID)
+	if err != nil {
+		return err
+	}
+
+	return response.Response(201, "Category Added to Campaign Successfully", campaignCategoryID)
+}
+
+// @Tags Campaign
+// @Summary Remove Category from Campaign
+// @Description Removes a category from the campaign.
+// @Accept json
+// @Produce json
+// @Param campaignID path string true "Campaign ID"
+// @Param req body dto.CampaignCategoryAddDelete true "Category ID"
+// @Success 200 {object} response.BaseResponse{}
+// @Router /private/campaign/{campaignID}/category [delete]
+func (h *PrivateHandler) RemoveCategoryFromCampaign(c *fiber.Ctx) error {
+	campaignID := c.Params("campaignID")
+
+	var req dto.CampaignCategoryAddDelete
+	if err := c.BodyParser(&req); err != nil {
+		return err
+	}
+	if err := h.services.UtilService().Validator().ValidateStruct(req); err != nil {
+		return err
+	}
+
+	category, err := h.services.CategoryService().GetCategoryByID(c.Context(), req.CategoryID)
+	if err != nil {
+		return err
+	}
+
+	if err := h.services.CampaignService().RemoveCategory(c.Context(), campaignID, category.ID); err != nil {
+		return err
+	}
+
+	return response.Response(200, "Category Removed from Campaign Successfully", nil)
 }

@@ -15,6 +15,7 @@ const (
 	ErrRoleNotFound        = "ROLE_NOT_FOUND"
 	ErrCampaignNotFound    = "CAMPAIGN_NOT_FOUND"
 	ErrDonationNotFound    = "DONATION_NOT_FOUND"
+	ErrCategoryNotFound    = "CATEGORY_NOT_FOUND"
 )
 
 // 400
@@ -38,23 +39,30 @@ const (
 
 // 500
 const (
-	ErrFilteringRole      = "ERROR_FILTERING_ROLES"
-	ErrFilteringUsers     = "ERROR_FILTERING_USERS"
-	ErrFilteringCampaigns = "ERROR_FILTERING_CAMPAIGNS"
-	ErrFilteringDonation  = "ERROR_FILTERING_DONATIONS"
+	ErrFilteringRole       = "ERROR_FILTERING_ROLES"
+	ErrFilteringUsers      = "ERROR_FILTERING_USERS"
+	ErrFilteringCampaigns  = "ERROR_FILTERING_CAMPAIGNS"
+	ErrFilteringDonation   = "ERROR_FILTERING_DONATIONS"
+	ErrFilteringCategories = "ERROR_FILTERING_CATEGORIES"
 
-	ErrCreatingUser      = "ERROR_CREATE_USER"
-	ErrCreatingCampaigns = "ERROR_CREATE_CAMPAINGS"
-	ErrCreatingDontaions = "ERROR_CREATE_DONATIONS"
+	ErrCreatingUser           = "ERROR_CREATE_USER"
+	ErrCreatingCampaigns      = "ERROR_CREATE_CAMPAINGS"
+	ErrCreatingDontaions      = "ERROR_CREATE_DONATIONS"
+	ErrCreatingCategories     = "ERROR_CREATING_CATEGORIES"
+	ErrCreateCampaingCategory = "ERROR_CREATING_CAMPAIGN_CATEGORY"
 
-	ErrUpdatingUserRole  = "ERROR_UPDATING_USER_ROLE"
-	ErrUpdatingCampaigns = "ERROR_UPDATING_CAMPAINGS"
-	ErrUpdatingUsers     = "ERROR_UPDATING_USERS"
+	ErrUpdatingUserRole   = "ERROR_UPDATING_USER_ROLE"
+	ErrUpdatingCampaigns  = "ERROR_UPDATING_CAMPAINGS"
+	ErrUpdatingUsers      = "ERROR_UPDATING_USERS"
+	ErrUpdatingCategories = "ERROR_UPDATING_CATEGORIES"
 
-	ErrDeletingCampaigns = "ERROR_DELETING_CAMPAIGNS"
-	ErrDeletingDonations = "ERROR_DELETING_DONATIONS"
+	ErrDeletingCampaigns        = "ERROR_DELETING_CAMPAIGNS"
+	ErrDeletingDonations        = "ERROR_DELETING_DONATIONS"
+	ErrDeletingCategories       = "ERROR_DELETING_CATEGORIES"
+	ErrDeletingCampaignCategory = "ERROR_DELETING_CAMPAING_CATEGORY"
 
-	ErrCountDonations = "ERROR_COUNT_DONATIONS"
+	ErrCountDonations  = "ERROR_COUNT_DONATIONS"
+	ErrCountCategories = "ERROR_COUNT_CATEGORIES"
 
 	ErrWalletVerificationError = "WALLET_VERIFICATION_ERROR"
 

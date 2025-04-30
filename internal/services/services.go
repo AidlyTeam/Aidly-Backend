@@ -17,6 +17,7 @@ type IService interface {
 	RoleService() *RoleService
 	CampaignService() *CampaignService
 	DonationService() *DonationService
+	CategoryService() *CategoryService
 }
 
 type Services struct {
@@ -26,6 +27,7 @@ type Services struct {
 	roleService     *RoleService
 	campaignService *CampaignService
 	donationService *DonationService
+	categoryService *CategoryService
 }
 
 func CreateNewServices(
@@ -40,6 +42,7 @@ func CreateNewServices(
 	roleService := newRoleService(db, queries, utilService)
 	campaignService := newCampaignService(db, queries, utilService)
 	donationService := newDonationService(db, queries, utilService)
+	categoryService := newCategoryService(db, queries, utilService)
 
 	return &Services{
 		utilService:     utilService,
@@ -48,6 +51,7 @@ func CreateNewServices(
 		campaignService: campaignService,
 		uploadService:   uploadService,
 		donationService: donationService,
+		categoryService: categoryService,
 	}
 }
 
@@ -73,6 +77,10 @@ func (s *Services) CampaignService() *CampaignService {
 
 func (s *Services) DonationService() *DonationService {
 	return s.donationService
+}
+
+func (s *Services) CategoryService() *CategoryService {
+	return s.categoryService
 }
 
 // ------------------------------------------------------

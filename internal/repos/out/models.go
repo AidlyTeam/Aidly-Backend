@@ -28,6 +28,17 @@ type TCampaign struct {
 	CreatedAt           sql.NullTime
 }
 
+type TCampaignCategory struct {
+	ID         uuid.UUID
+	CampaignID uuid.UUID
+	CategoryID uuid.UUID
+}
+
+type TCategory struct {
+	ID   uuid.UUID
+	Name string
+}
+
 type TDonation struct {
 	ID            uuid.UUID
 	CampaignID    uuid.UUID

@@ -1,9 +1,33 @@
 basePath: /api/v1
 definitions:
+  dto.CampaignCategoryAddDelete:
+    properties:
+      categoryID:
+        maxLength: 500
+        type: string
+    required:
+    - categoryID
+    type: object
   dto.CampaignChangeVerify:
     properties:
       isVerified:
         type: boolean
+    type: object
+  dto.CategoryCreateDTO:
+    properties:
+      name:
+        maxLength: 8
+        minLength: 3
+        type: string
+    required:
+    - name
+    type: object
+  dto.CategoryUpdateDTO:
+    properties:
+      name:
+        maxLength: 8
+        minLength: 3
+        type: string
     type: object
   dto.DonationCreateDTO:
     properties:
@@ -105,6 +129,95 @@ paths:
       summary: Change Campaign Verification Status
       tags:
       - Campaign
+  /admin/category:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new category.
+      parameters:
+      - description: Create Category Request
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CategoryCreateDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.BaseResponse'
+      summary: Create Category
+      tags:
+      - Category
+  /admin/category/{categoryID}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a category by its ID.
+      parameters:
+      - description: Category ID
+        in: path
+        name: categoryID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.BaseResponse'
+      summary: Delete Category
+      tags:
+      - Category
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a category by its ID.
+      parameters:
+      - description: Category ID
+        in: path
+        name: categoryID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.BaseResponse'
+      summary: Get Category by ID
+      tags:
+      - Category
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing category.
+      parameters:
+      - description: Category ID
+        in: path
+        name: categoryID
+        required: true
+        type: string
+      - description: Update Category Request
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CategoryUpdateDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.BaseResponse'
+      summary: Update Category
+      tags:
+      - Category
   /admin/donation:
     get:
       consumes:
@@ -358,6 +471,59 @@ paths:
       summary: Update a Campaign for User
       tags:
       - Campaign
+  /private/campaign/{campaignID}/category:
+    delete:
+      consumes:
+      - application/json
+      description: Removes a category from the campaign.
+      parameters:
+      - description: Campaign ID
+        in: path
+        name: campaignID
+        required: true
+        type: string
+      - description: Category ID
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CampaignCategoryAddDelete'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.BaseResponse'
+      summary: Remove Category from Campaign
+      tags:
+      - Campaign
+    post:
+      consumes:
+      - application/json
+      description: Adds a category to the campaign.
+      parameters:
+      - description: Campaign ID
+        in: path
+        name: campaignID
+        required: true
+        type: string
+      - description: Category ID
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CampaignCategoryAddDelete'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.BaseResponse'
+      summary: Add Category to Campaign
+      tags:
+      - Campaign
   /private/campaign/{campaignID}/isValid:
     get:
       consumes:
@@ -380,6 +546,30 @@ paths:
       summary: Check if the Campaign is Valid
       tags:
       - Campaign
+  /private/category:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a list of categories with optional pagination.
+      parameters:
+      - description: Page Number
+        in: query
+        name: page
+        type: string
+      - description: Limit Per Page
+        in: query
+        name: limit
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.BaseResponse'
+      summary: Get Categories
+      tags:
+      - Category
   /private/donation:
     get:
       consumes:
