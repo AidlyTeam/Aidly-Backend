@@ -361,7 +361,6 @@ func (s *CampaignService) RemoveCategory(ctx context.Context, campaignID string,
 		return err
 	}
 
-	// TODO: Make GetCategoryByID for is exist check
 	if err := s.queries.DeleteCampaignCategory(ctx, repo.DeleteCampaignCategoryParams{
 		CampaignID: campaign.ID,
 		CategoryID: categoryID,
