@@ -49,6 +49,7 @@ func (h *PrivateHandler) Init(router fiber.Router) {
 	h.initCampaignsRoutes(root)
 	h.initDonationsRoutes(root)
 	h.initCategoryRoutes(root)
+	h.initBadgeRoutes(root)
 }
 
 func (h *PrivateHandler) authMiddleware(c *fiber.Ctx) error {

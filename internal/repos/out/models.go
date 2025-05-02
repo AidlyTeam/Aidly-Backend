@@ -10,6 +10,14 @@ import (
 	"github.com/google/uuid"
 )
 
+type TBadge struct {
+	ID          uuid.UUID
+	Name        string
+	Description sql.NullString
+	IconPath    sql.NullString
+	CreatedAt   sql.NullTime
+}
+
 type TCampaign struct {
 	ID                  uuid.UUID
 	UserID              uuid.UUID
@@ -61,4 +69,11 @@ type TUser struct {
 	Surname       sql.NullString
 	IsDefault     bool
 	CreatedAt     sql.NullTime
+}
+
+type TUserBadge struct {
+	ID        uuid.UUID
+	UserID    uuid.UUID
+	BadgeID   uuid.UUID
+	AwardedAt sql.NullTime
 }

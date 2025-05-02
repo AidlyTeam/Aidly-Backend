@@ -5,6 +5,7 @@ type IDTOManager interface {
 	CampaignManager() *CampaignDTOManager
 	DonationManager() *DonationDTOManager
 	CategoryManager() *CategoryDTOManager
+	BadgeManager() *BadgeDTOManager
 }
 
 type DTOManager struct {
@@ -12,6 +13,7 @@ type DTOManager struct {
 	campaignManager *CampaignDTOManager
 	donationManager *DonationDTOManager
 	categoryManager *CategoryDTOManager
+	badgeManager    *BadgeDTOManager
 }
 
 func CreateNewDTOManager() IDTOManager {
@@ -19,12 +21,14 @@ func CreateNewDTOManager() IDTOManager {
 	campaingManager := NewCampaignDTOManager()
 	donationManager := NewDonationDTOManager()
 	categoryManager := NewCategoryDTOManager()
+	badgeManager := NewBadgeDTOManager()
 
 	return &DTOManager{
 		userDTOManager:  &userDTOManager,
 		campaignManager: &campaingManager,
 		donationManager: &donationManager,
 		categoryManager: &categoryManager,
+		badgeManager:    &badgeManager,
 	}
 }
 
@@ -42,4 +46,8 @@ func (m *DTOManager) DonationManager() *DonationDTOManager {
 
 func (m *DTOManager) CategoryManager() *CategoryDTOManager {
 	return m.categoryManager
+}
+
+func (m *DTOManager) BadgeManager() *BadgeDTOManager {
+	return m.badgeManager
 }

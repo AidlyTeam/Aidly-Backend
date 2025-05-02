@@ -345,7 +345,7 @@ func (s *CampaignService) AddCategory(ctx context.Context, campaignID string, ca
 		CategoryID: categoryID,
 	})
 	if err != nil {
-		return nil, serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrCreateCampaingCategory, err)
+		return nil, serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrCreatingCampaingCategory, err)
 	}
 
 	return &id, nil

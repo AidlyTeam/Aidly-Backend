@@ -18,6 +18,7 @@ type IService interface {
 	CampaignService() *CampaignService
 	DonationService() *DonationService
 	CategoryService() *CategoryService
+	BadgeService() *BadgeService
 }
 
 type Services struct {
@@ -28,6 +29,7 @@ type Services struct {
 	campaignService *CampaignService
 	donationService *DonationService
 	categoryService *CategoryService
+	badgeService    *BadgeService
 }
 
 func CreateNewServices(
@@ -43,6 +45,7 @@ func CreateNewServices(
 	campaignService := newCampaignService(db, queries, utilService)
 	donationService := newDonationService(db, queries, utilService)
 	categoryService := newCategoryService(db, queries, utilService)
+	badgeService := newBadgeService(db, queries, utilService)
 
 	return &Services{
 		utilService:     utilService,
@@ -52,6 +55,7 @@ func CreateNewServices(
 		uploadService:   uploadService,
 		donationService: donationService,
 		categoryService: categoryService,
+		badgeService:    badgeService,
 	}
 }
 
@@ -81,6 +85,10 @@ func (s *Services) DonationService() *DonationService {
 
 func (s *Services) CategoryService() *CategoryService {
 	return s.categoryService
+}
+
+func (s *Services) BadgeService() *BadgeService {
+	return s.badgeService
 }
 
 // ------------------------------------------------------

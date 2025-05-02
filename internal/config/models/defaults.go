@@ -23,6 +23,7 @@ type LimitDefaults struct {
 	DefaultCampaignLimit         int
 	DefaultDonationLimit         int
 	DefaultCampaignCategoryLimit int
+	DefaultBadgeLimit            int
 }
 
 // Initialize Defaults
@@ -43,6 +44,7 @@ func NewDefaults() Defaults {
 			DefaultCampaignLimit:         10,
 			DefaultDonationLimit:         10,
 			DefaultCampaignCategoryLimit: 20,
+			DefaultBadgeLimit:            10,
 		},
 	}
 }
