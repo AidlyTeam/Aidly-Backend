@@ -57,6 +57,7 @@ FROM
     t_campaigns 
 WHERE 
     ($1::UUID IS NULL OR user_id = $1::UUID)
+    AND is_valid = FALSE
 `
 
 func (q *Queries) CountCampaigns(ctx context.Context, userID uuid.NullUUID) (int64, error) {
@@ -157,7 +158,8 @@ FROM
 WHERE
     ($1::UUID IS NULL OR id = $1::UUID) AND
     ($2::UUID IS NULL OR user_id = $2::UUID) AND
-    ($3::BOOLEAN IS NULL OR is_verified = $3::BOOLEAN) 
+    ($3::BOOLEAN IS NULL OR is_verified = $3::BOOLEAN) AND
+    is_valid = FALSE
 LIMIT $5 OFFSET $4
 `
 
