@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS t_badges (
     name VARCHAR(50) NOT NULL,
     description TEXT,
     icon_path TEXT,
+    donation_threshold INTEGER UNIQUE NOT NULL,
     created_at TIMESTAMP DEFAULT NOW()
 );
 

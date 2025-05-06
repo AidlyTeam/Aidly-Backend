@@ -11,11 +11,12 @@ import (
 )
 
 type TBadge struct {
-	ID          uuid.UUID
-	Name        string
-	Description sql.NullString
-	IconPath    sql.NullString
-	CreatedAt   sql.NullTime
+	ID                uuid.UUID
+	Name              string
+	Description       sql.NullString
+	IconPath          sql.NullString
+	DonationThreshold int32
+	CreatedAt         sql.NullTime
 }
 
 type TCampaign struct {

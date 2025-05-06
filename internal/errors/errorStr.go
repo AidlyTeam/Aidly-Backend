@@ -71,9 +71,10 @@ const (
 	ErrDeletingCampaignCategory = "ERROR_DELETING_CAMPAING_CATEGORY"
 	ErrDeletingBadge            = "ERROR_DELETING_BADGE"
 
-	ErrCountDonations  = "ERROR_COUNT_DONATIONS"
-	ErrCountCategories = "ERROR_COUNT_CATEGORIES"
-	ErrCountBadge      = "ERROR_COUNT_BADGE"
+	ErrCountDonations            = "ERROR_COUNT_DONATIONS"
+	ErrCountCategories           = "ERROR_COUNT_CATEGORIES"
+	ErrCountBadge                = "ERROR_COUNT_BADGE"
+	ErrThresholdAlreadyBeingUsed = "ERROR_DONATION_THRESHOLD_ALREADY_BEING_USED"
 
 	ErrWalletVerificationError = "WALLET_VERIFICATION_ERROR"
 

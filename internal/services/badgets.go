@@ -71,11 +71,20 @@ func (s *BadgeService) GetBadgeByID(ctx context.Context, badgeID string) (*repo.
 }
 
 // CreateBadge inserts a new badge into the database.
-func (s *BadgeService) CreateBadge(ctx context.Context, name, description, iconPath string) (*uuid.UUID, error) {
+func (s *BadgeService) CreateBadge(ctx context.Context, name, description, iconPath string, donationThreshold int32) (*uuid.UUID, error) {
+	ok, err := s.queries.ExistsBadgeByThreshold(ctx, donationThreshold)
+	if err != nil {
+		return nil, serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrFilteringBadge, err)
+	}
+	if ok {
+		return nil, serviceErrors.NewServiceErrorWithMessage(serviceErrors.StatusBadRequest, serviceErrors.ErrThresholdAlreadyBeingUsed)
+	}
+
 	badgeID, err := s.queries.CreateBadge(ctx, repo.CreateBadgeParams{
-		Name:        name,
-		Description: s.utilService.ParseString(description),
-		IconPath:    s.utilService.ParseString(iconPath),
+		Name:              name,
+		Description:       s.utilService.ParseString(description),
+		IconPath:          s.utilService.ParseString(iconPath),
+		DonationThreshold: donationThreshold,
 	})
 	if err != nil {
 		return nil, serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrCreatingBadge, err)
@@ -85,17 +94,26 @@ func (s *BadgeService) CreateBadge(ctx context.Context, name, description, iconP
 }
 
 // UpdateBadge updates an existing badge.
-func (s *BadgeService) UpdateBadge(ctx context.Context, badgeID, name, description, iconPath string) error {
+func (s *BadgeService) UpdateBadge(ctx context.Context, badgeID, name, description, iconPath string, donationThreshold int32) error {
 	id, err := s.utilService.NParseUUID(badgeID)
 	if err != nil {
 		return err
 	}
 
+	ok, err := s.queries.ExistsBadgeByThreshold(ctx, donationThreshold)
+	if err != nil {
+		return serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrFilteringBadge, err)
+	}
+	if ok {
+		return serviceErrors.NewServiceErrorWithMessage(serviceErrors.StatusBadRequest, serviceErrors.ErrThresholdAlreadyBeingUsed)
+	}
+
 	err = s.queries.UpdateBadge(ctx, repo.UpdateBadgeParams{
-		BadgeID:     id,
-		Name:        s.utilService.ParseString(name),
-		Description: s.utilService.ParseString(description),
-		IconPath:    s.utilService.ParseString(iconPath),
+		BadgeID:           id,
+		Name:              s.utilService.ParseString(name),
+		Description:       s.utilService.ParseString(description),
+		IconPath:          s.utilService.ParseString(iconPath),
+		DonationThreshold: sql.NullInt32{Int32: donationThreshold, Valid: donationThreshold != 0},
 	})
 	if err != nil {
 		return serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrUpdatingBadge, err)
@@ -174,4 +192,26 @@ func (s *BadgeService) RemoveUserBadge(ctx context.Context, userID, badgeID uuid
 		UserID:  userID,
 		BadgeID: badgeID,
 	})
+}
+
+func (s *BadgeService) CheckBadgeAndAdd(ctx context.Context, userID uuid.UUID, count int32) (*uuid.UUID, error) {
+	var id uuid.UUID
+
+	ok, err := s.queries.ExistsBadgeByThreshold(ctx, count)
+	if err != nil {
+		return nil, serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrFilteringBadge, err)
+	}
+	if ok {
+		badge, err := s.queries.GetBadgeByDonationCount(ctx, count)
+		if err != nil {
+			return nil, serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrFilteringBadge, err)
+		}
+
+		id, err = s.AddUserBadge(ctx, userID, badge.ID)
+		if err != nil {
+			return nil, serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrCreatingUserBadge, err)
+		}
+	}
+
+	return &id, nil
 }

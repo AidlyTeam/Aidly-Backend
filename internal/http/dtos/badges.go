@@ -17,6 +17,7 @@ type BadgeView struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	IconPath    string `json:"iconPath"`
+	Threshold   int32  `json:"threshold"`
 }
 
 type BadgeViews struct {
@@ -31,6 +32,7 @@ func (BadgeDTOManager) ToBadgeView(badge *repo.TBadge) BadgeView {
 		Name:        badge.Name,
 		Description: badge.Description.String,
 		IconPath:    badge.IconPath.String,
+		Threshold:   badge.DonationThreshold,
 	}
 }
 
@@ -45,12 +47,14 @@ func (m *BadgeDTOManager) ToBadgeViews(badges []repo.TBadge, count int64) *Badge
 
 // BadgeCreateDTO is used to create a new badge
 type BadgeCreateDTO struct {
-	Name        string `json:"name" validate:"required,min=3,max=20"`
-	Description string `json:"description" validate:"required,min=5,max=100"`
+	Name              string `json:"name" validate:"required,min=3,max=20"`
+	Description       string `json:"description" validate:"required,min=5,max=100"`
+	DonationThreshold int32  `json:"donationThreshold"`
 }
 
 // BadgeUpdateDTO is used to update an existing badge
 type BadgeUpdateDTO struct {
-	Name        string `json:"name" validate:"omitempty,min=3,max=20"`
-	Description string `json:"description" validate:"omitempty,min=5,max=100"`
+	Name              string `json:"name" validate:"omitempty,min=3,max=20"`
+	Description       string `json:"description" validate:"omitempty,min=5,max=100"`
+	DonationThreshold int32  `json:"donationThreshold" validate:"omitempty"`
 }

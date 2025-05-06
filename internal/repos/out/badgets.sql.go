@@ -30,20 +30,26 @@ func (q *Queries) CountBadge(ctx context.Context, id uuid.NullUUID) (int64, erro
 
 const createBadge = `-- name: CreateBadge :one
 INSERT INTO t_badges 
-    (name, description, icon_path)
+    (name, description, icon_path, donation_threshold)
 VALUES 
-    ($1, $2, $3)
+    ($1, $2, $3, $4)
 RETURNING id
 `
 
 type CreateBadgeParams struct {
-	Name        string
-	Description sql.NullString
-	IconPath    sql.NullString
+	Name              string
+	Description       sql.NullString
+	IconPath          sql.NullString
+	DonationThreshold int32
 }
 
 func (q *Queries) CreateBadge(ctx context.Context, arg CreateBadgeParams) (uuid.UUID, error) {
-	row := q.db.QueryRowContext(ctx, createBadge, arg.Name, arg.Description, arg.IconPath)
+	row := q.db.QueryRowContext(ctx, createBadge,
+		arg.Name,
+		arg.Description,
+		arg.IconPath,
+		arg.DonationThreshold,
+	)
 	var id uuid.UUID
 	err := row.Scan(&id)
 	return id, err
@@ -61,9 +67,48 @@ func (q *Queries) DeleteBadge(ctx context.Context, badgeID uuid.UUID) error {
 	return err
 }
 
+const existsBadgeByThreshold = `-- name: ExistsBadgeByThreshold :one
+SELECT 
+    EXISTS (
+        SELECT 1 
+        FROM t_badges 
+        WHERE donation_threshold = $1 
+    ) AS exists
+`
+
+func (q *Queries) ExistsBadgeByThreshold(ctx context.Context, donationThreshold int32) (bool, error) {
+	row := q.db.QueryRowContext(ctx, existsBadgeByThreshold, donationThreshold)
+	var exists bool
+	err := row.Scan(&exists)
+	return exists, err
+}
+
+const getBadgeByDonationCount = `-- name: GetBadgeByDonationCount :one
+SELECT 
+    id, name, description, icon_path, donation_threshold, created_at
+FROM 
+    t_badges
+WHERE 
+    donation_threshold = $1
+`
+
+func (q *Queries) GetBadgeByDonationCount(ctx context.Context, donationThreshold int32) (TBadge, error) {
+	row := q.db.QueryRowContext(ctx, getBadgeByDonationCount, donationThreshold)
+	var i TBadge
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Description,
+		&i.IconPath,
+		&i.DonationThreshold,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const getBadgeByID = `-- name: GetBadgeByID :one
 SELECT 
-    id, name, description, icon_path, created_at
+    id, name, description, icon_path, donation_threshold, created_at
 FROM 
     t_badges
 WHERE 
@@ -78,6 +123,7 @@ func (q *Queries) GetBadgeByID(ctx context.Context, badgeID uuid.UUID) (TBadge, 
 		&i.Name,
 		&i.Description,
 		&i.IconPath,
+		&i.DonationThreshold,
 		&i.CreatedAt,
 	)
 	return i, err
@@ -85,22 +131,29 @@ func (q *Queries) GetBadgeByID(ctx context.Context, badgeID uuid.UUID) (TBadge, 
 
 const getBadges = `-- name: GetBadges :many
 SELECT 
-    id, name, description, icon_path, created_at
+    id, name, description, icon_path, donation_threshold, created_at
 FROM 
     t_badges
 WHERE
-    ($1::UUID IS NULL OR id = $1::UUID)
-LIMIT $3 OFFSET $2
+    ($1::UUID IS NULL OR id = $1::UUID) AND
+    ($2::INTEGER IS NULL OR donation_threshold = $2::INTEGER)
+LIMIT $4 OFFSET $3
 `
 
 type GetBadgesParams struct {
-	ID  uuid.NullUUID
-	Off int32
-	Lim int32
+	ID                uuid.NullUUID
+	DonationThreshold sql.NullInt32
+	Off               int32
+	Lim               int32
 }
 
 func (q *Queries) GetBadges(ctx context.Context, arg GetBadgesParams) ([]TBadge, error) {
-	rows, err := q.db.QueryContext(ctx, getBadges, arg.ID, arg.Off, arg.Lim)
+	rows, err := q.db.QueryContext(ctx, getBadges,
+		arg.ID,
+		arg.DonationThreshold,
+		arg.Off,
+		arg.Lim,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -113,6 +166,7 @@ func (q *Queries) GetBadges(ctx context.Context, arg GetBadgesParams) ([]TBadge,
 			&i.Name,
 			&i.Description,
 			&i.IconPath,
+			&i.DonationThreshold,
 			&i.CreatedAt,
 		); err != nil {
 			return nil, err
@@ -134,16 +188,18 @@ UPDATE
 SET
     name = COALESCE($1, name),
     description = COALESCE($2, description),
-    icon_path = COALESCE($3, icon_path)
+    icon_path = COALESCE($3, icon_path),
+    donation_threshold = COALESCE($4, donation_threshold)
 WHERE
-    id = $4
+    id = $5
 `
 
 type UpdateBadgeParams struct {
-	Name        sql.NullString
-	Description sql.NullString
-	IconPath    sql.NullString
-	BadgeID     uuid.UUID
+	Name              sql.NullString
+	Description       sql.NullString
+	IconPath          sql.NullString
+	DonationThreshold sql.NullInt32
+	BadgeID           uuid.UUID
 }
 
 func (q *Queries) UpdateBadge(ctx context.Context, arg UpdateBadgeParams) error {
@@ -151,6 +207,7 @@ func (q *Queries) UpdateBadge(ctx context.Context, arg UpdateBadgeParams) error 
 		arg.Name,
 		arg.Description,
 		arg.IconPath,
+		arg.DonationThreshold,
 		arg.BadgeID,
 	)
 	return err

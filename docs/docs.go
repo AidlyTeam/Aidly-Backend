@@ -86,6 +86,11 @@ const docTemplate = `{
                         "required": true
                     },
                     {
+                        "type": "integer",
+                        "name": "donationThreshold",
+                        "in": "formData"
+                    },
+                    {
                         "maxLength": 20,
                         "minLength": 3,
                         "type": "string",
@@ -166,6 +171,11 @@ const docTemplate = `{
                         "minLength": 5,
                         "type": "string",
                         "name": "description",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "donationThreshold",
                         "in": "formData"
                     },
                     {

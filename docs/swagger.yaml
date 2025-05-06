@@ -126,6 +126,9 @@ paths:
         required: true
         type: string
       - in: formData
+        name: donationThreshold
+        type: integer
+      - in: formData
         maxLength: 20
         minLength: 3
         name: name
@@ -201,6 +204,9 @@ paths:
         minLength: 5
         name: description
         type: string
+      - in: formData
+        name: donationThreshold
+        type: integer
       - in: formData
         maxLength: 20
         minLength: 3

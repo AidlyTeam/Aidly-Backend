@@ -116,5 +116,21 @@ func (h *PrivateHandler) Donate(c *fiber.Ctx) error {
 		return err
 	}
 
-	return response.Response(201, "Donation Created Successfully", donationID)
+	count, err := h.services.DonationService().CountDonations(c.Context(), "", userSession.UserID.String())
+	if err != nil {
+		return err
+	}
+
+	// Check the donation count if exist add.
+	badgeID, err := h.services.BadgeService().CheckBadgeAndAdd(c.Context(), userSession.UserID, int32(count))
+	if err != nil {
+		return nil
+	}
+
+	resp := dto.DonationRequest{
+		BadgeID:    *badgeID,
+		DonationID: *donationID,
+	}
+
+	return response.Response(201, "Donation Created Successfully", resp)
 }

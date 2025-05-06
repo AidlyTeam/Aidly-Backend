@@ -9,7 +9,7 @@ import (
 func (h *PrivateHandler) initBadgeRoutes(root fiber.Router) {
 	badge := root.Group("/badge")
 
-	badge.Get("/", h.GetUserBadges)
+	badge.Get("/user", h.GetUserBadges)
 }
 
 // @Tags Badge

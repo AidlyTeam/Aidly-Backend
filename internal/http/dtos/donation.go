@@ -5,6 +5,7 @@ import (
 	"time"
 
 	repo "github.com/AidlyTeam/Aidly-Backend/internal/repos/out"
+	"github.com/google/uuid"
 )
 
 type DonationDTOManager struct{}
@@ -55,4 +56,9 @@ type DonationCreateDTO struct {
 	CampaignID    string `json:"campaignID" validate:"required"`
 	Amount        string `json:"amount" validate:"required,numeric"`
 	TransactionID string `json:"transactionID" validate:"required"`
+}
+
+type DonationRequest struct {
+	BadgeID    uuid.UUID `json:"badgeID"`
+	DonationID uuid.UUID `json:"donationID"`
 }

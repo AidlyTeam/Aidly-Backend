@@ -54,7 +54,7 @@ func (q *Queries) GetUserBadgeExists(ctx context.Context, arg GetUserBadgeExists
 
 const getUserBadges = `-- name: GetUserBadges :many
 SELECT 
-    b.id, b.name, b.description, b.icon_path, b.created_at
+    b.id, b.name, b.description, b.icon_path, b.donation_threshold, b.created_at
 FROM 
     t_user_badges ub
 JOIN 
@@ -77,6 +77,7 @@ func (q *Queries) GetUserBadges(ctx context.Context, userID uuid.UUID) ([]TBadge
 			&i.Name,
 			&i.Description,
 			&i.IconPath,
+			&i.DonationThreshold,
 			&i.CreatedAt,
 		); err != nil {
 			return nil, err

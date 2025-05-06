@@ -99,6 +99,7 @@ func (h *AdminHandler) CreateBadge(c *fiber.Ctx) error {
 		badgeDTO.Name,
 		badgeDTO.Description,
 		imagePath,
+		badgeDTO.DonationThreshold,
 	)
 	if err != nil {
 		return err
@@ -148,6 +149,7 @@ func (h *AdminHandler) UpdateBadge(c *fiber.Ctx) error {
 		badgeDTO.Name,
 		badgeDTO.Description,
 		imagePath,
+		badgeDTO.DonationThreshold,
 	); err != nil {
 		return err
 	}

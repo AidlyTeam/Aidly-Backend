@@ -1,6 +1,6 @@
 -- name: GetUserBadges :many
 SELECT 
-    b.id, b.name, b.description, b.icon_path, b.created_at
+    b.id, b.name, b.description, b.icon_path, b.donation_threshold, b.created_at
 FROM 
     t_user_badges ub
 JOIN 
