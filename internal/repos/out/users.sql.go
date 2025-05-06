@@ -163,14 +163,14 @@ SELECT
 FROM 
     t_users
 WHERE
-    ($1 IS NULL OR id = $1) AND
-    ($2 IS NULL OR wallet_address = $2)
+    ($1::UUID IS NULL OR id = $1::UUID) AND
+    ($2::TEXT IS NULL OR wallet_address = $2::TEXT)
 LIMIT $4 OFFSET $3
 `
 
 type GetUsersParams struct {
-	ID            interface{}
-	WalletAddress interface{}
+	ID            uuid.NullUUID
+	WalletAddress sql.NullString
 	Off           int32
 	Lim           int32
 }

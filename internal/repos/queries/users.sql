@@ -4,8 +4,8 @@ SELECT
 FROM 
     t_users
 WHERE
-    (@id IS NULL OR id = @id) AND
-    (@wallet_address IS NULL OR wallet_address = @wallet_address)
+    (sqlc.narg(id)::UUID IS NULL OR id = sqlc.narg(id)::UUID) AND
+    (sqlc.narg(wallet_address)::TEXT IS NULL OR wallet_address = sqlc.narg(wallet_address)::TEXT)
 LIMIT @lim OFFSET @off;
 
 -- name: GetUserByID :one
