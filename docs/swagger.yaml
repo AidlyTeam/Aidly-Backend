@@ -75,7 +75,7 @@ definitions:
       statusCode:
         type: integer
     type: object
-host: localhost:8080
+host: localhost
 info:
   contact: {}
   description: API Service for Aidly

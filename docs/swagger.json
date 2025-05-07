@@ -5,7 +5,7 @@
         "title": "API Service",
         "contact": {}
     },
-    "host": "localhost:8080",
+    "host": "localhost",
     "basePath": "/api/v1",
     "paths": {
         "/admin/badge": {
