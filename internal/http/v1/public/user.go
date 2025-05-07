@@ -81,7 +81,19 @@ func (h *PublicHandler) Auth(c *fiber.Ctx) error {
 		return err
 	}
 
-	return response.Response(200, "Authenticate Successful", user)
+	sess, err := h.sessionStore.Get(c)
+	if err != nil {
+		return err
+	}
+	sessionData := sessionStore.SessionData{}
+	sessionData.ParseFromUser(user, firstRole)
+	sess.Set("user", sessionData)
+	if err := sess.Save(); err != nil {
+		return err
+	}
+	profileResponse := h.dtoManager.UserManager().ToUserProfile(sessionData)
+
+	return response.Response(200, "Authenticate Successful", profileResponse)
 }
 
 // @Tags Auth

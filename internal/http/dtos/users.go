@@ -11,10 +11,10 @@ func NewUserDTOManager() UserDTOManager {
 type UserProfileView struct {
 	ID            string `json:"id"`
 	RoleID        string `json:"roleID"`
+	WalletAddress string `json:"walletAddress"`
 	RoleName      string `json:"role"`
 	Name          string `json:"name"`
 	Surname       string `json:"surname"`
-	WalletAddress string `json:"walletAddress"`
 }
 
 func (UserDTOManager) ToUserProfile(userData sessionStore.SessionData) UserProfileView {
