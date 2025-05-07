@@ -8,6 +8,7 @@ WHERE
     (sqlc.narg(id)::UUID IS NULL OR id = sqlc.narg(id)::UUID) AND
     (sqlc.narg(user_id)::UUID IS NULL OR user_id = sqlc.narg(user_id)::UUID) AND
     (sqlc.narg(is_verified)::BOOLEAN IS NULL OR is_verified = sqlc.narg(is_verified)::BOOLEAN) AND
+    (sqlc.narg(status_type)::TEXT IS NULL OR status_type = sqlc.narg(status_type)::TEXT) AND
     is_valid = FALSE
 LIMIT @lim OFFSET @off;
 

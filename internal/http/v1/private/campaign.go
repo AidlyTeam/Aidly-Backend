@@ -32,6 +32,8 @@ func (h *PrivateHandler) initCampaignsRoutes(root fiber.Router) {
 // @Produce json
 // @Param id query string false "Campaign ID"
 // @Param userID query string false "User ID"
+// @Param categoryIDList query string false "Category ID List"
+// @Param status query string false "Status"
 // @Param isVerified query string false "Campaign Verifiy"
 // @Param page query string false "Page Number"
 // @Param limit query string false "Limit Per Page"
@@ -40,15 +42,17 @@ func (h *PrivateHandler) initCampaignsRoutes(root fiber.Router) {
 func (h *PrivateHandler) GetCampaigns(c *fiber.Ctx) error {
 	id := c.Query("id")
 	userID := c.Query("userID")
+	categoryIDList := c.Query("categoryIDList")
+	status := c.Query("status")
 	isVerified := c.Query("isVerified")
 	page := c.Query("page")
 	limit := c.Query("limit")
 
-	campaigns, err := h.services.CampaignService().GetCampaigns(c.Context(), id, userID, isVerified, page, limit)
+	campaigns, err := h.services.CampaignService().GetCampaigns(c.Context(), id, userID, isVerified, status, page, limit)
 	if err != nil {
 		return err
 	}
-	campaignsView := h.dtoManager.CampaignManager().ToCampaignViews(campaigns)
+	campaignsView := h.dtoManager.CampaignManager().ToCampaignViews(campaigns, categoryIDList)
 
 	return response.Response(200, "Campaigns Retrieved Successfully", campaignsView)
 }

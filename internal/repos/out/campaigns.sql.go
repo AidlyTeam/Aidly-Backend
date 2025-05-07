@@ -159,14 +159,16 @@ WHERE
     ($1::UUID IS NULL OR id = $1::UUID) AND
     ($2::UUID IS NULL OR user_id = $2::UUID) AND
     ($3::BOOLEAN IS NULL OR is_verified = $3::BOOLEAN) AND
+    ($4::TEXT IS NULL OR status_type = $4::TEXT) AND
     is_valid = FALSE
-LIMIT $5 OFFSET $4
+LIMIT $6 OFFSET $5
 `
 
 type GetCampaignsParams struct {
 	ID         uuid.NullUUID
 	UserID     uuid.NullUUID
 	IsVerified sql.NullBool
+	StatusType sql.NullString
 	Off        int32
 	Lim        int32
 }
@@ -176,6 +178,7 @@ func (q *Queries) GetCampaigns(ctx context.Context, arg GetCampaignsParams) ([]T
 		arg.ID,
 		arg.UserID,
 		arg.IsVerified,
+		arg.StatusType,
 		arg.Off,
 		arg.Lim,
 	)

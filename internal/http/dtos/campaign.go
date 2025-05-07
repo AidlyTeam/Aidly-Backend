@@ -1,6 +1,7 @@
 package dto
 
 import (
+	"strings"
 	"time"
 
 	"github.com/AidlyTeam/Aidly-Backend/internal/domains"
@@ -57,9 +58,33 @@ func (m *CampaignDTOManager) ToCampaignView(campaignData *domains.Campaign) Camp
 }
 
 // ToCampaignViews converts a slice of campaign data to an array of views.
-func (m *CampaignDTOManager) ToCampaignViews(campaigns []domains.Campaign) []CampaignView {
+func (m *CampaignDTOManager) ToCampaignViews(campaigns []domains.Campaign, categoryIDList string) []CampaignView {
 	var campaignViews []CampaignView
+
+	// Parse the categoryID list if not empty
+	var categoryFilter map[string]struct{}
+	if categoryIDList != "" {
+		categoryFilter = make(map[string]struct{})
+		for _, id := range strings.Split(categoryIDList, ",") {
+			categoryFilter[strings.TrimSpace(id)] = struct{}{}
+		}
+	}
+
 	for _, campaign := range campaigns {
+		// If category filtering is enabled, check if campaign has a matching category
+		if categoryFilter != nil {
+			found := false
+			for _, category := range campaign.Categories {
+				if _, ok := categoryFilter[category.CategoryID.String()]; ok {
+					found = true
+					break
+				}
+			}
+			if !found {
+				continue
+			}
+		}
+
 		campaignViews = append(campaignViews, m.ToCampaignView(&campaign))
 	}
 	return campaignViews

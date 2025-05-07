@@ -602,6 +602,18 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "description": "Category ID List",
+                        "name": "categoryIDList",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Status",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
                         "description": "Campaign Verifiy",
                         "name": "isVerified",
                         "in": "query"

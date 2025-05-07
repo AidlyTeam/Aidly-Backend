@@ -466,6 +466,14 @@ paths:
         in: query
         name: userID
         type: string
+      - description: Category ID List
+        in: query
+        name: categoryIDList
+        type: string
+      - description: Status
+        in: query
+        name: status
+        type: string
       - description: Campaign Verifiy
         in: query
         name: isVerified
