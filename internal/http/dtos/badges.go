@@ -26,8 +26,12 @@ type BadgeViews struct {
 }
 
 // ToBadgeView transforms domain badge to BadgeView
-func (BadgeDTOManager) ToBadgeView(badge *repo.TBadge) BadgeView {
-	return BadgeView{
+func (BadgeDTOManager) ToBadgeView(badge *repo.TBadge) *BadgeView {
+	if badge == nil {
+		return nil
+	}
+
+	return &BadgeView{
 		ID:          badge.ID.String(),
 		Name:        badge.Name,
 		Description: badge.Description.String,
@@ -40,7 +44,7 @@ func (BadgeDTOManager) ToBadgeView(badge *repo.TBadge) BadgeView {
 func (m *BadgeDTOManager) ToBadgeViews(badges []repo.TBadge, count int64) *BadgeViews {
 	var badgeViews []BadgeView
 	for _, badge := range badges {
-		badgeViews = append(badgeViews, m.ToBadgeView(&badge))
+		badgeViews = append(badgeViews, *m.ToBadgeView(&badge))
 	}
 	return &BadgeViews{Badges: badgeViews, TotalCount: int(count)}
 }

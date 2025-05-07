@@ -43,7 +43,7 @@ func (h *PublicHandler) Login(c *fiber.Ctx) error {
 	if err := sess.Save(); err != nil {
 		return err
 	}
-	profileResponse := h.dtoManager.UserManager().ToUserProfile(sessionData)
+	profileResponse := h.dtoManager.UserManager().ToUserProfile(sessionData, nil, 0)
 
 	return response.Response(200, "Login successful", profileResponse)
 }
@@ -91,7 +91,7 @@ func (h *PublicHandler) Auth(c *fiber.Ctx) error {
 	if err := sess.Save(); err != nil {
 		return err
 	}
-	profileResponse := h.dtoManager.UserManager().ToUserProfile(sessionData)
+	profileResponse := h.dtoManager.UserManager().ToUserProfile(sessionData, nil, 0)
 
 	return response.Response(200, "Authenticate Successful", profileResponse)
 }

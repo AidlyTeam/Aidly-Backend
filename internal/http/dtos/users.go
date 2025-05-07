@@ -1,6 +1,9 @@
 package dto
 
-import "github.com/AidlyTeam/Aidly-Backend/internal/http/sessionStore"
+import (
+	"github.com/AidlyTeam/Aidly-Backend/internal/http/sessionStore"
+	repo "github.com/AidlyTeam/Aidly-Backend/internal/repos/out"
+)
 
 type UserDTOManager struct{}
 
@@ -9,15 +12,18 @@ func NewUserDTOManager() UserDTOManager {
 }
 
 type UserProfileView struct {
-	ID            string `json:"id"`
-	RoleID        string `json:"roleID"`
-	WalletAddress string `json:"walletAddress"`
-	RoleName      string `json:"role"`
-	Name          string `json:"name"`
-	Surname       string `json:"surname"`
+	ID            string      `json:"id"`
+	RoleID        string      `json:"roleID"`
+	WalletAddress string      `json:"walletAddress"`
+	RoleName      string      `json:"role"`
+	Name          string      `json:"name"`
+	Surname       string      `json:"surname"`
+	Badges        *BadgeViews `json:"badges"`
 }
 
-func (UserDTOManager) ToUserProfile(userData sessionStore.SessionData) UserProfileView {
+func (UserDTOManager) ToUserProfile(userData sessionStore.SessionData, badges []repo.TBadge, badgeCount int64) UserProfileView {
+	badgeManager := new(BadgeDTOManager)
+
 	return UserProfileView{
 		ID:            userData.UserID.String(),
 		RoleID:        userData.RoleID.String(),
@@ -25,6 +31,7 @@ func (UserDTOManager) ToUserProfile(userData sessionStore.SessionData) UserProfi
 		Name:          userData.Name,
 		Surname:       userData.Surname,
 		WalletAddress: userData.WalletAddress,
+		Badges:        badgeManager.ToBadgeViews(badges, badgeCount),
 	}
 }
 

@@ -31,6 +31,22 @@ func (q *Queries) AddUserBadge(ctx context.Context, arg AddUserBadgeParams) (uui
 	return id, err
 }
 
+const countUserBadge = `-- name: CountUserBadge :one
+SELECT
+    COUNT(*)
+FROM
+    t_user_badges
+WHERE
+    user_id = $1
+`
+
+func (q *Queries) CountUserBadge(ctx context.Context, userID uuid.UUID) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countUserBadge, userID)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const getUserBadgeExists = `-- name: GetUserBadgeExists :one
 SELECT 
     EXISTS (

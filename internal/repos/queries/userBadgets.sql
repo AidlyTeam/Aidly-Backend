@@ -28,3 +28,11 @@ SELECT
         FROM t_user_badges 
         WHERE user_id = @user_id AND badge_id = @badge_id
     ) AS exists;
+
+-- name: CountUserBadge :one
+SELECT
+    COUNT(*)
+FROM
+    t_user_badges
+WHERE
+    user_id = @user_id;

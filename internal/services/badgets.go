@@ -173,6 +173,15 @@ func (s *BadgeService) GetBadgeCount(ctx context.Context, id string) (int64, err
 	return count, nil
 }
 
+func (s *BadgeService) GetUserBadgeCount(ctx context.Context, userID uuid.UUID) (int64, error) {
+	count, err := s.queries.CountUserBadge(ctx, userID)
+	if err != nil {
+		return 0, serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrCountBadge, err)
+	}
+
+	return count, nil
+}
+
 // Check if a user already has a badge
 func (s *BadgeService) UserBadgeExists(ctx context.Context, userID, badgeID uuid.UUID) (bool, error) {
 	return s.queries.GetUserBadgeExists(ctx, repo.GetUserBadgeExistsParams{

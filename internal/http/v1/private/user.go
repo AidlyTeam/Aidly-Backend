@@ -1,8 +1,6 @@
 package private
 
 import (
-	"fmt"
-
 	dto "github.com/AidlyTeam/Aidly-Backend/internal/http/dtos"
 	"github.com/AidlyTeam/Aidly-Backend/internal/http/response"
 	"github.com/AidlyTeam/Aidly-Backend/internal/http/sessionStore"
@@ -29,8 +27,12 @@ func (h *PrivateHandler) Profile(c *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println(badges)
-	userProfileDTO := h.dtoManager.UserManager().ToUserProfile(*userSession)
+	badgeCount, err := h.services.BadgeService().GetUserBadgeCount(c.Context(), userSession.UserID)
+	if err != nil {
+		return err
+	}
+	//count badge
+	userProfileDTO := h.dtoManager.UserManager().ToUserProfile(*userSession, badges, badgeCount)
 
 	return response.Response(200, "Status OK", userProfileDTO)
 }
