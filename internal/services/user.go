@@ -41,13 +41,13 @@ func (s *UserService) Login(ctx context.Context, walletAddress string) (*repo.TU
 }
 
 // Login & Register
-func (s *UserService) AuthWallet(ctx context.Context, walletAddress, message, signature string, defaultRoleID uuid.UUID) (*repo.TUser, error) {
+func (s *UserService) AuthWallet(ctx context.Context, walletAddress, message, signature string, defaultRoleID uuid.UUID) (*repo.TUser, bool, error) {
 	ok, err := hasherService.VerifySignature(walletAddress, message, signature)
 	if err != nil {
-		return nil, serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrWalletVerificationError, err)
+		return nil, false, serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrWalletVerificationError, err)
 	}
 	if !ok {
-		return nil, serviceErrors.NewServiceErrorWithMessage(serviceErrors.StatusBadRequest, serviceErrors.ErrInvalidWalletConnection)
+		return nil, false, serviceErrors.NewServiceErrorWithMessage(serviceErrors.StatusBadRequest, serviceErrors.ErrInvalidWalletConnection)
 	}
 
 	users, err := s.queries.GetUsers(ctx, repo.GetUsersParams{
@@ -56,7 +56,7 @@ func (s *UserService) AuthWallet(ctx context.Context, walletAddress, message, si
 		Off:           0,
 	})
 	if err != nil {
-		return nil, serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrFilteringUsers, err)
+		return nil, false, serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrFilteringUsers, err)
 	}
 	if len(users) == 0 {
 		id, err := s.queries.CreateUser(ctx, repo.CreateUserParams{
@@ -64,22 +64,22 @@ func (s *UserService) AuthWallet(ctx context.Context, walletAddress, message, si
 			WalletAddress: walletAddress,
 		})
 		if err != nil {
-			return nil, serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrCreatingUser, err)
+			return nil, false, serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrCreatingUser, err)
 		}
 
 		user, err := s.queries.GetUserByID(ctx, id)
 		if err != nil {
 			if strings.Contains(err.Error(), "sql: no rows in result set") {
-				return nil, serviceErrors.NewServiceErrorWithMessage(serviceErrors.StatusBadRequest, serviceErrors.ErrUserNotFound)
+				return nil, false, serviceErrors.NewServiceErrorWithMessage(serviceErrors.StatusBadRequest, serviceErrors.ErrUserNotFound)
 			}
-			return nil, serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrFilteringUsers, err)
+			return nil, false, serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrFilteringUsers, err)
 		}
 
-		return &user, nil
+		return &user, true, nil
 	}
 	user := &users[0]
 
-	return user, err
+	return user, false, err
 }
 
 func (s *UserService) AdminCreate(ctx context.Context, walletAddress string, defaultRoleID uuid.UUID) (*repo.TUser, error) {

@@ -70,7 +70,7 @@ func (h *PublicHandler) Auth(c *fiber.Ctx) error {
 		return err
 	}
 
-	user, err := h.services.UserService().AuthWallet(
+	user, isRegister, err := h.services.UserService().AuthWallet(
 		c.Context(),
 		auth.WalletAddress,
 		auth.Message,
@@ -85,8 +85,18 @@ func (h *PublicHandler) Auth(c *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
+
 	sessionData := sessionStore.SessionData{}
-	sessionData.ParseFromUser(user, firstRole)
+	if !isRegister {
+		// If user is not registering. Which means he is login in. Then set the users role in session else firstrole.
+		userRole, err := h.services.RoleService().GetRoleByID(c.Context(), user.RoleID)
+		if err != nil {
+			return err
+		}
+		sessionData.ParseFromUser(user, userRole)
+	} else {
+		sessionData.ParseFromUser(user, firstRole)
+	}
 	sess.Set("user", sessionData)
 	if err := sess.Save(); err != nil {
 		return err
