@@ -37,8 +37,10 @@ const (
 
 	// Campaign
 	ErrInvalidCampaignStatus  = "INVALID_CAMPAIGN_STATUS"
+	ErrInvalidTokenSymbol     = "INVALID_ACCEPTED_TOKEN_SYMBOL"
 	ErrCategoryAlreadyAdded   = "CATEGORY_ALREADY_ADDED_INTO_CAMPAIGN"
 	ErrUserBadgeAlreadyExists = "USER_BADGE_ALREADY_EXISTS"
+	ErrNotValidWalletAddress  = "NOT_VALID_WALLET_ADDRESS"
 )
 
 // 500

@@ -661,6 +661,11 @@ const docTemplate = `{
                         "required": true
                     },
                     {
+                        "type": "string",
+                        "name": "acceptedTokenSymbol",
+                        "in": "formData"
+                    },
+                    {
                         "maxLength": 500,
                         "type": "string",
                         "name": "description",
@@ -770,6 +775,11 @@ const docTemplate = `{
                         "type": "file",
                         "description": "Campaign Image File",
                         "name": "imageFile",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "name": "acceptedTokenSymbol",
                         "in": "formData"
                     },
                     {

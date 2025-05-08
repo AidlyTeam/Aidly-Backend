@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS t_campaigns (
     image_path TEXT, 
     target_amount DECIMAL(10, 2) NOT NULL,
     raised_amount DECIMAL(10, 2) DEFAULT 0,
-    accepted_token_symbol VARCHAR(10) DEFAULT 'SOL',
+    accepted_token_symbol VARCHAR(10) NOT NULL DEFAULT 'SOL',
     is_verified BOOLEAN NOT NULL DEFAULT FALSE,
     is_valid BOOLEAN NOT NULL DEFAULT FALSE,
     status_type VARCHAR(50) NOT NULL DEFAULT 'normal',

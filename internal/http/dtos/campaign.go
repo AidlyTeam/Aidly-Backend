@@ -92,24 +92,26 @@ func (m *CampaignDTOManager) ToCampaignViews(campaigns []domains.Campaign, categ
 
 // CampaignCreateDTO struct will define the data required to create a campaign.
 type CampaignCreateDTO struct {
-	Title         string `json:"title" validate:"required,max=100"`
-	Description   string `json:"description" validate:"required,max=500"`
-	WalletAddress string `json:"walletAddress" validate:"required,max=500"`
-	TargetAmount  string `json:"targetAmount" validate:"required"`
-	StatusType    string `json:"statusType"`
-	StartDate     string `json:"startDate" validate:"required"`
-	EndDate       string `json:"endDate" validate:"required"`
+	Title               string `json:"title" validate:"required,max=100"`
+	Description         string `json:"description" validate:"required,max=500"`
+	WalletAddress       string `json:"walletAddress" validate:"required,max=500"`
+	TargetAmount        string `json:"targetAmount" validate:"required"`
+	StatusType          string `json:"statusType"`
+	AcceptedTokenSymbol string `json:"acceptedTokenSymbol"`
+	StartDate           string `json:"startDate" validate:"required"`
+	EndDate             string `json:"endDate" validate:"required"`
 }
 
 // CampaignUpdateDTO struct will define the data required to update an existing campaign.
 type CampaignUpdateDTO struct {
-	Title         string `json:"title" validate:"omitempty,max=100"`
-	Description   string `json:"description" validate:"omitempty,max=500"`
-	WalletAddress string `json:"walletAddress" validate:"omitempty,max=500"`
-	TargetAmount  string `json:"targetAmount" validate:"omitempty"`
-	StatusType    string `json:"statusType"`
-	StartDate     string `json:"startDate" validate:"omitempty"`
-	EndDate       string `json:"endDate" validate:"omitempty"`
+	Title               string `json:"title" validate:"omitempty,max=100"`
+	Description         string `json:"description" validate:"omitempty,max=500"`
+	WalletAddress       string `json:"walletAddress" validate:"omitempty,max=500"`
+	TargetAmount        string `json:"targetAmount" validate:"omitempty"`
+	StatusType          string `json:"statusType"`
+	AcceptedTokenSymbol string `json:"acceptedTokenSymbol"`
+	StartDate           string `json:"startDate" validate:"omitempty"`
+	EndDate             string `json:"endDate" validate:"omitempty"`
 }
 
 type CampaignChangeVerify struct {

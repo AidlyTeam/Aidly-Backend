@@ -32,9 +32,9 @@ WHERE
 
 -- name: CreateCampaign :one
 INSERT INTO t_campaigns 
-    (user_id, wallet_address, title, description, image_path, target_amount, raised_amount, status_type, start_date, end_date, created_at)
+    (user_id, wallet_address, title, description, image_path, target_amount, raised_amount, status_type, accepted_token_symbol, start_date, end_date, created_at)
 VALUES 
-    (@user_id, @wallet_address, @title, @description, @image_path, @target_amount, DEFAULT, @status_type, @start_date, @end_date, NOW())
+    (@user_id, @wallet_address, @title, @description, @image_path, @target_amount, DEFAULT, @status_type, @accepted_token_symbol, @start_date, @end_date, NOW())
 RETURNING id;
 
 -- name: UpdateCampaign :exec
@@ -49,6 +49,7 @@ SET
     raised_amount = COALESCE(sqlc.narg(raised_amount), raised_amount),
     is_valid = COALESCE(sqlc.narg(is_valid), is_valid),
     status_type = COALESCE(sqlc.narg(status_type), status_type),
+    accepted_token_symbol = COALESCE(sqlc.narg(accepted_token_symbol), accepted_token_symbol),
     start_date = COALESCE(sqlc.narg(start_date), start_date),
     end_date = COALESCE(sqlc.narg(end_date), end_date)
 WHERE

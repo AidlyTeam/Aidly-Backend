@@ -507,6 +507,9 @@ paths:
         required: true
         type: file
       - in: formData
+        name: acceptedTokenSymbol
+        type: string
+      - in: formData
         maxLength: 500
         name: description
         required: true
@@ -601,6 +604,9 @@ paths:
         in: formData
         name: imageFile
         type: file
+      - in: formData
+        name: acceptedTokenSymbol
+        type: string
       - in: formData
         maxLength: 500
         name: description

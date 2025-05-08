@@ -3,9 +3,11 @@ package private
 import (
 	"strings"
 
+	serviceErrors "github.com/AidlyTeam/Aidly-Backend/internal/errors"
 	dto "github.com/AidlyTeam/Aidly-Backend/internal/http/dtos"
 	"github.com/AidlyTeam/Aidly-Backend/internal/http/response"
 	"github.com/AidlyTeam/Aidly-Backend/internal/http/sessionStore"
+	solana_service "github.com/AidlyTeam/Aidly-Backend/pkg/web3"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -102,6 +104,10 @@ func (h *PrivateHandler) CreateCampaign(c *fiber.Ctx) error {
 		return err
 	}
 
+	if ok := solana_service.IsValidSolanaAddress(newCampaign.WalletAddress); !ok {
+		return response.Response(400, serviceErrors.ErrNotValidWalletAddress, nil)
+	}
+
 	imagePath := h.services.UploadService().CreatePath(imageFile.Filename)
 
 	// TODO: CHECK IF THE WALLET ADDRESS IS REALY SOLANA WALLET ADRESS. CREATE WEB3 SERVICE
@@ -114,6 +120,7 @@ func (h *PrivateHandler) CreateCampaign(c *fiber.Ctx) error {
 		imagePath,
 		newCampaign.TargetAmount,
 		newCampaign.StatusType,
+		newCampaign.AcceptedTokenSymbol,
 		newCampaign.StartDate,
 		newCampaign.EndDate,
 	)
@@ -160,6 +167,12 @@ func (h *PrivateHandler) UpdateCampaign(c *fiber.Ctx) error {
 		imagePath = h.services.UploadService().CreatePath(imageFile.Filename)
 	}
 
+	if updateCampaign.WalletAddress != "" {
+		if ok := solana_service.IsValidSolanaAddress(updateCampaign.WalletAddress); !ok {
+			return response.Response(400, serviceErrors.ErrNotValidWalletAddress, nil)
+		}
+	}
+
 	if err := h.services.CampaignService().UpdateCampaign(
 		c.Context(),
 		userSession.UserID,
@@ -170,6 +183,7 @@ func (h *PrivateHandler) UpdateCampaign(c *fiber.Ctx) error {
 		imagePath,
 		updateCampaign.TargetAmount,
 		updateCampaign.StatusType,
+		updateCampaign.AcceptedTokenSymbol,
 		updateCampaign.StartDate,
 		updateCampaign.EndDate,
 	); err != nil {

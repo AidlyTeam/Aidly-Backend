@@ -37,3 +37,12 @@ func VerifySignature(pubKeyBase58 string, message string, signatureBase58 string
 
 	return valid, nil
 }
+
+func IsValidSolanaAddress(address string) bool {
+	decoded, err := base58.Decode(address)
+	if err != nil {
+		return false
+	}
+
+	return len(decoded) == 32
+}
