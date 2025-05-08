@@ -61,7 +61,7 @@ func (h *AdminHandler) GetDonationByID(c *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	donationView := h.dtoManager.DonationManager().ToDonationView(donation)
+	donationView := h.dtoManager.DonationManager().ToDonationView(nil, donation)
 
 	return response.Response(200, "Donation Retrieved Successfully", donationView)
 }

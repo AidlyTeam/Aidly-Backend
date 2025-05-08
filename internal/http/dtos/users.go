@@ -11,6 +11,18 @@ func NewUserDTOManager() UserDTOManager {
 	return UserDTOManager{}
 }
 
+type UserNameSurnameView struct {
+	Name    string `json:"name"`
+	Surname string `json:"surname"`
+}
+
+func (UserDTOManager) ToUserNameSurname(name, surname string) *UserNameSurnameView {
+	return &UserNameSurnameView{
+		Name:    name,
+		Surname: surname,
+	}
+}
+
 type UserProfileView struct {
 	ID            string      `json:"id"`
 	RoleID        string      `json:"roleID"`

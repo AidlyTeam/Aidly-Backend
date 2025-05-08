@@ -1,6 +1,7 @@
 package private
 
 import (
+	serviceErrors "github.com/AidlyTeam/Aidly-Backend/internal/errors"
 	dto "github.com/AidlyTeam/Aidly-Backend/internal/http/dtos"
 	"github.com/AidlyTeam/Aidly-Backend/internal/http/response"
 	"github.com/AidlyTeam/Aidly-Backend/internal/http/sessionStore"
@@ -44,7 +45,6 @@ func (h *PrivateHandler) GetDonations(c *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-
 	donationsView := h.dtoManager.DonationManager().ToDonationViews(donations, count)
 
 	return response.Response(200, "Donations Retrieved Successfully", donationsView)
@@ -71,7 +71,7 @@ func (h *PrivateHandler) GetDonationByID(c *fiber.Ctx) error {
 		return response.Response(403, "Forbidden", nil)
 	}
 
-	donationView := h.dtoManager.DonationManager().ToDonationView(donation)
+	donationView := h.dtoManager.DonationManager().ToDonationView(nil, donation)
 
 	return response.Response(200, "Donation Retrieved Successfully", donationView)
 }
@@ -100,8 +100,18 @@ func (h *PrivateHandler) Donate(c *fiber.Ctx) error {
 		return nil
 	}
 
-	// TODO: CHECK IF THE DONATION IS SUCCEED WITH TRANSACTION ID. IF SUCCEED. THEN CREATE.
-	// Make A web3 servis for this
+	// TODO: TAKE LOOK AT THIS LATER
+	ok, err := h.services.DonationService().VerifyDonationTransaction(
+		c.Context(),
+		newDonation.TransactionID,
+		userSession.WalletAddress, newDonation.CampaignID)
+	if err != nil {
+		return response.Response(500, err.Error(), nil)
+	}
+	if !ok {
+		return response.Response(400, serviceErrors.ErrInvalidTransactionInfo, nil)
+	}
+
 	donationID, err := h.services.DonationService().CreateDonation(
 		c.Context(),
 		userSession.UserID,

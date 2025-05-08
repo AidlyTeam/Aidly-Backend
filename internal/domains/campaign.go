@@ -24,6 +24,7 @@ type Campaign struct {
 	EndDate             *time.Time
 	CreatedAt           time.Time
 	Categories          []Category
+	User                *User
 }
 
 type Campaigns struct {
@@ -31,7 +32,7 @@ type Campaigns struct {
 	TotalCount int
 }
 
-func ToCampaign(dbModel *repo.TCampaign, categoryModel []Category) *Campaign {
+func ToCampaignByID(dbModel *repo.GetCampaignByIDRow, categoryModel []Category) *Campaign {
 	appModel := Campaign{
 		ID:                  dbModel.ID,
 		UserID:              dbModel.UserID,
@@ -49,6 +50,31 @@ func ToCampaign(dbModel *repo.TCampaign, categoryModel []Category) *Campaign {
 		EndDate:             &dbModel.EndDate.Time,
 		CreatedAt:           dbModel.CreatedAt.Time,
 		Categories:          categoryModel,
+		User:                ToUser(dbModel.UserName.String, dbModel.UserSurname.String),
+	}
+
+	return &appModel
+}
+
+func ToCampaign(dbModel *repo.GetCampaignsRow, categoryModel []Category) *Campaign {
+	appModel := Campaign{
+		ID:                  dbModel.ID,
+		UserID:              dbModel.UserID,
+		Title:               dbModel.Title,
+		Description:         dbModel.Description.String,
+		WalletAddress:       dbModel.WalletAddress,
+		ImagePath:           dbModel.ImagePath.String,
+		TargetAmount:        dbModel.TargetAmount,
+		RaisedAmount:        dbModel.RaisedAmount.String,
+		AcceptedTokenSymbol: dbModel.AcceptedTokenSymbol,
+		IsVerified:          dbModel.IsVerified,
+		IsValid:             dbModel.IsValid,
+		StatusType:          dbModel.StatusType,
+		StartDate:           dbModel.StartDate.Time,
+		EndDate:             &dbModel.EndDate.Time,
+		CreatedAt:           dbModel.CreatedAt.Time,
+		Categories:          categoryModel,
+		User:                ToUser(dbModel.UserName.String, dbModel.UserSurname.String),
 	}
 
 	return &appModel

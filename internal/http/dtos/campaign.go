@@ -17,26 +17,28 @@ func NewCampaignDTOManager() CampaignDTOManager {
 
 // CampaignView struct will define the response format for campaign details.
 type CampaignView struct {
-	ID            string        `json:"id"`
-	UserID        string        `json:"userID"`
-	Title         string        `json:"title"`
-	Description   string        `json:"description"`
-	ImagePath     string        `json:"imagePath"`
-	TargetAmount  string        `json:"targetAmount"`
-	RaisedAmount  string        `json:"raisedAmount"`
-	IsVerified    bool          `json:"isVerified"`
-	IsValid       bool          `json:"isValid"`
-	AcceptedToken string        `json:"acceptedToken"`
-	StatusType    string        `json:"status"`
-	WalletAddress string        `json:"walletAddress"`
-	StartDate     time.Time     `json:"startDate"`
-	EndDate       time.Time     `json:"endDate"`
-	Categories    CategoryViews `json:"categories"`
+	ID            string               `json:"id"`
+	UserID        string               `json:"userID"`
+	Title         string               `json:"title"`
+	Description   string               `json:"description"`
+	ImagePath     string               `json:"imagePath"`
+	TargetAmount  string               `json:"targetAmount"`
+	RaisedAmount  string               `json:"raisedAmount"`
+	IsVerified    bool                 `json:"isVerified"`
+	IsValid       bool                 `json:"isValid"`
+	AcceptedToken string               `json:"acceptedToken"`
+	StatusType    string               `json:"status"`
+	WalletAddress string               `json:"walletAddress"`
+	StartDate     time.Time            `json:"startDate"`
+	EndDate       time.Time            `json:"endDate"`
+	Categories    *CategoryViews       `json:"categories"`
+	User          *UserNameSurnameView `json:"campaignUser"`
 }
 
 // ToCampaignView converts campaign data to a view format for response.
 func (m *CampaignDTOManager) ToCampaignView(campaignData *domains.Campaign) CampaignView {
 	categoryManager := new(CategoryDTOManager)
+	userManager := new(UserDTOManager)
 
 	return CampaignView{
 		ID:            campaignData.ID.String(),
@@ -53,7 +55,8 @@ func (m *CampaignDTOManager) ToCampaignView(campaignData *domains.Campaign) Camp
 		WalletAddress: campaignData.WalletAddress,
 		StartDate:     campaignData.StartDate,
 		EndDate:       *campaignData.EndDate,
-		Categories:    *categoryManager.ToCategoryViews(campaignData.Categories, 0),
+		Categories:    categoryManager.ToCategoryViews(campaignData.Categories, 0),
+		User:          userManager.ToUserNameSurname(campaignData.User.Name, campaignData.User.Surname),
 	}
 }
 

@@ -108,7 +108,7 @@ func (s *CampaignService) GetCampaignByID(ctx context.Context, campaignID string
 	}
 
 	appCategories := domains.ToCategoriesCampaign(categories)
-	domainsCampaigns := domains.ToCampaign(&campaign, appCategories)
+	domainsCampaigns := domains.ToCampaignByID(&campaign, appCategories)
 
 	return domainsCampaigns, nil
 }

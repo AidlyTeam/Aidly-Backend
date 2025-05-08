@@ -41,6 +41,9 @@ const (
 	ErrCategoryAlreadyAdded   = "CATEGORY_ALREADY_ADDED_INTO_CAMPAIGN"
 	ErrUserBadgeAlreadyExists = "USER_BADGE_ALREADY_EXISTS"
 	ErrNotValidWalletAddress  = "NOT_VALID_WALLET_ADDRESS"
+
+	// Donate
+	ErrInvalidTransactionInfo = "INVALID_TRANSACTION_INFO"
 )
 
 // 500

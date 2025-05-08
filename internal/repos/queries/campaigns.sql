@@ -1,25 +1,60 @@
 -- name: GetCampaigns :many
 SELECT 
-    id, user_id, title, description, wallet_address, image_path, target_amount, raised_amount, 
-    accepted_token_symbol, is_verified, is_valid, status_type, start_date, end_date, created_at
+    c.id, 
+    c.user_id, 
+    c.title, 
+    c.description, 
+    c.wallet_address, 
+    c.image_path, 
+    c.target_amount, 
+    c.raised_amount, 
+    c.accepted_token_symbol, 
+    c.is_verified, 
+    c.is_valid, 
+    c.status_type, 
+    c.start_date, 
+    c.end_date, 
+    c.created_at,
+    u.name AS user_name,
+    u.surname AS user_surname
 FROM 
-    t_campaigns
+    t_campaigns c
+JOIN 
+    t_users u ON u.id = c.user_id
 WHERE
-    (sqlc.narg(id)::UUID IS NULL OR id = sqlc.narg(id)::UUID) AND
-    (sqlc.narg(user_id)::UUID IS NULL OR user_id = sqlc.narg(user_id)::UUID) AND
-    (sqlc.narg(is_verified)::BOOLEAN IS NULL OR is_verified = sqlc.narg(is_verified)::BOOLEAN) AND
-    (sqlc.narg(status_type)::TEXT IS NULL OR status_type = sqlc.narg(status_type)::TEXT) AND
-    is_valid = FALSE
+    (sqlc.narg(id)::UUID IS NULL OR c.id = sqlc.narg(id)::UUID) AND
+    (sqlc.narg(user_id)::UUID IS NULL OR c.user_id = sqlc.narg(user_id)::UUID) AND
+    (sqlc.narg(is_verified)::BOOLEAN IS NULL OR c.is_verified = sqlc.narg(is_verified)::BOOLEAN) AND
+    (sqlc.narg(status_type)::TEXT IS NULL OR c.status_type = sqlc.narg(status_type)::TEXT) AND
+    c.is_valid = FALSE
 LIMIT @lim OFFSET @off;
+
 
 -- name: GetCampaignByID :one
 SELECT 
-    id, user_id, title, description, wallet_address, image_path, target_amount, raised_amount, 
-    accepted_token_symbol, is_verified, is_valid, status_type, start_date, end_date, created_at
+    c.id, 
+    c.user_id, 
+    c.title, 
+    c.description, 
+    c.wallet_address, 
+    c.image_path, 
+    c.target_amount, 
+    c.raised_amount, 
+    c.accepted_token_symbol, 
+    c.is_verified, 
+    c.is_valid, 
+    c.status_type, 
+    c.start_date, 
+    c.end_date, 
+    c.created_at,
+    u.name AS user_name,
+    u.surname AS user_surname
 FROM 
-    t_campaigns
+    t_campaigns c
+JOIN 
+    t_users u ON u.id = c.user_id
 WHERE 
-    id = @campaign_id;
+    c.id = @campaign_id;
 
 -- name: GetUserCampaign :one
 SELECT 

@@ -1,9 +1,14 @@
 package services
 
 import (
+	"bytes"
 	"context"
 	"database/sql"
+	"encoding/json"
+	"fmt"
+	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/AidlyTeam/Aidly-Backend/internal/domains"
 	serviceErrors "github.com/AidlyTeam/Aidly-Backend/internal/errors"
@@ -31,7 +36,7 @@ func newDonationService(
 }
 
 // GetDonations retrieves donations based on the provided parameters.
-func (s *DonationService) GetDonations(ctx context.Context, id, campaignID, userID, page, limit string) ([]repo.TDonation, error) {
+func (s *DonationService) GetDonations(ctx context.Context, id, campaignID, userID, page, limit string) ([]repo.GetDonationsRow, error) {
 	pageNum, err := strconv.Atoi(page)
 	if err != nil || page == "" {
 		pageNum = 1
@@ -60,7 +65,7 @@ func (s *DonationService) GetDonations(ctx context.Context, id, campaignID, user
 }
 
 // GetDonationByID retrieves a donation by its ID.
-func (s *DonationService) GetDonationByID(ctx context.Context, donationID string) (*repo.TDonation, error) {
+func (s *DonationService) GetDonationByID(ctx context.Context, donationID string) (*repo.GetDonationByIDRow, error) {
 	id, err := s.utilService.NParseUUID(donationID)
 	if err != nil {
 		return nil, err
@@ -173,4 +178,53 @@ func (s *DonationService) CheckIfUserHasDonated(ctx context.Context, userID uuid
 	}
 
 	return count > 0, nil
+}
+
+// VerifyDonationTransaction sends a request to the /wallet/verify endpoint
+func (s *DonationService) VerifyDonationTransaction(ctx context.Context, txID, donatorWalletAddress, campaignWalletAddress string) (bool, error) {
+	// API endpoint URL
+	url := "http://nginx/web3-api/wallet/verify"
+
+	// Create the request payload
+	requestPayload := map[string]string{
+		"txid":                  txID,
+		"donatorWalletAddress":  donatorWalletAddress,
+		"campaignWalletAddress": campaignWalletAddress,
+	}
+
+	// Convert the payload to JSON
+	payload, err := json.Marshal(requestPayload)
+	if err != nil {
+		return false, fmt.Errorf("failed to marshal request payload: %w", err)
+	}
+
+	// Send the POST request
+	client := &http.Client{
+		Timeout: 10 * time.Second, // 10 seconds timeout
+	}
+
+	resp, err := client.Post(url, "application/json", bytes.NewBuffer(payload))
+	if err != nil {
+		return false, fmt.Errorf("failed to send request to API: %w", err)
+	}
+	defer resp.Body.Close()
+
+	// Check if the response status is OK
+	if resp.StatusCode != http.StatusOK {
+		return false, fmt.Errorf("received non-OK response status: %s", resp.Status)
+	}
+
+	// Parse the response body
+	var response map[string]interface{}
+	if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
+		return false, fmt.Errorf("failed to parse response body: %w", err)
+	}
+
+	// Check if the transaction is verified
+	verified, ok := response["verified"].(bool)
+	if !ok {
+		return false, fmt.Errorf("response did not contain 'verified' field")
+	}
+
+	return verified, nil
 }
