@@ -1038,6 +1038,12 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "description": "User ID",
+                        "name": "userID",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
                         "description": "Campaign ID",
                         "name": "campaignID",
                         "in": "query"

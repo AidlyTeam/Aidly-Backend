@@ -23,16 +23,15 @@ func (h *PrivateHandler) initDonationsRoutes(root fiber.Router) {
 // @Accept json
 // @Produce json
 // @Param id query string false "Donation ID"
+// @Param userID query string false "User ID"
 // @Param campaignID query string false "Campaign ID"
 // @Param page query string false "Page Number"
 // @Param limit query string false "Limit Per Page"
 // @Success 200 {object} response.BaseResponse{}
 // @Router /private/donation [get]
 func (h *PrivateHandler) GetDonations(c *fiber.Ctx) error {
-	userSession := sessionStore.GetSessionData(c)
-
 	id := c.Query("id")
-	userID := userSession.UserID.String()
+	userID := c.Query("userID")
 	campaignID := c.Query("campaignID")
 	page := c.Query("page")
 	limit := c.Query("limit")
@@ -100,11 +99,10 @@ func (h *PrivateHandler) Donate(c *fiber.Ctx) error {
 		return nil
 	}
 
-	// TODO: TAKE LOOK AT THIS LATER
 	ok, err := h.services.DonationService().VerifyDonationTransaction(
 		c.Context(),
 		newDonation.TransactionID,
-		userSession.WalletAddress, newDonation.CampaignID)
+		userSession.WalletAddress, campaign.WalletAddress)
 	if err != nil {
 		return response.Response(500, err.Error(), nil)
 	}
