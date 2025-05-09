@@ -26,6 +26,7 @@ WHERE
     (sqlc.narg(user_id)::UUID IS NULL OR c.user_id = sqlc.narg(user_id)::UUID) AND
     (sqlc.narg(is_verified)::BOOLEAN IS NULL OR c.is_verified = sqlc.narg(is_verified)::BOOLEAN) AND
     (sqlc.narg(status_type)::TEXT IS NULL OR c.status_type = sqlc.narg(status_type)::TEXT) AND
+    (sqlc.narg(title)::TEXT IS NULL OR c.title = sqlc.narg(title)::TEXT) AND
     c.is_valid = FALSE
 LIMIT @lim OFFSET @off;
 

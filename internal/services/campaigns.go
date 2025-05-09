@@ -32,7 +32,7 @@ func newCampaignService(
 	}
 }
 
-func (s *CampaignService) GetCampaigns(ctx context.Context, id, userID, IsVerified, statusType, page, limit string) ([]domains.Campaign, error) {
+func (s *CampaignService) GetCampaigns(ctx context.Context, id, userID, IsVerified, statusType, title, page, limit string) ([]domains.Campaign, error) {
 	pageNum, err := strconv.Atoi(page)
 	if err != nil || page == "" {
 		pageNum = 1
@@ -57,6 +57,7 @@ func (s *CampaignService) GetCampaigns(ctx context.Context, id, userID, IsVerifi
 	campaigns, err := s.queries.GetCampaigns(ctx, repo.GetCampaignsParams{
 		ID:         s.utilService.ParseNullUUID(id),
 		UserID:     s.utilService.ParseNullUUID(userID),
+		Title:      s.utilService.ParseString(title),
 		IsVerified: isVerifiedSQL,
 		StatusType: s.utilService.ParseString(statusType),
 		Lim:        int32(limitNum),

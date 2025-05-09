@@ -608,6 +608,12 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "description": "Campaign Title",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
                         "description": "Status",
                         "name": "status",
                         "in": "query"

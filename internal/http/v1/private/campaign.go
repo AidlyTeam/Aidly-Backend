@@ -35,6 +35,7 @@ func (h *PrivateHandler) initCampaignsRoutes(root fiber.Router) {
 // @Param id query string false "Campaign ID"
 // @Param userID query string false "User ID"
 // @Param categoryIDList query string false "Category ID List"
+// @Param search query string false "Campaign Title"
 // @Param status query string false "Status"
 // @Param isVerified query string false "Campaign Verifiy"
 // @Param page query string false "Page Number"
@@ -45,12 +46,13 @@ func (h *PrivateHandler) GetCampaigns(c *fiber.Ctx) error {
 	id := c.Query("id")
 	userID := c.Query("userID")
 	categoryIDList := c.Query("categoryIDList")
+	search := c.Query("search")
 	status := c.Query("status")
 	isVerified := c.Query("isVerified")
 	page := c.Query("page")
 	limit := c.Query("limit")
 
-	campaigns, err := h.services.CampaignService().GetCampaigns(c.Context(), id, userID, isVerified, status, page, limit)
+	campaigns, err := h.services.CampaignService().GetCampaigns(c.Context(), id, userID, isVerified, status, search, page, limit)
 	if err != nil {
 		return err
 	}
