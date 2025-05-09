@@ -754,6 +754,10 @@ paths:
         in: query
         name: id
         type: string
+      - description: User ID
+        in: query
+        name: userID
+        type: string
       - description: Campaign ID
         in: query
         name: campaignID

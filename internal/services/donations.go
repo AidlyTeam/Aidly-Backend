@@ -183,7 +183,7 @@ func (s *DonationService) CheckIfUserHasDonated(ctx context.Context, userID uuid
 // VerifyDonationTransaction sends a request to the /wallet/verify endpoint
 func (s *DonationService) VerifyDonationTransaction(ctx context.Context, txID, donatorWalletAddress, campaignWalletAddress string) (bool, error) {
 	// API endpoint URL
-	url := "http://nginx/web3-api/wallet/verify"
+	url := "http://nginx/web3/wallet/verify"
 
 	// Create the request payload
 	requestPayload := map[string]string{
@@ -221,9 +221,9 @@ func (s *DonationService) VerifyDonationTransaction(ctx context.Context, txID, d
 	}
 
 	// Check if the transaction is verified
-	verified, ok := response["verified"].(bool)
+	verified, ok := response["data"].(map[string]interface{})["isValid"].(bool)
 	if !ok {
-		return false, fmt.Errorf("response did not contain 'verified' field")
+		return false, fmt.Errorf("response did not contain 'isValid' field")
 	}
 
 	return verified, nil
