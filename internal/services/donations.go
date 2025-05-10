@@ -193,6 +193,8 @@ func (s *DonationService) VerifyDonationTransaction(ctx context.Context, txID, d
 		"recivedSOL":            recivedSOL,
 	}
 
+	fmt.Println(requestPayload)
+
 	// Convert the payload to JSON
 	payload, err := json.Marshal(requestPayload)
 	if err != nil {
