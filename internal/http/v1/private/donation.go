@@ -102,7 +102,10 @@ func (h *PrivateHandler) Donate(c *fiber.Ctx) error {
 	ok, err := h.services.DonationService().VerifyDonationTransaction(
 		c.Context(),
 		newDonation.TransactionID,
-		userSession.WalletAddress, campaign.WalletAddress)
+		userSession.WalletAddress,
+		campaign.WalletAddress,
+		newDonation.Amount,
+	)
 	if err != nil {
 		return response.Response(500, err.Error(), nil)
 	}

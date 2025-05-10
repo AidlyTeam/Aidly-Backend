@@ -181,7 +181,7 @@ func (s *DonationService) CheckIfUserHasDonated(ctx context.Context, userID uuid
 }
 
 // VerifyDonationTransaction sends a request to the /wallet/verify endpoint
-func (s *DonationService) VerifyDonationTransaction(ctx context.Context, txID, donatorWalletAddress, campaignWalletAddress string) (bool, error) {
+func (s *DonationService) VerifyDonationTransaction(ctx context.Context, txID, donatorWalletAddress, campaignWalletAddress, recivedSOL string) (bool, error) {
 	// API endpoint URL
 	url := "http://nginx/web3/wallet/verify"
 
@@ -190,6 +190,7 @@ func (s *DonationService) VerifyDonationTransaction(ctx context.Context, txID, d
 		"txid":                  txID,
 		"donatorWalletAddress":  donatorWalletAddress,
 		"campaignWalletAddress": campaignWalletAddress,
+		"recivedSOL":            recivedSOL,
 	}
 
 	// Convert the payload to JSON
