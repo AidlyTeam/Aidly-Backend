@@ -1,16 +1,17 @@
 -- name: GetBadges :many
 SELECT 
-    id, name, description, icon_path, donation_threshold, created_at
+    id, symbol, name, description, seller_fee, icon_path, donation_threshold, uri, is_nft, created_at
 FROM 
     t_badges
 WHERE
     (sqlc.narg(id)::UUID IS NULL OR id = sqlc.narg(id)::UUID) AND
+    (sqlc.narg(is_nft)::BOOLEAN IS NULL OR is_nft = sqlc.narg(is_nft)::BOOLEAN) AND
     (sqlc.narg(donation_threshold)::INTEGER IS NULL OR donation_threshold = sqlc.narg(donation_threshold)::INTEGER)
 LIMIT @lim OFFSET @off;
 
 -- name: GetBadgeByID :one
 SELECT 
-    id, name, description, icon_path, donation_threshold, created_at
+    id, symbol, name, description, seller_fee, icon_path, donation_threshold, uri, is_nft, created_at
 FROM 
     t_badges
 WHERE 
@@ -18,7 +19,7 @@ WHERE
 
 -- name: GetBadgeByDonationCount :one
 SELECT 
-    id, name, description, icon_path, donation_threshold, created_at
+    id, symbol, name, description, seller_fee, icon_path, donation_threshold, uri, is_nft, created_at
 FROM 
     t_badges
 WHERE 
@@ -26,18 +27,22 @@ WHERE
 
 -- name: CreateBadge :one
 INSERT INTO t_badges 
-    (name, description, icon_path, donation_threshold)
+    (symbol, name, description, seller_fee, icon_path, uri, is_nft, donation_threshold)
 VALUES 
-    (@name, @description, @icon_path, @donation_threshold)
+    (@symbol, @name, @description, @seller_fee, @icon_path, @uri, @is_nft, @donation_threshold)
 RETURNING id;
 
 -- name: UpdateBadge :exec
 UPDATE
     t_badges
 SET
+    symbol = COALESCE(sqlc.narg(symbol), symbol),
     name = COALESCE(sqlc.narg(name), name),
     description = COALESCE(sqlc.narg(description), description),
+    seller_fee = COALESCE(sqlc.narg(seller_fee), seller_fee),
     icon_path = COALESCE(sqlc.narg(icon_path), icon_path),
+    uri = COALESCE(sqlc.narg(uri), uri),
+    is_nft = COALESCE(sqlc.narg(is_nft), is_nft),
     donation_threshold = COALESCE(sqlc.narg(donation_threshold), donation_threshold)
 WHERE
     id = @badge_id;

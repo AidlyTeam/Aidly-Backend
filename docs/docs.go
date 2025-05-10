@@ -37,6 +37,12 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "description": "Is NFT",
+                        "name": "isNft",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
                         "description": "Page Number",
                         "name": "page",
                         "in": "query"
@@ -91,12 +97,27 @@ const docTemplate = `{
                         "in": "formData"
                     },
                     {
+                        "type": "boolean",
+                        "name": "isNft",
+                        "in": "formData"
+                    },
+                    {
                         "maxLength": 20,
                         "minLength": 3,
                         "type": "string",
                         "name": "name",
                         "in": "formData",
                         "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "name": "sellerFee",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "name": "symbol",
+                        "in": "formData"
                     }
                 ],
                 "responses": {
@@ -183,6 +204,16 @@ const docTemplate = `{
                         "minLength": 3,
                         "type": "string",
                         "name": "name",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "sellerFee",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "name": "symbol",
                         "in": "formData"
                     }
                 ],

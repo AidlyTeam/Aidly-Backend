@@ -70,7 +70,7 @@ func (q *Queries) GetUserBadgeExists(ctx context.Context, arg GetUserBadgeExists
 
 const getUserBadges = `-- name: GetUserBadges :many
 SELECT 
-    b.id, b.name, b.description, b.icon_path, b.donation_threshold, b.created_at
+    b.id, b.symbol, b.name, b.description, b.seller_fee, b.icon_path, b.donation_threshold, b.uri, b.is_nft, b.created_at
 FROM 
     t_user_badges ub
 JOIN 
@@ -90,10 +90,14 @@ func (q *Queries) GetUserBadges(ctx context.Context, userID uuid.UUID) ([]TBadge
 		var i TBadge
 		if err := rows.Scan(
 			&i.ID,
+			&i.Symbol,
 			&i.Name,
 			&i.Description,
+			&i.SellerFee,
 			&i.IconPath,
 			&i.DonationThreshold,
+			&i.Uri,
+			&i.IsNft,
 			&i.CreatedAt,
 		); err != nil {
 			return nil, err
