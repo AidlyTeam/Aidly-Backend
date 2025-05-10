@@ -29,7 +29,7 @@ func newBadgeService(
 }
 
 // GetBadges retrieves badges with optional ID filtering and pagination.
-func (s *BadgeService) GetBadges(ctx context.Context, id, page, limit string) ([]repo.TBadge, error) {
+func (s *BadgeService) GetBadges(ctx context.Context, id, isNft, page, limit string) ([]repo.TBadge, error) {
 	pageNum, err := strconv.Atoi(page)
 	if err != nil || page == "" {
 		pageNum = 1
@@ -40,10 +40,22 @@ func (s *BadgeService) GetBadges(ctx context.Context, id, page, limit string) ([
 		limitNum = s.utilService.D().Limits.DefaultBadgeLimit
 	}
 
+	var isNftBool bool
+	var isNftSQL sql.NullBool
+
+	if isNft != "" {
+		isNftBool, err = strconv.ParseBool(isNft)
+		if err != nil {
+			return nil, serviceErrors.NewServiceErrorWithMessage(serviceErrors.StatusBadRequest, "Invalid isVerified value")
+		}
+		isNftSQL = sql.NullBool{Bool: isNftBool, Valid: true}
+	}
+
 	badges, err := s.queries.GetBadges(ctx, repo.GetBadgesParams{
-		ID:  s.utilService.ParseNullUUID(id),
-		Off: (int32(pageNum) - 1) * int32(limitNum),
-		Lim: int32(limitNum),
+		ID:    s.utilService.ParseNullUUID(id),
+		IsNft: isNftSQL,
+		Off:   (int32(pageNum) - 1) * int32(limitNum),
+		Lim:   int32(limitNum),
 	})
 	if err != nil {
 		return nil, serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrFilteringBadge, err)
@@ -71,7 +83,8 @@ func (s *BadgeService) GetBadgeByID(ctx context.Context, badgeID string) (*repo.
 }
 
 // CreateBadge inserts a new badge into the database.
-func (s *BadgeService) CreateBadge(ctx context.Context, name, description, iconPath string, donationThreshold int32) (*uuid.UUID, error) {
+func (s *BadgeService) CreateBadge(ctx context.Context, symbol, name, description, iconPath string, sellerFee int32, isNft bool, donationThreshold int32) (*uuid.UUID, error) {
+	// Check if the donation threshold is already being used
 	ok, err := s.queries.ExistsBadgeByThreshold(ctx, donationThreshold)
 	if err != nil {
 		return nil, serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrFilteringBadge, err)
@@ -80,10 +93,14 @@ func (s *BadgeService) CreateBadge(ctx context.Context, name, description, iconP
 		return nil, serviceErrors.NewServiceErrorWithMessage(serviceErrors.StatusBadRequest, serviceErrors.ErrThresholdAlreadyBeingUsed)
 	}
 
+	// Create the new badge in the database
 	badgeID, err := s.queries.CreateBadge(ctx, repo.CreateBadgeParams{
+		Symbol:            s.utilService.ParseString(symbol),
 		Name:              name,
 		Description:       s.utilService.ParseString(description),
 		IconPath:          s.utilService.ParseString(iconPath),
+		SellerFee:         sql.NullInt32{Int32: sellerFee, Valid: sellerFee != 0},
+		IsNft:             isNft,
 		DonationThreshold: donationThreshold,
 	})
 	if err != nil {
@@ -94,12 +111,14 @@ func (s *BadgeService) CreateBadge(ctx context.Context, name, description, iconP
 }
 
 // UpdateBadge updates an existing badge.
-func (s *BadgeService) UpdateBadge(ctx context.Context, badgeID, name, description, iconPath string, donationThreshold int32) error {
+func (s *BadgeService) UpdateBadge(ctx context.Context, badgeID, symbol, name, description, iconPath, uri string, sellerFee int32, donationThreshold int32) error {
+	// Parse the badgeID from string to UUID
 	id, err := s.utilService.NParseUUID(badgeID)
 	if err != nil {
 		return err
 	}
 
+	// Check if the donation threshold is already being used
 	ok, err := s.queries.ExistsBadgeByThreshold(ctx, donationThreshold)
 	if err != nil {
 		return serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrFilteringBadge, err)
@@ -108,11 +127,15 @@ func (s *BadgeService) UpdateBadge(ctx context.Context, badgeID, name, descripti
 		return serviceErrors.NewServiceErrorWithMessage(serviceErrors.StatusBadRequest, serviceErrors.ErrThresholdAlreadyBeingUsed)
 	}
 
+	// Update the badge in the database
 	err = s.queries.UpdateBadge(ctx, repo.UpdateBadgeParams{
 		BadgeID:           id,
+		Symbol:            s.utilService.ParseString(symbol),
 		Name:              s.utilService.ParseString(name),
 		Description:       s.utilService.ParseString(description),
 		IconPath:          s.utilService.ParseString(iconPath),
+		Uri:               s.utilService.ParseString(uri),
+		SellerFee:         sql.NullInt32{Int32: sellerFee, Valid: sellerFee != 0},
 		DonationThreshold: sql.NullInt32{Int32: donationThreshold, Valid: donationThreshold != 0},
 	})
 	if err != nil {

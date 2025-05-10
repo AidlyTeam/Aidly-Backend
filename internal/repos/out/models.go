@@ -12,10 +12,14 @@ import (
 
 type TBadge struct {
 	ID                uuid.UUID
+	Symbol            sql.NullString
 	Name              string
 	Description       sql.NullString
+	SellerFee         sql.NullInt32
 	IconPath          sql.NullString
 	DonationThreshold int32
+	Uri               sql.NullString
+	IsNft             bool
 	CreatedAt         sql.NullTime
 }
 

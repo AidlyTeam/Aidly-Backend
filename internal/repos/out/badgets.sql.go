@@ -30,24 +30,32 @@ func (q *Queries) CountBadge(ctx context.Context, id uuid.NullUUID) (int64, erro
 
 const createBadge = `-- name: CreateBadge :one
 INSERT INTO t_badges 
-    (name, description, icon_path, donation_threshold)
+    (symbol, name, description, seller_fee, icon_path, uri, is_nft, donation_threshold)
 VALUES 
-    ($1, $2, $3, $4)
+    ($1, $2, $3, $4, $5, $6, $7, $8)
 RETURNING id
 `
 
 type CreateBadgeParams struct {
+	Symbol            sql.NullString
 	Name              string
 	Description       sql.NullString
+	SellerFee         sql.NullInt32
 	IconPath          sql.NullString
+	Uri               sql.NullString
+	IsNft             bool
 	DonationThreshold int32
 }
 
 func (q *Queries) CreateBadge(ctx context.Context, arg CreateBadgeParams) (uuid.UUID, error) {
 	row := q.db.QueryRowContext(ctx, createBadge,
+		arg.Symbol,
 		arg.Name,
 		arg.Description,
+		arg.SellerFee,
 		arg.IconPath,
+		arg.Uri,
+		arg.IsNft,
 		arg.DonationThreshold,
 	)
 	var id uuid.UUID
@@ -85,7 +93,7 @@ func (q *Queries) ExistsBadgeByThreshold(ctx context.Context, donationThreshold 
 
 const getBadgeByDonationCount = `-- name: GetBadgeByDonationCount :one
 SELECT 
-    id, name, description, icon_path, donation_threshold, created_at
+    id, symbol, name, description, seller_fee, icon_path, donation_threshold, uri, is_nft, created_at
 FROM 
     t_badges
 WHERE 
@@ -97,10 +105,14 @@ func (q *Queries) GetBadgeByDonationCount(ctx context.Context, donationThreshold
 	var i TBadge
 	err := row.Scan(
 		&i.ID,
+		&i.Symbol,
 		&i.Name,
 		&i.Description,
+		&i.SellerFee,
 		&i.IconPath,
 		&i.DonationThreshold,
+		&i.Uri,
+		&i.IsNft,
 		&i.CreatedAt,
 	)
 	return i, err
@@ -108,7 +120,7 @@ func (q *Queries) GetBadgeByDonationCount(ctx context.Context, donationThreshold
 
 const getBadgeByID = `-- name: GetBadgeByID :one
 SELECT 
-    id, name, description, icon_path, donation_threshold, created_at
+    id, symbol, name, description, seller_fee, icon_path, donation_threshold, uri, is_nft, created_at
 FROM 
     t_badges
 WHERE 
@@ -120,10 +132,14 @@ func (q *Queries) GetBadgeByID(ctx context.Context, badgeID uuid.UUID) (TBadge, 
 	var i TBadge
 	err := row.Scan(
 		&i.ID,
+		&i.Symbol,
 		&i.Name,
 		&i.Description,
+		&i.SellerFee,
 		&i.IconPath,
 		&i.DonationThreshold,
+		&i.Uri,
+		&i.IsNft,
 		&i.CreatedAt,
 	)
 	return i, err
@@ -131,17 +147,19 @@ func (q *Queries) GetBadgeByID(ctx context.Context, badgeID uuid.UUID) (TBadge, 
 
 const getBadges = `-- name: GetBadges :many
 SELECT 
-    id, name, description, icon_path, donation_threshold, created_at
+    id, symbol, name, description, seller_fee, icon_path, donation_threshold, uri, is_nft, created_at
 FROM 
     t_badges
 WHERE
     ($1::UUID IS NULL OR id = $1::UUID) AND
-    ($2::INTEGER IS NULL OR donation_threshold = $2::INTEGER)
-LIMIT $4 OFFSET $3
+    ($2::BOOLEAN IS NULL OR is_nft = $2::BOOLEAN) AND
+    ($3::INTEGER IS NULL OR donation_threshold = $3::INTEGER)
+LIMIT $5 OFFSET $4
 `
 
 type GetBadgesParams struct {
 	ID                uuid.NullUUID
+	IsNft             sql.NullBool
 	DonationThreshold sql.NullInt32
 	Off               int32
 	Lim               int32
@@ -150,6 +168,7 @@ type GetBadgesParams struct {
 func (q *Queries) GetBadges(ctx context.Context, arg GetBadgesParams) ([]TBadge, error) {
 	rows, err := q.db.QueryContext(ctx, getBadges,
 		arg.ID,
+		arg.IsNft,
 		arg.DonationThreshold,
 		arg.Off,
 		arg.Lim,
@@ -163,10 +182,14 @@ func (q *Queries) GetBadges(ctx context.Context, arg GetBadgesParams) ([]TBadge,
 		var i TBadge
 		if err := rows.Scan(
 			&i.ID,
+			&i.Symbol,
 			&i.Name,
 			&i.Description,
+			&i.SellerFee,
 			&i.IconPath,
 			&i.DonationThreshold,
+			&i.Uri,
+			&i.IsNft,
 			&i.CreatedAt,
 		); err != nil {
 			return nil, err
@@ -186,27 +209,39 @@ const updateBadge = `-- name: UpdateBadge :exec
 UPDATE
     t_badges
 SET
-    name = COALESCE($1, name),
-    description = COALESCE($2, description),
-    icon_path = COALESCE($3, icon_path),
-    donation_threshold = COALESCE($4, donation_threshold)
+    symbol = COALESCE($1, symbol),
+    name = COALESCE($2, name),
+    description = COALESCE($3, description),
+    seller_fee = COALESCE($4, seller_fee),
+    icon_path = COALESCE($5, icon_path),
+    uri = COALESCE($6, uri),
+    is_nft = COALESCE($7, is_nft),
+    donation_threshold = COALESCE($8, donation_threshold)
 WHERE
-    id = $5
+    id = $9
 `
 
 type UpdateBadgeParams struct {
+	Symbol            sql.NullString
 	Name              sql.NullString
 	Description       sql.NullString
+	SellerFee         sql.NullInt32
 	IconPath          sql.NullString
+	Uri               sql.NullString
+	IsNft             sql.NullBool
 	DonationThreshold sql.NullInt32
 	BadgeID           uuid.UUID
 }
 
 func (q *Queries) UpdateBadge(ctx context.Context, arg UpdateBadgeParams) error {
 	_, err := q.db.ExecContext(ctx, updateBadge,
+		arg.Symbol,
 		arg.Name,
 		arg.Description,
+		arg.SellerFee,
 		arg.IconPath,
+		arg.Uri,
+		arg.IsNft,
 		arg.DonationThreshold,
 		arg.BadgeID,
 	)

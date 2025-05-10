@@ -91,6 +91,10 @@ paths:
         in: query
         name: id
         type: string
+      - description: Is NFT
+        in: query
+        name: isNft
+        type: string
       - description: Page Number
         in: query
         name: page
@@ -129,10 +133,19 @@ paths:
         name: donationThreshold
         type: integer
       - in: formData
+        name: isNft
+        type: boolean
+      - in: formData
         maxLength: 20
         minLength: 3
         name: name
         required: true
+        type: string
+      - in: formData
+        name: sellerFee
+        type: integer
+      - in: formData
+        name: symbol
         type: string
       produces:
       - application/json
@@ -211,6 +224,12 @@ paths:
         maxLength: 20
         minLength: 3
         name: name
+        type: string
+      - in: formData
+        name: sellerFee
+        type: integer
+      - in: formData
+        name: symbol
         type: string
       produces:
       - application/json

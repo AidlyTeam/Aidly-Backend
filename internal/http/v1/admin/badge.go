@@ -5,6 +5,7 @@ import (
 
 	dto "github.com/AidlyTeam/Aidly-Backend/internal/http/dtos"
 	"github.com/AidlyTeam/Aidly-Backend/internal/http/response"
+	"github.com/AidlyTeam/Aidly-Backend/pkg/paths"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -16,9 +17,6 @@ func (h *AdminHandler) initBadgeRoutes(root fiber.Router) {
 	badge.Post("/", h.CreateBadge)
 	badge.Put("/:badgeID", h.UpdateBadge)
 	badge.Delete("/:badgeID", h.DeleteBadge)
-
-	// TODO: CREATE BADGE JSON AND SEND IT TO A USER ACCORDINGLY. NEED USERS DONATION COUNT FOR THIS BADGE SYSTEM
-	// MAKE ORDER IN BADGE AND IN CODE YOU WILL SEND IT ALGORITHMYLICLY
 }
 
 // @Tags Badge
@@ -27,16 +25,18 @@ func (h *AdminHandler) initBadgeRoutes(root fiber.Router) {
 // @Accept json
 // @Produce json
 // @Param id query string false "Badge ID"
+// @Param isNft query string false "Is NFT"
 // @Param page query string false "Page Number"
 // @Param limit query string false "Limit Per Page"
 // @Success 200 {object} response.BaseResponse{}
 // @Router /admin/badge [get]
 func (h *AdminHandler) GetBadges(c *fiber.Ctx) error {
 	id := c.Query("id")
+	isNft := c.Query("isNft")
 	page := c.Query("page")
 	limit := c.Query("limit")
 
-	badges, err := h.services.BadgeService().GetBadges(c.Context(), id, page, limit)
+	badges, err := h.services.BadgeService().GetBadges(c.Context(), id, isNft, page, limit)
 	if err != nil {
 		return err
 	}
@@ -44,7 +44,6 @@ func (h *AdminHandler) GetBadges(c *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-
 	badgeViews := h.dtoManager.BadgeManager().ToBadgeViews(badges, count)
 
 	return response.Response(200, "Badges fetched successfully", badgeViews)
@@ -96,12 +95,21 @@ func (h *AdminHandler) CreateBadge(c *fiber.Ctx) error {
 
 	id, err := h.services.BadgeService().CreateBadge(
 		c.Context(),
+		badgeDTO.Symbol,
 		badgeDTO.Name,
 		badgeDTO.Description,
 		imagePath,
+		badgeDTO.SellerFee,
+		badgeDTO.IsNft,
 		badgeDTO.DonationThreshold,
 	)
 	if err != nil {
+		return err
+	}
+
+	uri := paths.CreateURI(h.config.Application.Https, id.String(), h.config.Application.Site)
+
+	if err := h.services.BadgeService().UpdateBadge(c.Context(), id.String(), "", "", "", "", uri, 0, 0); err != nil {
 		return err
 	}
 
@@ -146,9 +154,12 @@ func (h *AdminHandler) UpdateBadge(c *fiber.Ctx) error {
 	if err := h.services.BadgeService().UpdateBadge(
 		c.Context(),
 		badgeID,
+		badgeDTO.Symbol,
 		badgeDTO.Name,
 		badgeDTO.Description,
 		imagePath,
+		"",
+		badgeDTO.SellerFee,
 		badgeDTO.DonationThreshold,
 	); err != nil {
 		return err

@@ -14,10 +14,14 @@ func NewBadgeDTOManager() BadgeDTOManager {
 // BadgeView represents the structure of a badge in responses
 type BadgeView struct {
 	ID          string `json:"id"`
+	Symbol      string `json:"symbol"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	IconPath    string `json:"iconPath"`
+	Uri         string `json:"uri"`
+	SellerFee   int32  `json:"sellerFee"`
 	Threshold   int32  `json:"threshold"`
+	IsNft       bool   `json:"isNft"`
 }
 
 type BadgeViews struct {
@@ -33,8 +37,12 @@ func (BadgeDTOManager) ToBadgeView(badge *repo.TBadge) *BadgeView {
 
 	return &BadgeView{
 		ID:          badge.ID.String(),
+		Symbol:      badge.Symbol.String,
 		Name:        badge.Name,
 		Description: badge.Description.String,
+		SellerFee:   badge.SellerFee.Int32,
+		Uri:         badge.Uri.String,
+		IsNft:       badge.IsNft,
 		IconPath:    badge.IconPath.String,
 		Threshold:   badge.DonationThreshold,
 	}
@@ -51,14 +59,19 @@ func (m *BadgeDTOManager) ToBadgeViews(badges []repo.TBadge, count int64) *Badge
 
 // BadgeCreateDTO is used to create a new badge
 type BadgeCreateDTO struct {
+	Symbol            string `json:"symbol"`
 	Name              string `json:"name" validate:"required,min=3,max=20"`
 	Description       string `json:"description" validate:"required,min=5,max=100"`
+	SellerFee         int32  `json:"sellerFee"`
 	DonationThreshold int32  `json:"donationThreshold"`
+	IsNft             bool   `json:"isNft"`
 }
 
 // BadgeUpdateDTO is used to update an existing badge
 type BadgeUpdateDTO struct {
+	Symbol            string `json:"symbol"`
 	Name              string `json:"name" validate:"omitempty,min=3,max=20"`
 	Description       string `json:"description" validate:"omitempty,min=5,max=100"`
+	SellerFee         int32  `json:"sellerFee"`
 	DonationThreshold int32  `json:"donationThreshold" validate:"omitempty"`
 }
