@@ -900,6 +900,27 @@ paths:
       summary: Auth
       tags:
       - Auth
+  /public/badge/{badgeID}:
+    get:
+      consumes:
+      - application/json
+      description: Get NFT Metadata
+      parameters:
+      - description: Badge ID
+        in: path
+        name: badgeID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.BaseResponse'
+      summary: Get Badge NFT
+      tags:
+      - Badge
   /public/login:
     post:
       consumes:
