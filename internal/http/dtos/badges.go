@@ -11,6 +11,38 @@ func NewBadgeDTOManager() BadgeDTOManager {
 	return BadgeDTOManager{}
 }
 
+// MetadataAttributeView represents an individual attribute in NFT metadata
+type MetadataAttributeView struct {
+	TraitType string `json:"trait_type"`
+	Value     string `json:"value"`
+}
+
+// MetadataView represents the structure of an NFT metadata in responses
+type MetadataView struct {
+	Name        string                  `json:"name"`
+	Symbol      string                  `json:"symbol"`
+	Description string                  `json:"description"`
+	Image       string                  `json:"image"`
+	URI         string                  `json:"uri"`
+	Attributes  []MetadataAttributeView `json:"attributes,omitempty"`
+	SellerFee   int                     `json:"seller_fee_basis_points"`
+}
+
+func (BadgeDTOManager) ToMetadataView(badge *repo.TBadge) *MetadataView {
+	if badge == nil || !badge.IsNft {
+		return nil
+	}
+
+	return &MetadataView{
+		Name:        badge.Name,
+		Symbol:      badge.Symbol.String,
+		Description: badge.Description.String,
+		Image:       badge.IconPath.String,
+		URI:         badge.Uri.String,
+		SellerFee:   int(badge.SellerFee.Int32),
+	}
+}
+
 // BadgeView represents the structure of a badge in responses
 type BadgeView struct {
 	ID          string `json:"id"`

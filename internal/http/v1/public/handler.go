@@ -39,4 +39,5 @@ func (h *PublicHandler) Init(router fiber.Router) {
 	})
 
 	h.initUserRoutes(root)
+	h.initBadgeRoutes(root)
 }

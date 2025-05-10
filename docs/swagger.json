@@ -1248,6 +1248,38 @@
                 }
             }
         },
+        "/public/badge/{badgeID}": {
+            "get": {
+                "description": "Get NFT Metadata",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Badge"
+                ],
+                "summary": "Get Badge NFT",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Badge ID",
+                        "name": "badgeID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/public/login": {
             "post": {
                 "description": "Login",

@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"io"
 	"mime/multipart"
 	"os"
@@ -88,9 +89,10 @@ func (s *uploadService) DeleteFile(path string) error {
 func (s *uploadService) CreatePath(fileName string) string {
 	ext := filepath.Ext(fileName)
 
+	fmt.Println(ext, "dsa")
 	var path string
 	if ext != "" {
-		path = s.UploadDir() + "/" + uuid.New().String() + "." + ext
+		path = s.UploadDir() + "/" + uuid.New().String() + ext
 	} else {
 		path = s.UploadDir() + "/" + uuid.New().String()
 	}
