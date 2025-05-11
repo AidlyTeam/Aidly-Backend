@@ -41,9 +41,14 @@ const (
 	ErrCategoryAlreadyAdded   = "CATEGORY_ALREADY_ADDED_INTO_CAMPAIGN"
 	ErrUserBadgeAlreadyExists = "USER_BADGE_ALREADY_EXISTS"
 	ErrNotValidWalletAddress  = "NOT_VALID_WALLET_ADDRESS"
+	ErrImageRequried          = "IMAGE_REQUIRED"
 
 	// Donate
 	ErrInvalidTransactionInfo = "INVALID_TRANSACTION_INFO"
+
+	// Badge
+	ErrBadgeIsNotNFT    = "BADGE_IS_NOT_NFT"
+	ErrNFTAlreadyMinted = "NFT_IS_ALREADY_MINTED"
 )
 
 // 500
@@ -69,6 +74,7 @@ const (
 	ErrUpdatingUsers      = "ERROR_UPDATING_USERS"
 	ErrUpdatingCategories = "ERROR_UPDATING_CATEGORIES"
 	ErrUpdatingBadge      = "ERROR_UPDATING_BADGE"
+	ErrChangingMinted     = "ERROR_WHILE_CHANGING_IS_MINTED"
 
 	ErrDeletingCampaigns        = "ERROR_DELETING_CAMPAIGNS"
 	ErrDeletingDonations        = "ERROR_DELETING_DONATIONS"

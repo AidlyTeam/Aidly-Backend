@@ -33,7 +33,7 @@ type UserProfileView struct {
 	Badges        *BadgeViews `json:"badges"`
 }
 
-func (UserDTOManager) ToUserProfile(userData sessionStore.SessionData, badges []repo.TBadge, badgeCount int64) UserProfileView {
+func (UserDTOManager) ToUserProfile(userData sessionStore.SessionData, badges []repo.GetUserBadgesRow, badgeCount int64) UserProfileView {
 	badgeManager := new(BadgeDTOManager)
 
 	return UserProfileView{
@@ -43,7 +43,7 @@ func (UserDTOManager) ToUserProfile(userData sessionStore.SessionData, badges []
 		Name:          userData.Name,
 		Surname:       userData.Surname,
 		WalletAddress: userData.WalletAddress,
-		Badges:        badgeManager.ToBadgeViews(badges, badgeCount),
+		Badges:        badgeManager.ToUserBadgeViews(badges, badgeCount),
 	}
 }
 
