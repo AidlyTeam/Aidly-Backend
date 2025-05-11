@@ -47,6 +47,41 @@ func (q *Queries) CountUserBadge(ctx context.Context, userID uuid.UUID) (int64, 
 	return count, err
 }
 
+const getUserBadge = `-- name: GetUserBadge :one
+SELECT 
+    b.id, b.symbol, b.name, b.description, b.seller_fee, b.icon_path, b.donation_threshold, b.uri, b.is_nft, b.created_at
+FROM 
+    t_user_badges ub
+JOIN 
+    t_badges b ON ub.badge_id = b.id
+WHERE 
+    ub.user_id = $1 AND
+    b.id = $2
+`
+
+type GetUserBadgeParams struct {
+	UserID  uuid.UUID
+	BadgeID uuid.UUID
+}
+
+func (q *Queries) GetUserBadge(ctx context.Context, arg GetUserBadgeParams) (TBadge, error) {
+	row := q.db.QueryRowContext(ctx, getUserBadge, arg.UserID, arg.BadgeID)
+	var i TBadge
+	err := row.Scan(
+		&i.ID,
+		&i.Symbol,
+		&i.Name,
+		&i.Description,
+		&i.SellerFee,
+		&i.IconPath,
+		&i.DonationThreshold,
+		&i.Uri,
+		&i.IsNft,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const getUserBadgeExists = `-- name: GetUserBadgeExists :one
 SELECT 
     EXISTS (

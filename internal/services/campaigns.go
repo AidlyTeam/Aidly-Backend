@@ -54,7 +54,7 @@ func (s *CampaignService) GetCampaigns(ctx context.Context, id, userID, IsVerifi
 		isVerifiedSQL = sql.NullBool{Bool: isVerifiedBool, Valid: true}
 	}
 
-	campaigns, err := s.queries.GetCampaigns(ctx, repo.GetCampaignsParams{
+	params := repo.GetCampaignsParams{
 		ID:         s.utilService.ParseNullUUID(id),
 		UserID:     s.utilService.ParseNullUUID(userID),
 		Title:      s.utilService.ParseString(title),
@@ -62,7 +62,8 @@ func (s *CampaignService) GetCampaigns(ctx context.Context, id, userID, IsVerifi
 		StatusType: s.utilService.ParseString(statusType),
 		Lim:        int32(limitNum),
 		Off:        (int32(pageNum) - 1) * int32(limitNum),
-	})
+	}
+	campaigns, err := s.queries.GetCampaigns(ctx, params)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, serviceErrors.NewServiceErrorWithMessage(serviceErrors.StatusNotFound, serviceErrors.ErrCampaignNotFound)

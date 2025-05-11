@@ -582,6 +582,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/private/badge/mint/{badgeID}": {
+            "get": {
+                "description": "Mints an NFT for a specific badge owned by the user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Badge"
+                ],
+                "summary": "Mint badge NFT",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Badge ID",
+                        "name": "badgeID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/private/badge/user/": {
             "get": {
                 "description": "Retrieves all badges owned by a specific user",

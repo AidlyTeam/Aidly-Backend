@@ -8,6 +8,17 @@ JOIN
 WHERE 
     ub.user_id = @user_id;
 
+-- name: GetUserBadge :one
+SELECT 
+    b.id, b.symbol, b.name, b.description, b.seller_fee, b.icon_path, b.donation_threshold, b.uri, b.is_nft, b.created_at
+FROM 
+    t_user_badges ub
+JOIN 
+    t_badges b ON ub.badge_id = b.id
+WHERE 
+    ub.user_id = @user_id AND
+    b.id = @badge_id;
+
 -- name: AddUserBadge :one
 INSERT INTO t_user_badges 
     (user_id, badge_id)
