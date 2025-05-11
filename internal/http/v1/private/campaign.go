@@ -103,6 +103,9 @@ func (h *PrivateHandler) CreateCampaign(c *fiber.Ctx) error {
 
 	imageFile, err := c.FormFile("imageFile")
 	if err != nil {
+		if strings.Contains(err.Error(), "there is no uploaded file associated with the given key") {
+			return response.Response(400, serviceErrors.ErrImageRequried, nil)
+		}
 		return err
 	}
 

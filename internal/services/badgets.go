@@ -219,11 +219,11 @@ func (s *BadgeService) UserBadgeExists(ctx context.Context, userID, badgeID uuid
 }
 
 // Get all badges a user has
-func (s *BadgeService) GetUserBadges(ctx context.Context, userID uuid.UUID) ([]repo.TBadge, error) {
+func (s *BadgeService) GetUserBadges(ctx context.Context, userID uuid.UUID) ([]repo.GetUserBadgesRow, error) {
 	return s.queries.GetUserBadges(ctx, userID)
 }
 
-func (s *BadgeService) GetUserBadge(ctx context.Context, badgeID string, userID uuid.UUID) (*repo.TBadge, error) {
+func (s *BadgeService) GetUserBadge(ctx context.Context, badgeID string, userID uuid.UUID) (*repo.GetUserBadgeRow, error) {
 	badgeUUID, err := s.utilService.NParseUUID(badgeID)
 	if err != nil {
 		return nil, err
@@ -271,6 +271,17 @@ func (s *BadgeService) CheckBadgeAndAdd(ctx context.Context, userID uuid.UUID, c
 	}
 
 	return &id, nil
+}
+
+func (s *BadgeService) ChangeIsMinted(ctx context.Context, userID, badgeID uuid.UUID) error {
+	if err := s.queries.ChangeIsMinted(ctx, repo.ChangeIsMintedParams{
+		UserID:  userID,
+		BadgeID: badgeID,
+	}); err != nil {
+		return serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrChangingMinted, err)
+	}
+
+	return nil
 }
 
 func (s *BadgeService) MintNFT(ctx context.Context, name, symbol, uri string, sellerFee int32, publicKey string) (map[string]interface{}, error) {

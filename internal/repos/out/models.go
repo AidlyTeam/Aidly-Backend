@@ -80,5 +80,6 @@ type TUserBadge struct {
 	ID        uuid.UUID
 	UserID    uuid.UUID
 	BadgeID   uuid.UUID
+	IsMinted  bool
 	AwardedAt sql.NullTime
 }

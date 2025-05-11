@@ -7,6 +7,7 @@ package repo
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/google/uuid"
 )
@@ -31,6 +32,25 @@ func (q *Queries) AddUserBadge(ctx context.Context, arg AddUserBadgeParams) (uui
 	return id, err
 }
 
+const changeIsMinted = `-- name: ChangeIsMinted :exec
+UPDATE
+    t_user_badges
+SET
+    is_minted = COALESCE(TRUE, is_minted)
+WHERE
+    user_id = $1 AND badge_id = $2
+`
+
+type ChangeIsMintedParams struct {
+	UserID  uuid.UUID
+	BadgeID uuid.UUID
+}
+
+func (q *Queries) ChangeIsMinted(ctx context.Context, arg ChangeIsMintedParams) error {
+	_, err := q.db.ExecContext(ctx, changeIsMinted, arg.UserID, arg.BadgeID)
+	return err
+}
+
 const countUserBadge = `-- name: CountUserBadge :one
 SELECT
     COUNT(*)
@@ -49,7 +69,7 @@ func (q *Queries) CountUserBadge(ctx context.Context, userID uuid.UUID) (int64, 
 
 const getUserBadge = `-- name: GetUserBadge :one
 SELECT 
-    b.id, b.symbol, b.name, b.description, b.seller_fee, b.icon_path, b.donation_threshold, b.uri, b.is_nft, b.created_at
+    b.id, b.symbol, b.name, b.description, b.seller_fee, b.icon_path, b.donation_threshold, b.uri, b.is_nft, ub.is_minted, b.created_at
 FROM 
     t_user_badges ub
 JOIN 
@@ -64,9 +84,23 @@ type GetUserBadgeParams struct {
 	BadgeID uuid.UUID
 }
 
-func (q *Queries) GetUserBadge(ctx context.Context, arg GetUserBadgeParams) (TBadge, error) {
+type GetUserBadgeRow struct {
+	ID                uuid.UUID
+	Symbol            sql.NullString
+	Name              string
+	Description       sql.NullString
+	SellerFee         sql.NullInt32
+	IconPath          sql.NullString
+	DonationThreshold int32
+	Uri               sql.NullString
+	IsNft             bool
+	IsMinted          bool
+	CreatedAt         sql.NullTime
+}
+
+func (q *Queries) GetUserBadge(ctx context.Context, arg GetUserBadgeParams) (GetUserBadgeRow, error) {
 	row := q.db.QueryRowContext(ctx, getUserBadge, arg.UserID, arg.BadgeID)
-	var i TBadge
+	var i GetUserBadgeRow
 	err := row.Scan(
 		&i.ID,
 		&i.Symbol,
@@ -77,6 +111,7 @@ func (q *Queries) GetUserBadge(ctx context.Context, arg GetUserBadgeParams) (TBa
 		&i.DonationThreshold,
 		&i.Uri,
 		&i.IsNft,
+		&i.IsMinted,
 		&i.CreatedAt,
 	)
 	return i, err
@@ -105,7 +140,7 @@ func (q *Queries) GetUserBadgeExists(ctx context.Context, arg GetUserBadgeExists
 
 const getUserBadges = `-- name: GetUserBadges :many
 SELECT 
-    b.id, b.symbol, b.name, b.description, b.seller_fee, b.icon_path, b.donation_threshold, b.uri, b.is_nft, b.created_at
+    b.id, b.symbol, b.name, b.description, b.seller_fee, b.icon_path, b.donation_threshold, b.uri, b.is_nft, ub.is_minted, b.created_at
 FROM 
     t_user_badges ub
 JOIN 
@@ -114,15 +149,29 @@ WHERE
     ub.user_id = $1
 `
 
-func (q *Queries) GetUserBadges(ctx context.Context, userID uuid.UUID) ([]TBadge, error) {
+type GetUserBadgesRow struct {
+	ID                uuid.UUID
+	Symbol            sql.NullString
+	Name              string
+	Description       sql.NullString
+	SellerFee         sql.NullInt32
+	IconPath          sql.NullString
+	DonationThreshold int32
+	Uri               sql.NullString
+	IsNft             bool
+	IsMinted          bool
+	CreatedAt         sql.NullTime
+}
+
+func (q *Queries) GetUserBadges(ctx context.Context, userID uuid.UUID) ([]GetUserBadgesRow, error) {
 	rows, err := q.db.QueryContext(ctx, getUserBadges, userID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []TBadge
+	var items []GetUserBadgesRow
 	for rows.Next() {
-		var i TBadge
+		var i GetUserBadgesRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Symbol,
@@ -133,6 +182,7 @@ func (q *Queries) GetUserBadges(ctx context.Context, userID uuid.UUID) ([]TBadge
 			&i.DonationThreshold,
 			&i.Uri,
 			&i.IsNft,
+			&i.IsMinted,
 			&i.CreatedAt,
 		); err != nil {
 			return nil, err

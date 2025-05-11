@@ -54,6 +54,7 @@ type BadgeView struct {
 	SellerFee   int32  `json:"sellerFee"`
 	Threshold   int32  `json:"threshold"`
 	IsNft       bool   `json:"isNft"`
+	IsMinted    bool   `json:"isMinted"`
 }
 
 type BadgeViews struct {
@@ -85,6 +86,35 @@ func (m *BadgeDTOManager) ToBadgeViews(badges []repo.TBadge, count int64) *Badge
 	var badgeViews []BadgeView
 	for _, badge := range badges {
 		badgeViews = append(badgeViews, *m.ToBadgeView(&badge))
+	}
+	return &BadgeViews{Badges: badgeViews, TotalCount: int(count)}
+}
+
+// ToBadgeView transforms domain badge to BadgeView
+func (BadgeDTOManager) ToUserBadgeView(badge *repo.GetUserBadgesRow) *BadgeView {
+	if badge == nil {
+		return nil
+	}
+
+	return &BadgeView{
+		ID:          badge.ID.String(),
+		Symbol:      badge.Symbol.String,
+		Name:        badge.Name,
+		Description: badge.Description.String,
+		SellerFee:   badge.SellerFee.Int32,
+		Uri:         badge.Uri.String,
+		IsNft:       badge.IsNft,
+		IconPath:    badge.IconPath.String,
+		Threshold:   badge.DonationThreshold,
+		IsMinted:    badge.IsMinted,
+	}
+}
+
+// ToBadgeViews transforms list of badges to BadgeViews
+func (m *BadgeDTOManager) ToUserBadgeViews(badges []repo.GetUserBadgesRow, count int64) *BadgeViews {
+	var badgeViews []BadgeView
+	for _, badge := range badges {
+		badgeViews = append(badgeViews, *m.ToUserBadgeView(&badge))
 	}
 	return &BadgeViews{Badges: badgeViews, TotalCount: int(count)}
 }

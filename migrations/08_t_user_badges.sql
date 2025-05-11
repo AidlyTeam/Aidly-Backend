@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS t_user_badges (
     id UUID PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),
     user_id UUID NOT NULL,
     badge_id UUID NOT NULL,
+    is_minted BOOLEAN NOT NULL DEFAULT FALSE,
     awarded_at TIMESTAMPTZ DEFAULT NOW(),
 
     CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES t_users(id) ON DELETE CASCADE,
