@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS t_donations (
     campaign_id UUID NOT NULL,
     transaction_id VARCHAR(255) NOT NULL,
     user_id UUID NOT NULL,
-    amount DECIMAL(10, 2) NOT NULL,
+    amount DECIMAL(18, 8) NOT NULL,
     donation_date TIMESTAMPTZ DEFAULT NOW(),
 
     CONSTRAINT fk_campaign FOREIGN KEY (campaign_id) REFERENCES t_campaigns(id) ON DELETE CASCADE,

@@ -123,6 +123,8 @@ func (s *DonationService) CreateDonation(ctx context.Context, userID uuid.UUID, 
 	// Step 3: Calculate new raised amount and update campaign validity
 	newRaisedAmount := raisedAmount.Add(amountDec)
 
+	fmt.Println(newRaisedAmount, amountStr, amountDec, "1")
+
 	// Step 4: Update the campaign raised amount and validity status
 	if err := qtx.UpdateCampaign(ctx, repo.UpdateCampaignParams{
 		CampaignID:   campaign.ID,
