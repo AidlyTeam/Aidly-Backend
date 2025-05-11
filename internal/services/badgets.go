@@ -292,13 +292,14 @@ func (s *BadgeService) MintNFT(ctx context.Context, name, symbol, uri string, se
 	}
 
 	// HTTP POST isteği gönder
-	client := &http.Client{Timeout: 30 * time.Second}
+	client := &http.Client{Timeout: 120 * time.Second}
 	resp, err := client.Post(url, "application/json", bytes.NewBuffer(payload))
 	if err != nil {
 		return nil, fmt.Errorf("failed to send request to API: %w", err)
 	}
 	defer resp.Body.Close()
 
+	fmt.Println(resp)
 	// Başarılı durum kontrolü
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("received non-OK response status: %s", resp.Status)

@@ -1,8 +1,6 @@
 package private
 
 import (
-	"fmt"
-
 	serviceErrors "github.com/AidlyTeam/Aidly-Backend/internal/errors"
 	dto "github.com/AidlyTeam/Aidly-Backend/internal/http/dtos"
 	"github.com/AidlyTeam/Aidly-Backend/internal/http/response"
@@ -114,8 +112,6 @@ func (h *PrivateHandler) Donate(c *fiber.Ctx) error {
 	if !ok {
 		return response.Response(400, serviceErrors.ErrInvalidTransactionInfo, nil)
 	}
-
-	fmt.Println(newDonation.Amount, "Selam")
 
 	donationID, err := h.services.DonationService().CreateDonation(
 		c.Context(),

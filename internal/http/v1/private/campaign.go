@@ -130,6 +130,10 @@ func (h *PrivateHandler) CreateCampaign(c *fiber.Ctx) error {
 		return err
 	}
 
+	if err := h.services.CampaignService().UpdateCampaignValidity(c.Context(), campaignID.String()); err != nil {
+		return err
+	}
+
 	if err := h.services.UploadService().SaveImage(imageFile, imagePath); err != nil {
 		return err
 	}
