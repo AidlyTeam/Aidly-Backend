@@ -27,7 +27,7 @@ WHERE
     (sqlc.narg(is_verified)::BOOLEAN IS NULL OR c.is_verified = sqlc.narg(is_verified)::BOOLEAN) AND
     (sqlc.narg(status_type)::TEXT IS NULL OR c.status_type = sqlc.narg(status_type)::TEXT) AND
     (sqlc.narg(title)::TEXT IS NULL OR c.title ILIKE '%' || sqlc.narg(title)::TEXT || '%') AND
-    c.is_valid = FALSE
+    c.is_valid = TRUE
 LIMIT @lim OFFSET @off;
 
 

@@ -456,6 +456,27 @@ paths:
       summary: Get Donation by ID
       tags:
       - Donation
+  /private/badge/mint/{badgeID}:
+    get:
+      consumes:
+      - application/json
+      description: Mints an NFT for a specific badge owned by the user
+      parameters:
+      - description: Badge ID
+        in: path
+        name: badgeID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.BaseResponse'
+      summary: Mint badge NFT
+      tags:
+      - Badge
   /private/badge/user/:
     get:
       consumes:

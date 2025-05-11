@@ -1,9 +1,14 @@
 package services
 
 import (
+	"bytes"
 	"context"
 	"database/sql"
+	"encoding/json"
+	"fmt"
+	"net/http"
 	"strconv"
+	"time"
 
 	serviceErrors "github.com/AidlyTeam/Aidly-Backend/internal/errors"
 	repo "github.com/AidlyTeam/Aidly-Backend/internal/repos/out"
@@ -218,6 +223,26 @@ func (s *BadgeService) GetUserBadges(ctx context.Context, userID uuid.UUID) ([]r
 	return s.queries.GetUserBadges(ctx, userID)
 }
 
+func (s *BadgeService) GetUserBadge(ctx context.Context, badgeID string, userID uuid.UUID) (*repo.TBadge, error) {
+	badgeUUID, err := s.utilService.NParseUUID(badgeID)
+	if err != nil {
+		return nil, err
+	}
+
+	badge, err := s.queries.GetUserBadge(ctx, repo.GetUserBadgeParams{
+		UserID:  userID,
+		BadgeID: badgeUUID,
+	})
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, serviceErrors.NewServiceErrorWithMessage(serviceErrors.StatusNotFound, serviceErrors.ErrBadgeNotFound)
+		}
+		return nil, serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrFilteringBadge, err)
+	}
+
+	return &badge, nil
+}
+
 // Remove a badge from a user
 func (s *BadgeService) RemoveUserBadge(ctx context.Context, userID, badgeID uuid.UUID) error {
 	return s.queries.RemoveUserBadge(ctx, repo.RemoveUserBadgeParams{
@@ -246,4 +271,44 @@ func (s *BadgeService) CheckBadgeAndAdd(ctx context.Context, userID uuid.UUID, c
 	}
 
 	return &id, nil
+}
+
+func (s *BadgeService) MintNFT(ctx context.Context, name, symbol, uri string, sellerFee int32, publicKey string) (map[string]interface{}, error) {
+	url := "http://nginx/web3/nft/mint"
+
+	// JSON body payload
+	requestPayload := map[string]interface{}{
+		"name":      name,
+		"symbol":    symbol,
+		"uri":       uri,
+		"sellerFee": sellerFee,
+		"publicKey": publicKey,
+	}
+
+	// JSON'a çevir
+	payload, err := json.Marshal(requestPayload)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal request payload: %w", err)
+	}
+
+	// HTTP POST isteği gönder
+	client := &http.Client{Timeout: 30 * time.Second}
+	resp, err := client.Post(url, "application/json", bytes.NewBuffer(payload))
+	if err != nil {
+		return nil, fmt.Errorf("failed to send request to API: %w", err)
+	}
+	defer resp.Body.Close()
+
+	// Başarılı durum kontrolü
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("received non-OK response status: %s", resp.Status)
+	}
+
+	// Response'u çözümle
+	var response map[string]interface{}
+	if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
+		return nil, fmt.Errorf("failed to decode response: %w", err)
+	}
+
+	return response, nil
 }

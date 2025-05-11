@@ -218,8 +218,8 @@ WHERE
     ($2::UUID IS NULL OR c.user_id = $2::UUID) AND
     ($3::BOOLEAN IS NULL OR c.is_verified = $3::BOOLEAN) AND
     ($4::TEXT IS NULL OR c.status_type = $4::TEXT) AND
-    ($5::TEXT IS NULL OR c.title = $5::TEXT) AND
-    c.is_valid = FALSE
+    ($5::TEXT IS NULL OR c.title ILIKE '%' || $5::TEXT || '%') AND
+    c.is_valid = TRUE
 LIMIT $7 OFFSET $6
 `
 

@@ -10,6 +10,7 @@ func (h *PrivateHandler) initBadgeRoutes(root fiber.Router) {
 	badge := root.Group("/badge")
 
 	badge.Get("/user", h.GetUserBadges)
+	badge.Get("/mint/:badgeID", h.MintNft)
 }
 
 // @Tags Badge
@@ -34,4 +35,37 @@ func (h *PrivateHandler) GetUserBadges(c *fiber.Ctx) error {
 	badgeViews := h.dtoManager.BadgeManager().ToBadgeViews(badges, count)
 
 	return response.Response(200, "User badges fetched successfully", badgeViews)
+}
+
+// @Tags Badge
+// @Summary Mint badge NFT
+// @Description Mints an NFT for a specific badge owned by the user
+// @Accept json
+// @Produce json
+// @Param badgeID path string true "Badge ID"
+// @Success 200 {object} response.BaseResponse{}
+// @Router /private/badge/mint/{badgeID} [get]
+func (h *PrivateHandler) MintNft(c *fiber.Ctx) error {
+	userSession := sessionStore.GetSessionData(c)
+
+	badgeID := c.Params("badgeID")
+
+	userBadge, err := h.services.BadgeService().GetUserBadge(c.Context(), badgeID, userSession.UserID)
+	if err != nil {
+		return err
+	}
+
+	resp, err := h.services.BadgeService().MintNFT(
+		c.Context(),
+		userBadge.Name,
+		userBadge.Symbol.String,
+		userBadge.Uri.String,
+		userBadge.SellerFee.Int32,
+		userSession.WalletAddress,
+	)
+	if err != nil {
+		return err
+	}
+
+	return response.Response(200, "NFT Minted", resp)
 }
