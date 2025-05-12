@@ -1,16 +1,17 @@
 -- name: GetUsers :many
 SELECT 
-    id, role_id, wallet_address, name, surname, is_default, created_at
+    id, role_id, wallet_address, email, name, surname, is_default, created_at
 FROM 
     t_users
 WHERE
     (sqlc.narg(id)::UUID IS NULL OR id = sqlc.narg(id)::UUID) AND
+    (sqlc.narg(email)::TEXT IS NULL OR email = sqlc.narg(email)::TEXT) AND
     (sqlc.narg(wallet_address)::TEXT IS NULL OR wallet_address = sqlc.narg(wallet_address)::TEXT)
 LIMIT @lim OFFSET @off;
 
 -- name: GetUserByID :one
 SELECT 
-    id, role_id, wallet_address, name, surname, is_default, created_at
+    id, role_id, wallet_address, email, name, surname, is_default, created_at
 FROM 
     t_users
 WHERE 
@@ -18,7 +19,15 @@ WHERE
 
 -- name: GetUserByWalletAddress :one
 SELECT 
-    id, role_id, wallet_address, name, surname, is_default, created_at
+    id, role_id, wallet_address, email, name, surname, is_default, created_at
+FROM 
+    t_users 
+WHERE 
+    wallet_address = @wallet_address;
+
+-- name: GetUserByEmail :one
+SELECT 
+    id, role_id, wallet_address, email, name, surname, is_default, created_at
 FROM 
     t_users 
 WHERE 
@@ -26,7 +35,7 @@ WHERE
 
 -- name: GetDefaultUser :one
 SELECT 
-    id, role_id, wallet_address, name, surname, is_default, created_at
+    id, role_id, wallet_address, email, name, surname, is_default, created_at
 FROM 
     t_users 
 WHERE 
@@ -34,9 +43,9 @@ WHERE
 
 -- name: CreateUser :one
 INSERT INTO t_users 
-    (role_id, name, surname, wallet_address, is_default, created_at)
+    (role_id, name, surname, email, wallet_address, is_default, created_at)
 VALUES 
-    (@role_id, @name, @surname, @wallet_address, @is_default, NOW())
+    (@role_id, @name, @surname, @email, @wallet_address, @is_default, NOW())
 RETURNING id;
 
 -- name: UpdateUser :exec
@@ -44,7 +53,8 @@ UPDATE
     t_users
 SET
     name = COALESCE(@name, name),
-    surname = COALESCE(@surname, surname)
+    surname = COALESCE(@surname, surname),
+    email = COALESCE(@email, email)
 WHERE
     id = @user_id;
 

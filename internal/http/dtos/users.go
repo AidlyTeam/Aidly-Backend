@@ -53,7 +53,13 @@ type UserAuthWalletDTO struct {
 	Signature     string `json:"signatureBase58" validate:"required"`
 }
 
+type UserCivicAuthDTO struct {
+	FullName string `json:"fullName" validate:"required"`
+	Email    string `json:"email" validate:"required"`
+}
+
 type UserProfileUpdateDTO struct {
 	Name    string `json:"name" validate:"omitempty,max=30"`
 	Surname string `json:"surname" validate:"omitempty,max=30"`
+	Email   string `json:"email" validate:"omitempty,email"`
 }

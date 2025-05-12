@@ -1287,6 +1287,40 @@ const docTemplate = `{
                 }
             }
         },
+        "/public/auth/civic": {
+            "post": {
+                "description": "Auth with Civic",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Auth",
+                "parameters": [
+                    {
+                        "description": "Auth Information",
+                        "name": "auth",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UserCivicAuthDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/public/badge/{badgeID}": {
             "get": {
                 "description": "Get NFT Metadata",
@@ -1448,9 +1482,27 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.UserCivicAuthDTO": {
+            "type": "object",
+            "required": [
+                "email",
+                "fullName"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "fullName": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.UserProfileUpdateDTO": {
             "type": "object",
             "properties": {
+                "email": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string",
                     "maxLength": 30

@@ -46,9 +46,9 @@ func (q *Queries) CountUserByWalletAddress(ctx context.Context, walletAddress st
 
 const createUser = `-- name: CreateUser :one
 INSERT INTO t_users 
-    (role_id, name, surname, wallet_address, is_default, created_at)
+    (role_id, name, surname, email, wallet_address, is_default, created_at)
 VALUES 
-    ($1, $2, $3, $4, $5, NOW())
+    ($1, $2, $3, $4, $5, $6, NOW())
 RETURNING id
 `
 
@@ -56,6 +56,7 @@ type CreateUserParams struct {
 	RoleID        uuid.UUID
 	Name          sql.NullString
 	Surname       sql.NullString
+	Email         string
 	WalletAddress string
 	IsDefault     bool
 }
@@ -65,6 +66,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (uuid.UU
 		arg.RoleID,
 		arg.Name,
 		arg.Surname,
+		arg.Email,
 		arg.WalletAddress,
 		arg.IsDefault,
 	)
@@ -87,7 +89,7 @@ func (q *Queries) DeleteUser(ctx context.Context, userID uuid.UUID) error {
 
 const getDefaultUser = `-- name: GetDefaultUser :one
 SELECT 
-    id, role_id, wallet_address, name, surname, is_default, created_at
+    id, role_id, wallet_address, email, name, surname, is_default, created_at
 FROM 
     t_users 
 WHERE 
@@ -101,6 +103,32 @@ func (q *Queries) GetDefaultUser(ctx context.Context) (TUser, error) {
 		&i.ID,
 		&i.RoleID,
 		&i.WalletAddress,
+		&i.Email,
+		&i.Name,
+		&i.Surname,
+		&i.IsDefault,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const getUserByEmail = `-- name: GetUserByEmail :one
+SELECT 
+    id, role_id, wallet_address, email, name, surname, is_default, created_at
+FROM 
+    t_users 
+WHERE 
+    wallet_address = $1
+`
+
+func (q *Queries) GetUserByEmail(ctx context.Context, walletAddress string) (TUser, error) {
+	row := q.db.QueryRowContext(ctx, getUserByEmail, walletAddress)
+	var i TUser
+	err := row.Scan(
+		&i.ID,
+		&i.RoleID,
+		&i.WalletAddress,
+		&i.Email,
 		&i.Name,
 		&i.Surname,
 		&i.IsDefault,
@@ -111,7 +139,7 @@ func (q *Queries) GetDefaultUser(ctx context.Context) (TUser, error) {
 
 const getUserByID = `-- name: GetUserByID :one
 SELECT 
-    id, role_id, wallet_address, name, surname, is_default, created_at
+    id, role_id, wallet_address, email, name, surname, is_default, created_at
 FROM 
     t_users
 WHERE 
@@ -125,6 +153,7 @@ func (q *Queries) GetUserByID(ctx context.Context, userID uuid.UUID) (TUser, err
 		&i.ID,
 		&i.RoleID,
 		&i.WalletAddress,
+		&i.Email,
 		&i.Name,
 		&i.Surname,
 		&i.IsDefault,
@@ -135,7 +164,7 @@ func (q *Queries) GetUserByID(ctx context.Context, userID uuid.UUID) (TUser, err
 
 const getUserByWalletAddress = `-- name: GetUserByWalletAddress :one
 SELECT 
-    id, role_id, wallet_address, name, surname, is_default, created_at
+    id, role_id, wallet_address, email, name, surname, is_default, created_at
 FROM 
     t_users 
 WHERE 
@@ -149,6 +178,7 @@ func (q *Queries) GetUserByWalletAddress(ctx context.Context, walletAddress stri
 		&i.ID,
 		&i.RoleID,
 		&i.WalletAddress,
+		&i.Email,
 		&i.Name,
 		&i.Surname,
 		&i.IsDefault,
@@ -159,17 +189,19 @@ func (q *Queries) GetUserByWalletAddress(ctx context.Context, walletAddress stri
 
 const getUsers = `-- name: GetUsers :many
 SELECT 
-    id, role_id, wallet_address, name, surname, is_default, created_at
+    id, role_id, wallet_address, email, name, surname, is_default, created_at
 FROM 
     t_users
 WHERE
     ($1::UUID IS NULL OR id = $1::UUID) AND
-    ($2::TEXT IS NULL OR wallet_address = $2::TEXT)
-LIMIT $4 OFFSET $3
+    ($2::TEXT IS NULL OR email = $2::TEXT) AND
+    ($3::TEXT IS NULL OR wallet_address = $3::TEXT)
+LIMIT $5 OFFSET $4
 `
 
 type GetUsersParams struct {
 	ID            uuid.NullUUID
+	Email         sql.NullString
 	WalletAddress sql.NullString
 	Off           int32
 	Lim           int32
@@ -178,6 +210,7 @@ type GetUsersParams struct {
 func (q *Queries) GetUsers(ctx context.Context, arg GetUsersParams) ([]TUser, error) {
 	rows, err := q.db.QueryContext(ctx, getUsers,
 		arg.ID,
+		arg.Email,
 		arg.WalletAddress,
 		arg.Off,
 		arg.Lim,
@@ -193,6 +226,7 @@ func (q *Queries) GetUsers(ctx context.Context, arg GetUsersParams) ([]TUser, er
 			&i.ID,
 			&i.RoleID,
 			&i.WalletAddress,
+			&i.Email,
 			&i.Name,
 			&i.Surname,
 			&i.IsDefault,
@@ -232,18 +266,25 @@ UPDATE
     t_users
 SET
     name = COALESCE($1, name),
-    surname = COALESCE($2, surname)
+    surname = COALESCE($2, surname),
+    email = COALESCE($3, email)
 WHERE
-    id = $3
+    id = $4
 `
 
 type UpdateUserParams struct {
 	Name    sql.NullString
 	Surname sql.NullString
+	Email   string
 	UserID  uuid.UUID
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) error {
-	_, err := q.db.ExecContext(ctx, updateUser, arg.Name, arg.Surname, arg.UserID)
+	_, err := q.db.ExecContext(ctx, updateUser,
+		arg.Name,
+		arg.Surname,
+		arg.Email,
+		arg.UserID,
+	)
 	return err
 }

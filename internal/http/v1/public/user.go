@@ -12,6 +12,7 @@ func (h *PublicHandler) initUserRoutes(root fiber.Router) {
 	root.Post("/login", h.Login)
 	root.Post("/logout", h.Logout)
 	root.Post("/auth", h.Auth)
+	root.Post("/auth/civic", h.CivicAuth)
 }
 
 // FIXME: THIS IS FOR DEVELOPMENT ONLY  - DELETE IT LATER
@@ -96,6 +97,63 @@ func (h *PublicHandler) Auth(c *fiber.Ctx) error {
 		sessionData.ParseFromUser(user, userRole)
 	} else {
 		sessionData.ParseFromUser(user, firstRole)
+	}
+	sess.Set("user", sessionData)
+	if err := sess.Save(); err != nil {
+		return err
+	}
+	profileResponse := h.dtoManager.UserManager().ToUserProfile(sessionData, nil, 0)
+
+	return response.Response(200, "Authenticate Successful", profileResponse)
+}
+
+// @Tags Auth
+// @Summary Auth
+// @Description Auth with Civic
+// @Accept json
+// @Produce json
+// @Param auth body dto.UserCivicAuthDTO true "Auth Information"
+// @Success 200 {object} response.BaseResponse{}
+// @Router /public/auth/civic [post]
+func (h *PublicHandler) CivicAuth(c *fiber.Ctx) error {
+	var auth dto.UserCivicAuthDTO
+	if err := c.BodyParser(&auth); err != nil {
+		return err
+	}
+	if err := h.services.UtilService().Validator().ValidateStruct(auth); err != nil {
+		return err
+	}
+
+	defaultRole, err := h.services.RoleService().GetByName(c.Context(), h.config.Defaults.Roles.DefaultRole)
+	if err != nil {
+		return err
+	}
+
+	user, isRegister, err := h.services.UserService().CivicLogin(
+		c.Context(),
+		auth.FullName,
+		auth.Email,
+		defaultRole.ID,
+	)
+	if err != nil {
+		return err
+	}
+
+	sess, err := h.sessionStore.Get(c)
+	if err != nil {
+		return err
+	}
+
+	sessionData := sessionStore.SessionData{}
+	if !isRegister {
+		// If user is not registering. Which means he is login in. Then set the users role in session else firstrole.
+		userRole, err := h.services.RoleService().GetRoleByID(c.Context(), user.RoleID)
+		if err != nil {
+			return err
+		}
+		sessionData.ParseFromUser(user, userRole)
+	} else {
+		sessionData.ParseFromUser(user, defaultRole)
 	}
 	sess.Set("user", sessionData)
 	if err := sess.Save(); err != nil {
