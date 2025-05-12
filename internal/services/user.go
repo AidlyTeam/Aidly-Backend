@@ -8,6 +8,7 @@ import (
 	serviceErrors "github.com/AidlyTeam/Aidly-Backend/internal/errors"
 	repo "github.com/AidlyTeam/Aidly-Backend/internal/repos/out"
 	hasherService "github.com/AidlyTeam/Aidly-Backend/pkg/hasher"
+	"github.com/AidlyTeam/Aidly-Backend/pkg/paths"
 	"github.com/google/uuid"
 )
 
@@ -38,6 +39,42 @@ func (s *UserService) Login(ctx context.Context, walletAddress string) (*repo.TU
 		return nil, serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrFilteringUsers, err)
 	}
 	return &user, nil
+}
+
+func (s *UserService) CivicLogin(ctx context.Context, fullName, email string, defaultRoleID uuid.UUID) (*repo.TUser, bool, error) {
+	users, err := s.queries.GetUsers(ctx, repo.GetUsersParams{
+		Email: s.utilService.ParseString(email),
+		Lim:   1,
+		Off:   0,
+	})
+	if err != nil {
+		return nil, false, serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrFilteringUsers, err)
+	}
+	if len(users) == 0 {
+		name, surname := paths.SplitFullName(fullName)
+		id, err := s.queries.CreateUser(ctx, repo.CreateUserParams{
+			RoleID:  defaultRoleID,
+			Email:   email,
+			Name:    s.utilService.ParseString(name),
+			Surname: s.utilService.ParseString(surname),
+		})
+		if err != nil {
+			return nil, false, serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrCreatingUser, err)
+		}
+
+		user, err := s.queries.GetUserByID(ctx, id)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				return nil, false, serviceErrors.NewServiceErrorWithMessage(serviceErrors.StatusBadRequest, serviceErrors.ErrUserNotFound)
+			}
+			return nil, false, serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrFilteringUsers, err)
+		}
+
+		return &user, true, nil
+	}
+	user := &users[0]
+
+	return user, false, err
 }
 
 // Login & Register
@@ -115,7 +152,7 @@ func (s *UserService) GetDefaultUser(ctx context.Context) (*repo.TUser, error) {
 	return &user, nil
 }
 
-func (s *UserService) Update(ctx context.Context, id, name, surname string) error {
+func (s *UserService) Update(ctx context.Context, id, name, surname, email string) error {
 	idUUID, err := s.utilService.NParseUUID(id)
 	if err != nil {
 		return serviceErrors.NewServiceErrorWithMessage(serviceErrors.StatusBadRequest, serviceErrors.ErrInvalidID)
@@ -128,10 +165,23 @@ func (s *UserService) Update(ctx context.Context, id, name, surname string) erro
 		return serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrFilteringUsers, err)
 	}
 
+	users, err := s.queries.GetUsers(ctx, repo.GetUsersParams{
+		WalletAddress: s.utilService.ParseString(email),
+		Lim:           1,
+		Off:           0,
+	})
+	if err != nil {
+		return serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrFilteringUsers, err)
+	}
+	if len(users) > 0 {
+		return serviceErrors.NewServiceErrorWithMessage(serviceErrors.StatusBadRequest, serviceErrors.ErrEmailBeingUsed)
+	}
+
 	if err := s.queries.UpdateUser(ctx, repo.UpdateUserParams{
 		UserID:  idUUID,
 		Name:    s.utilService.ParseString(name),
 		Surname: s.utilService.ParseString(surname),
+		Email:   email,
 	}); err != nil {
 		return serviceErrors.NewServiceErrorWithMessage(serviceErrors.StatusInternalServerError, serviceErrors.ErrUpdatingUsers)
 	}

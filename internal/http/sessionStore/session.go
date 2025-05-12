@@ -16,6 +16,7 @@ type SessionData struct {
 	Role          string
 	Name          string
 	Surname       string
+	Email         string
 	WalletAddress string
 }
 
@@ -24,6 +25,7 @@ func (s *SessionData) ParseFromUser(user *repo.TUser, role *repo.TRole) {
 	s.RoleID = user.RoleID
 	s.Role = role.Name
 	s.Name = user.Name.String
+	s.Email = user.Email
 	s.Surname = user.Surname.String
 	s.WalletAddress = user.WalletAddress
 }

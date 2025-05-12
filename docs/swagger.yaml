@@ -55,8 +55,20 @@ definitions:
     - signatureBase58
     - walletAddress
     type: object
+  dto.UserCivicAuthDTO:
+    properties:
+      email:
+        type: string
+      fullName:
+        type: string
+    required:
+    - email
+    - fullName
+    type: object
   dto.UserProfileUpdateDTO:
     properties:
+      email:
+        type: string
       name:
         maxLength: 30
         type: string
@@ -911,6 +923,28 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/dto.UserAuthWalletDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.BaseResponse'
+      summary: Auth
+      tags:
+      - Auth
+  /public/auth/civic:
+    post:
+      consumes:
+      - application/json
+      description: Auth with Civic
+      parameters:
+      - description: Auth Information
+        in: body
+        name: auth
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserCivicAuthDTO'
       produces:
       - application/json
       responses:

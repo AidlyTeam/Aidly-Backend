@@ -57,7 +57,7 @@ func (h *PrivateHandler) UpdateProfile(c *fiber.Ctx) error {
 	}
 
 	// Update Profile
-	if err := h.services.UserService().Update(c.Context(), userSession.UserID.String(), newUserProfile.Name, newUserProfile.Surname); err != nil {
+	if err := h.services.UserService().Update(c.Context(), userSession.UserID.String(), newUserProfile.Name, newUserProfile.Surname, newUserProfile.Email); err != nil {
 		return err
 	}
 
