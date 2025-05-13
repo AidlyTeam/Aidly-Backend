@@ -48,6 +48,10 @@ func (s *SessionData) SetRole(roleName string, roleID uuid.UUID) {
 	s.RoleID = roleID
 }
 
+func (s *SessionData) SetEmail(email string) {
+	s.Email = email
+}
+
 func GetSessionData(c *fiber.Ctx) *SessionData {
 	user := c.Locals("user")
 	if user == nil {

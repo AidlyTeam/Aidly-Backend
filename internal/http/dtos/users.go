@@ -61,13 +61,13 @@ type UserCivicAuthDTO struct {
 }
 
 type UserProfileUpdateDTO struct {
-	Name    string `json:"name" validate:"omitempty,max=30"`
-	Surname string `json:"surname" validate:"omitempty,max=30"`
-	Email   string `json:"email" validate:"omitempty,email"`
+	Name    string `json:"name" validate:"required,max=30"`
+	Surname string `json:"surname" validate:"required,max=30"`
+	Email   string `json:"email" validate:"required,email"`
 }
 
 type UserConnectWallectDTO struct {
-	WalletAddress string `json:"name" validate:"omitempty,max=30"`
+	WalletAddress string `json:"walletAddress" validate:"required"`
 	Message       string `json:"message" validate:"required"`
 	Signature     string `json:"signatureBase58" validate:"required"`
 }
