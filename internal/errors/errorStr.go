@@ -24,10 +24,11 @@ const (
 const (
 
 	// Authentication
-	ErrUsernameBeingUsed   = "USERNAME_ALREADY_BEING_USED"
-	ErrInvalidAuth         = "USERNAME_OR_PASSWORD_WRONG"
-	ErrEmailBeingUsed      = "EMAIL_ALREADY_BEING_USED"
-	ErrPasswordsDoNotMatch = "PASSWORDS_DO_NOT_MATCH"
+	ErrUsernameBeingUsed      = "USERNAME_ALREADY_BEING_USED"
+	ErrInvalidAuth            = "USERNAME_OR_PASSWORD_WRONG"
+	ErrEmailBeingUsed         = "EMAIL_ALREADY_BEING_USED"
+	ErrWalletAddressBeingUsed = "WALLET_ADDRESS_BEING_USED"
+	ErrPasswordsDoNotMatch    = "PASSWORDS_DO_NOT_MATCH"
 
 	// General
 	ErrInvalidID               = "INVALID_ID"
@@ -72,6 +73,7 @@ const (
 	ErrUpdatingUserRole   = "ERROR_UPDATING_USER_ROLE"
 	ErrUpdatingCampaigns  = "ERROR_UPDATING_CAMPAINGS"
 	ErrUpdatingUsers      = "ERROR_UPDATING_USERS"
+	ErrConnectingWallet   = "ERROR_CONNECTING_WALLET"
 	ErrUpdatingCategories = "ERROR_UPDATING_CATEGORIES"
 	ErrUpdatingBadge      = "ERROR_UPDATING_BADGE"
 	ErrChangingMinted     = "ERROR_WHILE_CHANGING_IS_MINTED"

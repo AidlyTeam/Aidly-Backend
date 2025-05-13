@@ -58,6 +58,14 @@ SET
 WHERE
     id = @user_id;
 
+-- name: ConnectWallet :exec
+UPDATE
+    t_users
+SET
+    wallet_address = COALESCE(@wallet_address, wallet_address)
+WHERE
+    id = @user_id;
+
 -- name: ChangeUserRole :exec
 UPDATE
     t_users

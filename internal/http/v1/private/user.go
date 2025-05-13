@@ -11,6 +11,7 @@ func (h *PrivateHandler) initUserRoutes(root fiber.Router) {
 	user := root.Group("/user")
 	user.Get("/profile", h.Profile)
 	user.Post("/profile", h.UpdateProfile)
+	user.Post("/connect", h.ConnectWallet)
 }
 
 // @Tags User
@@ -80,6 +81,42 @@ func (h *PrivateHandler) UpdateProfile(c *fiber.Ctx) error {
 		return err
 	}
 	userSession.SetNameSurname(newUserProfile.Name, newUserProfile.Surname)
+	sess.Set("user", userSession)
+	if err := sess.Save(); err != nil {
+		return err
+	}
+
+	return response.Response(200, "Status OK", nil)
+}
+
+// @Tags User
+// @Summary Connect Wallet
+// @Description Connect Phantom Wallet.
+// @Accept json
+// @Produce json
+// @Param wallet body dto.UserConnectWallectDTO true "Wallet"
+// @Success 200 {object} response.BaseResponse{}
+// @Router /private/user/connect [post]
+func (h *PrivateHandler) ConnectWallet(c *fiber.Ctx) error {
+	userSession := sessionStore.GetSessionData(c)
+
+	var wallet dto.UserConnectWallectDTO
+	if err := c.BodyParser(&wallet); err != nil {
+		return err
+	}
+	if err := h.services.UtilService().Validator().ValidateStruct(wallet); err != nil {
+		return err
+	}
+
+	if err := h.services.UserService().ConnectWallet(c.Context(), userSession.UserID.String(), wallet.WalletAddress, wallet.Message, wallet.Signature); err != nil {
+		return err
+	}
+
+	sess, err := h.sess_store.Get(c)
+	if err != nil {
+		return err
+	}
+	userSession.SetWalletAddress(userSession.WalletAddress)
 	sess.Set("user", userSession)
 	if err := sess.Save(); err != nil {
 		return err

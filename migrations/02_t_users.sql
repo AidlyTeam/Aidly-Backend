@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS t_users (
     id UUID PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),
     role_id UUID NOT NULL,
     wallet_address VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL UNIQUE,
+    email VARCHAR(255) NOT NULL,
     name VARCHAR(30),
     surname VARCHAR(30),
     is_default BOOLEAN NOT NULL DEFAULT false,

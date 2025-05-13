@@ -166,9 +166,9 @@ func (s *UserService) Update(ctx context.Context, id, name, surname, email strin
 	}
 
 	users, err := s.queries.GetUsers(ctx, repo.GetUsersParams{
-		WalletAddress: s.utilService.ParseString(email),
-		Lim:           1,
-		Off:           0,
+		Email: s.utilService.ParseString(email),
+		Lim:   1,
+		Off:   0,
 	})
 	if err != nil {
 		return serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrFilteringUsers, err)
@@ -184,6 +184,48 @@ func (s *UserService) Update(ctx context.Context, id, name, surname, email strin
 		Email:   email,
 	}); err != nil {
 		return serviceErrors.NewServiceErrorWithMessage(serviceErrors.StatusInternalServerError, serviceErrors.ErrUpdatingUsers)
+	}
+
+	return nil
+}
+
+func (s *UserService) ConnectWallet(ctx context.Context, id, walletAddress, message, signature string) error {
+	ok, err := hasherService.VerifySignature(walletAddress, message, signature)
+	if err != nil {
+		return serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrWalletVerificationError, err)
+	}
+	if !ok {
+		return serviceErrors.NewServiceErrorWithMessage(serviceErrors.StatusBadRequest, serviceErrors.ErrInvalidWalletConnection)
+	}
+
+	idUUID, err := s.utilService.NParseUUID(id)
+	if err != nil {
+		return serviceErrors.NewServiceErrorWithMessage(serviceErrors.StatusBadRequest, serviceErrors.ErrInvalidID)
+	}
+	if _, err := s.queries.GetUserByID(ctx, idUUID); err != nil {
+		if strings.Contains(err.Error(), "sql: no rows in result set") {
+			return serviceErrors.NewServiceErrorWithMessage(serviceErrors.StatusBadRequest, serviceErrors.ErrUserNotFound)
+		}
+		return serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrFilteringUsers, err)
+	}
+
+	users, err := s.queries.GetUsers(ctx, repo.GetUsersParams{
+		WalletAddress: s.utilService.ParseString(walletAddress),
+		Lim:           1,
+		Off:           0,
+	})
+	if err != nil {
+		return serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrFilteringUsers, err)
+	}
+	if len(users) > 0 {
+		return serviceErrors.NewServiceErrorWithMessage(serviceErrors.StatusBadRequest, serviceErrors.ErrWalletAddressBeingUsed)
+	}
+
+	if err := s.queries.ConnectWallet(ctx, repo.ConnectWalletParams{
+		UserID:        idUUID,
+		WalletAddress: walletAddress,
+	}); err != nil {
+		return serviceErrors.NewServiceErrorWithMessage(serviceErrors.StatusInternalServerError, serviceErrors.ErrConnectingWallet)
 	}
 
 	return nil
