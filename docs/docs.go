@@ -1535,23 +1535,28 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "message",
-                "signatureBase58"
+                "signatureBase58",
+                "walletAddress"
             ],
             "properties": {
                 "message": {
                     "type": "string"
                 },
-                "name": {
-                    "type": "string",
-                    "maxLength": 30
-                },
                 "signatureBase58": {
+                    "type": "string"
+                },
+                "walletAddress": {
                     "type": "string"
                 }
             }
         },
         "dto.UserProfileUpdateDTO": {
             "type": "object",
+            "required": [
+                "email",
+                "name",
+                "surname"
+            ],
             "properties": {
                 "email": {
                     "type": "string"

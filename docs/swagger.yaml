@@ -69,14 +69,14 @@ definitions:
     properties:
       message:
         type: string
-      name:
-        maxLength: 30
-        type: string
       signatureBase58:
+        type: string
+      walletAddress:
         type: string
     required:
     - message
     - signatureBase58
+    - walletAddress
     type: object
   dto.UserProfileUpdateDTO:
     properties:
@@ -88,6 +88,10 @@ definitions:
       surname:
         maxLength: 30
         type: string
+    required:
+    - email
+    - name
+    - surname
     type: object
   response.BaseResponse:
     properties:
