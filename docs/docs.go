@@ -1198,6 +1198,40 @@ const docTemplate = `{
                 }
             }
         },
+        "/private/user/connect": {
+            "post": {
+                "description": "Connect Phantom Wallet.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Connect Wallet",
+                "parameters": [
+                    {
+                        "description": "Wallet",
+                        "name": "wallet",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UserConnectWallectDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/private/user/profile": {
             "get": {
                 "description": "Retrieves users profile.",
@@ -1493,6 +1527,25 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "fullName": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UserConnectWallectDTO": {
+            "type": "object",
+            "required": [
+                "message",
+                "signatureBase58"
+            ],
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 30
+                },
+                "signatureBase58": {
                     "type": "string"
                 }
             }

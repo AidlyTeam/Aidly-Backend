@@ -30,6 +30,10 @@ func (s *SessionData) ParseFromUser(user *repo.TUser, role *repo.TRole) {
 	s.WalletAddress = user.WalletAddress
 }
 
+func (s *SessionData) SetWalletAddress(walletAddress string) {
+	s.WalletAddress = walletAddress
+}
+
 func (s *SessionData) SetNameSurname(name, surname string) {
 	if name != "" {
 		s.Name = name

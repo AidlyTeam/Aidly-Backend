@@ -31,6 +31,25 @@ func (q *Queries) ChangeUserRole(ctx context.Context, arg ChangeUserRoleParams) 
 	return err
 }
 
+const connectWallet = `-- name: ConnectWallet :exec
+UPDATE
+    t_users
+SET
+    wallet_address = COALESCE($1, wallet_address)
+WHERE
+    id = $2
+`
+
+type ConnectWalletParams struct {
+	WalletAddress string
+	UserID        uuid.UUID
+}
+
+func (q *Queries) ConnectWallet(ctx context.Context, arg ConnectWalletParams) error {
+	_, err := q.db.ExecContext(ctx, connectWallet, arg.WalletAddress, arg.UserID)
+	return err
+}
+
 const countUserByWalletAddress = `-- name: CountUserByWalletAddress :one
 SELECT COUNT(*) 
 FROM t_users 

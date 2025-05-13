@@ -65,6 +65,19 @@ definitions:
     - email
     - fullName
     type: object
+  dto.UserConnectWallectDTO:
+    properties:
+      message:
+        type: string
+      name:
+        maxLength: 30
+        type: string
+      signatureBase58:
+        type: string
+    required:
+    - message
+    - signatureBase58
+    type: object
   dto.UserProfileUpdateDTO:
     properties:
       email:
@@ -875,6 +888,28 @@ paths:
       summary: Get Donation by ID for User
       tags:
       - Donation
+  /private/user/connect:
+    post:
+      consumes:
+      - application/json
+      description: Connect Phantom Wallet.
+      parameters:
+      - description: Wallet
+        in: body
+        name: wallet
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserConnectWallectDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.BaseResponse'
+      summary: Connect Wallet
+      tags:
+      - User
   /private/user/profile:
     get:
       consumes:

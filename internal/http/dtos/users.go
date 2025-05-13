@@ -30,6 +30,7 @@ type UserProfileView struct {
 	RoleName      string      `json:"role"`
 	Name          string      `json:"name"`
 	Surname       string      `json:"surname"`
+	Email         string      `json:"email"`
 	Badges        *BadgeViews `json:"badges"`
 }
 
@@ -42,6 +43,7 @@ func (UserDTOManager) ToUserProfile(userData sessionStore.SessionData, badges []
 		RoleName:      userData.Role,
 		Name:          userData.Name,
 		Surname:       userData.Surname,
+		Email:         userData.Email,
 		WalletAddress: userData.WalletAddress,
 		Badges:        badgeManager.ToUserBadgeViews(badges, badgeCount),
 	}
@@ -62,4 +64,10 @@ type UserProfileUpdateDTO struct {
 	Name    string `json:"name" validate:"omitempty,max=30"`
 	Surname string `json:"surname" validate:"omitempty,max=30"`
 	Email   string `json:"email" validate:"omitempty,email"`
+}
+
+type UserConnectWallectDTO struct {
+	WalletAddress string `json:"name" validate:"omitempty,max=30"`
+	Message       string `json:"message" validate:"required"`
+	Signature     string `json:"signatureBase58" validate:"required"`
 }
