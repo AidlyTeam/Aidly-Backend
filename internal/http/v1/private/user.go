@@ -81,6 +81,7 @@ func (h *PrivateHandler) UpdateProfile(c *fiber.Ctx) error {
 		return err
 	}
 	userSession.SetNameSurname(newUserProfile.Name, newUserProfile.Surname)
+	userSession.SetEmail(newUserProfile.Email)
 	sess.Set("user", userSession)
 	if err := sess.Save(); err != nil {
 		return err
