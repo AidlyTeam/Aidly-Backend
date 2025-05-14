@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"strings"
+	"sync"
 
 	serviceErrors "github.com/AidlyTeam/Aidly-Backend/internal/errors"
 	repo "github.com/AidlyTeam/Aidly-Backend/internal/repos/out"
@@ -16,6 +17,7 @@ type UserService struct {
 	db          *sql.DB
 	queries     *repo.Queries
 	utilService IUtilService
+	userMutex   sync.Mutex
 }
 
 func newUserService(
@@ -42,6 +44,9 @@ func (s *UserService) Login(ctx context.Context, walletAddress string) (*repo.TU
 }
 
 func (s *UserService) CivicLogin(ctx context.Context, fullName, email string, defaultRoleID uuid.UUID) (*repo.TUser, bool, error) {
+	s.userMutex.Lock()
+	defer s.userMutex.Unlock()
+
 	users, err := s.queries.GetUsers(ctx, repo.GetUsersParams{
 		Email: s.utilService.ParseString(email),
 		Lim:   1,
