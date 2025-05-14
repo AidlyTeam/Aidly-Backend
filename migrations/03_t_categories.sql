@@ -11,8 +11,29 @@ INSERT INTO t_categories (name) VALUES
 ('Earthquake'),
 ('Animal Support'),
 ('Social Support'),
-('Innovation');
-
+('Innovation'),
+('Environment'),
+('Disability Support'),
+('Children'),
+('Elderly Care'),
+('Arts & Culture'),
+('Emergency Relief'),
+('Mental Health'),
+('Technology Access'),
+('Clean Water'),
+('Food Aid'),
+('Housing Support'),
+('Refugee Support'),
+('Medical Expenses'),
+('Funeral Assistance'),
+('Debt Relief'),
+('Single Parent Support'),
+('Unemployment Aid'),
+('Accident Recovery'),
+('Rent Support'),
+('Utility Bills Assistance'),
+('Surgery Funding'),
+('Newborn Support');
 
 -- +goose StatementEnd
 
