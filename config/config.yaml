@@ -5,7 +5,7 @@ app:
   mode: "self"
   migrationsPath: "migrations"
   managment:
-    walletAddress: "FrCPti5XRuKtCtsv9uMxPRnc8Dc2U3SV1KB2jfeTM9aZ"
+    walletAddress: "74HhKaQZp94oEbWgU51qJsSDTLRahVJFaJLqJN5jfs4U"
 
 database:
   driver: "postgres"
