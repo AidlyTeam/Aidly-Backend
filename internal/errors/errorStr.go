@@ -61,6 +61,7 @@ const (
 	ErrFilteringCategories         = "ERROR_FILTERING_CATEGORIES"
 	ErrFilteringCampaignCategories = "ERROR_FILTERING_CATEGORIES"
 	ErrFilteringBadge              = "ERROR_FILTERING_BADGE"
+	ErrFetchingIstatistic          = "ERROR_FETCHING_ISTATISTIC"
 
 	ErrCreatingUser             = "ERROR_CREATE_USER"
 	ErrCreatingCampaigns        = "ERROR_CREATE_CAMPAINGS"

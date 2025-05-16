@@ -950,6 +950,21 @@ paths:
       summary: Update User Profile
       tags:
       - User
+  /private/user/statistic:
+    get:
+      consumes:
+      - application/json
+      description: User, Donation and Campaign count.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.BaseResponse'
+      summary: Recives Statistic
+      tags:
+      - Statistics
   /public/auth:
     post:
       consumes:

@@ -70,7 +70,7 @@ type TUser struct {
 	ID            uuid.UUID
 	RoleID        uuid.UUID
 	WalletAddress string
-	Email         string
+	Email         sql.NullString
 	Name          sql.NullString
 	Surname       sql.NullString
 	IsDefault     bool

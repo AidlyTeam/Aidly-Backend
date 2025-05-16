@@ -75,7 +75,7 @@ type CreateUserParams struct {
 	RoleID        uuid.UUID
 	Name          sql.NullString
 	Surname       sql.NullString
-	Email         string
+	Email         sql.NullString
 	WalletAddress string
 	IsDefault     bool
 }
@@ -280,6 +280,26 @@ func (q *Queries) IsDefaultUserExists(ctx context.Context) (bool, error) {
 	return is_default_user_exists, err
 }
 
+const statistics = `-- name: Statistics :one
+SELECT 
+    (SELECT COUNT(*) FROM t_users) AS total_users,
+    (SELECT COUNT(*) FROM t_donations) AS total_donations,
+    (SELECT COUNT(*) FROM t_campaigns) AS total_campaigns
+`
+
+type StatisticsRow struct {
+	TotalUsers     int64
+	TotalDonations int64
+	TotalCampaigns int64
+}
+
+func (q *Queries) Statistics(ctx context.Context) (StatisticsRow, error) {
+	row := q.db.QueryRowContext(ctx, statistics)
+	var i StatisticsRow
+	err := row.Scan(&i.TotalUsers, &i.TotalDonations, &i.TotalCampaigns)
+	return i, err
+}
+
 const updateUser = `-- name: UpdateUser :exec
 UPDATE
     t_users
@@ -294,7 +314,7 @@ WHERE
 type UpdateUserParams struct {
 	Name    sql.NullString
 	Surname sql.NullString
-	Email   string
+	Email   sql.NullString
 	UserID  uuid.UUID
 }
 

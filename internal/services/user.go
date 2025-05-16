@@ -59,7 +59,7 @@ func (s *UserService) CivicLogin(ctx context.Context, fullName, email string, de
 		name, surname := paths.SplitFullName(fullName)
 		id, err := s.queries.CreateUser(ctx, repo.CreateUserParams{
 			RoleID:  defaultRoleID,
-			Email:   email,
+			Email:   s.utilService.ParseString(email),
 			Name:    s.utilService.ParseString(name),
 			Surname: s.utilService.ParseString(surname),
 		})
@@ -186,7 +186,7 @@ func (s *UserService) Update(ctx context.Context, id, name, surname, email strin
 		UserID:  idUUID,
 		Name:    s.utilService.ParseString(name),
 		Surname: s.utilService.ParseString(surname),
-		Email:   email,
+		Email:   s.utilService.ParseString(email),
 	}); err != nil {
 		return serviceErrors.NewServiceErrorWithMessage(serviceErrors.StatusInternalServerError, serviceErrors.ErrUpdatingUsers)
 	}
@@ -245,4 +245,13 @@ func (s *UserService) ChangeUserRole(ctx context.Context, id, newRoleID uuid.UUI
 	}
 
 	return nil
+}
+
+func (s *UserService) Statistics(ctx context.Context) (*repo.StatisticsRow, error) {
+	dbModel, err := s.queries.Statistics(ctx)
+	if err != nil {
+		return nil, serviceErrors.NewServiceErrorWithMessageAndError(serviceErrors.StatusInternalServerError, serviceErrors.ErrFetchingIstatistic, err)
+	}
+
+	return &dbModel, nil
 }
