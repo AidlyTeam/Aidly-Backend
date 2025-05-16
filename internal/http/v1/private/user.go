@@ -12,6 +12,7 @@ func (h *PrivateHandler) initUserRoutes(root fiber.Router) {
 	user.Get("/profile", h.Profile)
 	user.Post("/profile", h.UpdateProfile)
 	user.Post("/connect", h.ConnectWallet)
+	user.Get("/statistic", h.GetStatistics)
 }
 
 // @Tags User
@@ -124,4 +125,20 @@ func (h *PrivateHandler) ConnectWallet(c *fiber.Ctx) error {
 	}
 
 	return response.Response(200, "Status OK", nil)
+}
+
+// @Tags Statistics
+// @Summary Recives Statistic
+// @Description User, Donation and Campaign count.
+// @Accept json
+// @Produce json
+// @Success 200 {object} response.BaseResponse{}
+// @Router /private/user/statistic [get]
+func (h *PrivateHandler) GetStatistics(c *fiber.Ctx) error {
+	statistic, err := h.services.UserService().Statistics(c.Context())
+	if err != nil {
+		return err
+	}
+
+	return response.Response(200, "Statistic Recived", statistic)
 }

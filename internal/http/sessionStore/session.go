@@ -25,7 +25,7 @@ func (s *SessionData) ParseFromUser(user *repo.TUser, role *repo.TRole) {
 	s.RoleID = user.RoleID
 	s.Role = role.Name
 	s.Name = user.Name.String
-	s.Email = user.Email
+	s.Email = user.Email.String
 	s.Surname = user.Surname.String
 	s.WalletAddress = user.WalletAddress
 }

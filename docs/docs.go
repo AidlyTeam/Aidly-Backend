@@ -1287,6 +1287,29 @@ const docTemplate = `{
                 }
             }
         },
+        "/private/user/statistic": {
+            "get": {
+                "description": "User, Donation and Campaign count.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Statistics"
+                ],
+                "summary": "Recives Statistic",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.BaseResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/public/auth": {
             "post": {
                 "description": "Auth with Wallet",

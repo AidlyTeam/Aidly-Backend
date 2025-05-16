@@ -34,7 +34,7 @@ func (s *uploadService) SaveImage(file *multipart.FileHeader, filePath string) e
 
 	// Dosya uzantısını kontrol ediyoruz
 	ext := strings.ToLower(filepath.Ext(file.Filename))
-	if ext != ".jpg" && ext != ".jpeg" && ext != ".png" {
+	if ext != ".jpg" && ext != ".jpeg" && ext != ".png" && ext != ".heic" {
 		return serviceErrors.NewServiceErrorWithMessage(400, serviceErrors.ErrInvalidFileType)
 	}
 

@@ -92,3 +92,9 @@ SELECT
         FROM t_users u
         WHERE u.is_default = true
     ) AS is_default_user_exists;
+
+-- name: Statistics :one
+SELECT 
+    (SELECT COUNT(*) FROM t_users) AS total_users,
+    (SELECT COUNT(*) FROM t_donations) AS total_donations,
+    (SELECT COUNT(*) FROM t_campaigns) AS total_campaigns;
