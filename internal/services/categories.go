@@ -38,7 +38,7 @@ func (s *CategoryService) GetCategories(ctx context.Context, page, limit string)
 
 	limitNum, err := strconv.Atoi(limit)
 	if err != nil || limit == "" {
-		limitNum = s.utilService.D().Limits.DefaultDonationLimit
+		limitNum = s.utilService.D().Limits.DefaultCategoryLimit
 	}
 
 	categories, err := s.queries.GetCategories(ctx, repo.GetCategoriesParams{
